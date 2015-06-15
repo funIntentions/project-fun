@@ -394,6 +394,7 @@ void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
         if (!BFSVertComesBeforeVert2(plan, potential->id, newOperator) && !BFSVertComesAfterVert2(plan, potential->id, causalLink.targetOperator)) // is within the danger interval
         {
             Threat* newThreat = new Threat(newOperator, causalLink, potential->id);
+            cout << "- Threat Found -" << endl;
             cout << "New Operator: " << newOperator << endl;
             cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
             cout << "Causal Condition: " << causalLink.condition << endl;
@@ -487,28 +488,122 @@ vector<Plan> pop(Operator initialState, Operator endGoal, vector<Operator> opera
     return finishedPlans;
 }
 
-vector<vector<long>> generateTotalOrderPlans(Plan& partialOrderPlan)
+struct UnfinishedTotalOrderPlan
 {
-    vector<vector<long>> finishedPlans;
-    queue<vector<long>> unfinishedPlans;
+    bool* visited;
+    vector<long> plan;
+    list<long> nextSteps;
 
-    unfinishedPlans.push({partialOrderPlan.start});
-
-    while (!unfinishedPlans.empty())
+    /*UnfinishedTotalOrderPlan(bool* vertsVisited, vector<long> planSoFar, vector<long> newSteps)
     {
-        vector<long> plan = unfinishedPlans.front();
-        unfinishedPlans.pop();
+        visited = new bool[](vertsVisited);
+        plan = vector<long>(planSoFar);
+        nextSteps = vector<long>(newSteps);
+    }
 
-        long step = plan.back();
-        cout << "Current Step: " << step << endl;
+    UnfinishedTotalOrderPlan(int numVertices)
+    {
+        visited = new bool[numVertices];
+    }*/
 
-        // Step 1, find next temporal steps
-        for (auto temporalLink = partialOrderPlan.ordering[step].begin(); temporalLink != partialOrderPlan.ordering[step].end(); ++temporalLink)
+};
+
+void addNewPlanForEachPermutation(queue<UnfinishedTotalOrderPlan>& unfinishedPlans, const UnfinishedTotalOrderPlan& currentPlan, vector<long> newOperators)
+{
+    sort (newOperators.begin(), newOperators.end());
+
+    do
+    {
+        UnfinishedTotalOrderPlan newPlan(currentPlan);
+
+        for (auto opItr = newOperators.begin(); opItr != newOperators.end(); ++opItr)
         {
-
+            newPlan.nextSteps.push_back(*opItr);
         }
 
+        unfinishedPlans.push(newPlan);
     }
+    while (next_permutation(newOperators.begin(), newOperators.end()));
+}
+
+bool processNextSteps(queue<UnfinishedTotalOrderPlan>& unfinishedPlans, UnfinishedTotalOrderPlan& totalOrderPlan, Plan plan)
+{
+    long vert = totalOrderPlan.nextSteps.front();
+    totalOrderPlan.plan.push_back(vert);
+    totalOrderPlan.nextSteps.pop_front();
+
+    vector<long> newlyAdded;
+
+    for (auto itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+    {
+        if (!totalOrderPlan.visited[itr->targetOperator])
+        {
+            if (itr->isBefore && itr->targetOperator != plan.end)
+            {
+                totalOrderPlan.visited[itr->targetOperator] = true;
+                newlyAdded.push_back(itr->targetOperator);
+            }
+        }
+    }
+
+    if (newlyAdded.empty() && totalOrderPlan.nextSteps.empty())
+        return true; // plan complete
+
+    addNewPlanForEachPermutation(unfinishedPlans, totalOrderPlan, newlyAdded);
+
+    return false;
+}
+
+vector<vector<long>> generateTotalOrderPlans(const Plan& plan)
+{
+    vector<vector<long>> finishedPlans;
+    queue<UnfinishedTotalOrderPlan> unfinishedPlans;
+    UnfinishedTotalOrderPlan initialPlan;
+
+    long numVertices = plan.steps.size();
+    initialPlan.visited = new bool[numVertices];
+    for (unsigned int i = 0; i < numVertices; ++i)
+    {
+        initialPlan.visited[i] = false;
+    }
+
+    vector<long> nextSteps;
+
+    // Get first steps (this is a bit of an awkward step)
+    for (auto temporalLink = plan.ordering[plan.start].begin(); temporalLink != plan.ordering[plan.start].end(); ++temporalLink)
+    {
+        long target = temporalLink->targetOperator;
+        bool next = true;
+
+        for (auto targetTemporalLink = plan.ordering[target].begin(); targetTemporalLink != plan.ordering[target].end(); ++targetTemporalLink)
+        {
+            if (!targetTemporalLink->isBefore && targetTemporalLink->targetOperator != plan.start)
+            {
+                next = false;
+            }
+        }
+
+        if (next)
+        {
+            initialPlan.visited[temporalLink->targetOperator] = true;
+            nextSteps.push_back(temporalLink->targetOperator);
+        }
+    }
+
+    addNewPlanForEachPermutation(unfinishedPlans, initialPlan, nextSteps);
+
+    while (!unfinishedPlans.empty()) // process unfinished plans until they're all finished
+    {
+        UnfinishedTotalOrderPlan totalOrderPlan = unfinishedPlans.front();
+        unfinishedPlans.pop();
+
+        if (processNextSteps(unfinishedPlans, totalOrderPlan, plan))
+        {
+            finishedPlans.push_back(totalOrderPlan.plan);
+        }
+    }
+
+    return finishedPlans;
 }
 
 vector<long> getTotalOrderPlan(Plan plan)
@@ -551,7 +646,6 @@ vector<long> getTotalOrderPlan(Plan plan)
     while(!queue.empty())
     {
         long vert = queue.front();
-        cout << vert << ": ";
         totalOrderPlan.push_back(vert);
         queue.pop_front();
 
@@ -571,15 +665,6 @@ vector<long> getTotalOrderPlan(Plan plan)
         }
 
         //TODO: check how many are possible next steps, from those generate all the permutations and spawn that many we plans.
-        /*sort (newlyAdded.begin(), newlyAdded.end());
-
-        do
-        {
-
-        }
-        while (next_permutation(newlyAdded.begin(), newlyAdded.end()));
-
-        cout << "\n";*/
     }
 
     return totalOrderPlan;
@@ -654,7 +739,7 @@ int main()
             ++id;
         }
 
-        cout << "Building totoal order plan" << endl;
+        /*cout << endl << "Building totoal order plan" << endl;
         vector<long> totalOrderPlan = getTotalOrderPlan(plans[0]);
 
         cout << endl;
@@ -668,6 +753,30 @@ int main()
                 cout << op->second.name << endl;
             else
                 cout << "Oops: something is wrong" << endl;
+        }*/
+
+
+        vector<vector<long>> totalOrderPlans = generateTotalOrderPlans(plans[0]);
+        cout << endl;
+        cout << "Total Order Plan (One of them)" << endl;
+        cout << endl;
+
+        for (auto totalOrderPlan = totalOrderPlans.begin(); totalOrderPlan != totalOrderPlans.end(); ++totalOrderPlan)
+        {
+            cout << endl;
+            cout << "++ Possible Plan ++" << endl;
+            cout << endl;
+
+            for (auto step = totalOrderPlan->begin(); step != totalOrderPlan->end(); ++step)
+            {
+                unordered_map<long, Operator>::const_iterator op = plans[0].steps.find(*step);
+                if (op != plans[0].steps.end())
+                    cout << op->second.name << endl;
+                else
+                    cout << "Oops: something is wrong" << endl;
+            }
+
+            cout << "=================" << endl;
         }
     }
 
