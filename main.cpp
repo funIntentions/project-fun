@@ -20,6 +20,38 @@ enum Goals
     outSilverware
 };
 
+enum SussmanGoals
+{
+    ConA, // 0
+    AonC, // 1
+    BonA, // 2
+    BonC, // 3
+    AonB, // 4
+    ConB, // 5
+    AOnTable, // 6
+    BOnTable, // 7
+    COnTable, // 8
+    clearB, // 9
+    clearC, // 10
+    clearA, // 11
+    holdingA, // 12
+    holdingB, // 13
+    holdingC, // 14
+    handEmpty // 15
+};
+
+enum BriefcaseGoals
+{
+    dictionaryAtOffice = 0, // 0
+    paycheckAtOffice = 1, // 1
+    dictionaryAtHome = 2, // 2
+    paycheckAtHome = 3, // 3
+    dictionaryInBriefcase = 4, // 4
+    paycheckInBriefcase = 5, // 5
+    briefcaseAtHome = 6, // 6
+    briefcaseAtOffice = 7 // 7
+};
+
 struct Operator
 {
     string name;
@@ -115,7 +147,7 @@ struct Plan
     vector< vector<TemporalLink> > ordering;
     vector< vector<CausalLink> > links;
     vector<Threat> threats;
-    vector<Goal> open;
+    queue<Goal> open;
     long start;
     long end;
 
@@ -126,7 +158,7 @@ struct Plan
 
         for (;itr != newOperator.preconditions.end();++itr)
         {
-            open.push_back(Goal(newOperator.id, *itr));
+            open.push(Goal(newOperator.id, *itr));
         }
     }
 
@@ -199,8 +231,8 @@ Goal* selectSubgoal(Plan& plan)
         return nullptr;
     }
 
-    Goal* goal = new Goal(plan.open.back());
-    plan.open.pop_back();
+    Goal* goal = new Goal(plan.open.front());
+    plan.open.pop();
 
     cout << "- Goal Selected -" << endl;
     cout << "Goal Condition: " << goal->condition << " For Step: " << goal->step << endl;
@@ -404,6 +436,7 @@ void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
     }
 }
 
+// TODO: when there's the potencial to use either a SE or A, make two new branches
 void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> operators, Goal goal)
 {
     vector<Operator> chosen;
@@ -430,30 +463,28 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
                 Plan* partialPlan = new Plan(plan);
                 CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
                 partialPlan->links[chosenItr->id].push_back(*causalLink);
-                cout << "SE - New Causal Link From: " << chosenItr->id << " To: " << causalLink->targetOperator << " For Condition: " << causalLink->condition << endl;
+                cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
                 findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
 
                 partialPlans.push(*partialPlan);
             }
         }
     }
-    else
+    // TODO: should I put the else back here?
+    for (Operator option : operators)
     {
-        for (Operator option : operators)
+        for (auto itr = option.addedEffects.begin();itr != option.addedEffects.end(); ++itr)
         {
-            for (auto itr = option.addedEffects.begin();itr != option.addedEffects.end(); ++itr)
+            if (*itr == goal.condition)
             {
-                if (*itr == goal.condition)
-                {
-                    Plan* partialPlan = new Plan(plan);
-                    CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                    partialPlan->operatorAddition(option, goal.step, goal.condition, goal.step, NONE);
-                    partialPlan->addTemporalLink(option.id, partialPlan->start, false);
-                    cout << "A - New Causal Link From: " << option.id << " To: " << causalLink->targetOperator << " For Condition: " << causalLink->condition << endl;
-                    findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
+                Plan* partialPlan = new Plan(plan);
+                CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
+                partialPlan->operatorAddition(option, goal.step, goal.condition, goal.step, NONE);
+                partialPlan->addTemporalLink(option.id, partialPlan->start, false);
+                cout << "A - New Causal Link From: " << partialPlan->steps.at(option.id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
+                findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
 
-                    partialPlans.push(*partialPlan);
-                }
+                partialPlans.push(*partialPlan);
             }
         }
     }
@@ -467,6 +498,25 @@ vector<Plan> pop(Operator initialState, Operator endGoal, vector<Operator> opera
     queue<Plan> partialPlans;
     partialPlans.push(plan);
 
+    /*
+    ConA, // 0
+    AonC, // 1
+    BonA, // 2
+    BonC, // 3
+    AonB, // 4
+    ConB, // 5
+    AOnTable, // 6
+    BOnTable, // 7
+    COnTable, // 8
+    clearB, // 9
+    clearC, // 10
+    clearA, // 11
+    holdingA, // 12
+    holdingB, // 13
+    holdingC, // 14
+    handEmpty // 15
+    */
+
     while (!partialPlans.empty())
     {
         plan = partialPlans.front();
@@ -475,6 +525,7 @@ vector<Plan> pop(Operator initialState, Operator endGoal, vector<Operator> opera
         if (plan.open.empty() && plan.threats.empty()) // check if this plan is a solution
         {
             finishedPlans.push_back(plan);
+            break;
         }
 
         Goal* goal = selectSubgoal(plan);
@@ -673,10 +724,11 @@ vector<long> getTotalOrderPlan(Plan plan)
 int main()
 {
     // TODO: check how long the algorithm takes
+    // TODO: store this "setting the table" example somewhere
     Operator start("start");
     Operator finish("finish");
 
-    start.addedEffects = {tableCleared};
+    /*start.addedEffects = {tableCleared};
     finish.preconditions = {onTableCloth, outGlasses, outPlates, outSilverware};
 
     Operator layTableCloth("layTableCloth");
@@ -695,11 +747,125 @@ int main()
 
     vector<Operator> operators = {layTableCloth, putOutGlasses, putOutPlates, putOutSilverware};
 
+    vector<Plan> plans = pop(start, finish, operators);*/
+
+    // TODO: get the planner to solve the sussman problem
+    /*Operator start("start");
+    Operator finish("finish");
+    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+    finish.preconditions = {AonB, BonC};
+
+    Operator unstackCA("Unstack(C,A)");
+    unstackCA.preconditions = {clearC, ConA, handEmpty};
+    unstackCA.addedEffects = {holdingC, clearA};
+    unstackCA.subtractedEffects = {clearC, ConA, handEmpty};
+
+    Operator pickupA("Pickup(A)");
+    pickupA.preconditions = {AOnTable, clearA, handEmpty};
+    pickupA.addedEffects = {holdingA};
+    pickupA.subtractedEffects = {clearA, AOnTable, handEmpty};
+
+    Operator pickupB("PickupB");
+    pickupB.preconditions = {BOnTable, clearB, handEmpty};
+    pickupB.addedEffects = {holdingB};
+    pickupB.subtractedEffects = {BOnTable, clearB, handEmpty};
+
+    Operator pickupC("PickupC");
+    pickupC.preconditions = {COnTable, clearC, handEmpty};
+    pickupC.addedEffects = {holdingC};
+    pickupC.subtractedEffects = {COnTable, clearC, handEmpty};
+
+    Operator stackAB("Stack(A,B)");
+    stackAB.preconditions = {holdingA, clearB};
+    stackAB.addedEffects = {AonB, clearA, handEmpty};
+    stackAB.subtractedEffects = {holdingA, clearB};
+
+    Operator stackBC("Stack(B,C)");
+    stackBC.preconditions = {holdingB, clearC};
+    stackBC.addedEffects = {BonC, clearB, handEmpty};
+    stackBC.subtractedEffects = {holdingB, clearC};
+
+    Operator putdownC("Putdown(C)");
+    putdownC.preconditions = {holdingC};
+    putdownC.addedEffects = {COnTable, clearC, handEmpty};
+    putdownC.subtractedEffects = {holdingC};
+
+
+    vector<Operator> operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, putdownC};
+    vector<Plan> plans = pop(start, finish, operators);*/
+
+    // TODO: Briefcase domain
+    start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
+    finish.preconditions = {dictionaryAtOffice, paycheckAtHome};
+
+    // TODO: Building new operators should be made much quicker/easier than this
+    Operator homeToOffice("HomeToOffice");
+    homeToOffice.preconditions = {briefcaseAtHome};
+    homeToOffice.addedEffects = {briefcaseAtOffice};
+    homeToOffice.subtractedEffects = {briefcaseAtHome};
+
+    Operator officeToHome("OfficeToHome");
+    officeToHome.preconditions = {briefcaseAtOffice};
+    officeToHome.addedEffects = {briefcaseAtHome};
+    officeToHome.subtractedEffects = {briefcaseAtOffice};
+
+    Operator takeOutPaycheckAtHome("takeOutPaycheckAtHome");
+    takeOutPaycheckAtHome.preconditions = {paycheckInBriefcase, briefcaseAtHome};
+    takeOutPaycheckAtHome.addedEffects = {paycheckAtHome};
+    takeOutPaycheckAtHome.subtractedEffects = {paycheckInBriefcase};
+
+    Operator takeOutPaycheckAtOffice("takeOutPaycheckAtOffice");
+    takeOutPaycheckAtOffice.preconditions = {paycheckInBriefcase, briefcaseAtOffice};
+    takeOutPaycheckAtOffice.addedEffects = {paycheckAtOffice};
+    takeOutPaycheckAtOffice.subtractedEffects = {paycheckInBriefcase};
+
+    Operator putPaycheckInAtHome("putPaycheckInAtHome");
+    putPaycheckInAtHome.preconditions = {paycheckAtHome, briefcaseAtHome};
+    putPaycheckInAtHome.addedEffects = {paycheckInBriefcase};
+    putPaycheckInAtHome.subtractedEffects = {paycheckAtHome};
+
+    Operator putPaycheckInAtOffice("putPaycheckInAtOffice");
+    putPaycheckInAtOffice.preconditions = {paycheckAtOffice, briefcaseAtOffice};
+    putPaycheckInAtOffice.addedEffects = {paycheckInBriefcase};
+    putPaycheckInAtOffice.subtractedEffects = {paycheckAtOffice};
+
+    Operator takeOutDictionaryAtHome("takeOutDictionaryAtHome");
+    takeOutDictionaryAtHome.preconditions = {dictionaryInBriefcase, briefcaseAtHome};
+    takeOutDictionaryAtHome.addedEffects = {dictionaryAtHome};
+    takeOutDictionaryAtHome.subtractedEffects = {dictionaryInBriefcase};
+
+    Operator takeOutDictionaryAtOffice("takeOutDictionaryAtOffice");
+    takeOutDictionaryAtOffice.preconditions = {dictionaryInBriefcase, briefcaseAtOffice};
+    takeOutDictionaryAtOffice.addedEffects = {dictionaryAtOffice};
+    takeOutDictionaryAtOffice.subtractedEffects = {dictionaryInBriefcase};
+
+    Operator putDictionaryInAtHome("putDictionaryInAtHome");
+    putDictionaryInAtHome.preconditions = {dictionaryAtHome, briefcaseAtHome};
+    putDictionaryInAtHome.addedEffects = {dictionaryInBriefcase};
+    putDictionaryInAtHome.subtractedEffects = {dictionaryAtHome};
+
+    Operator putDictionaryInAtOffice("putDictionaryInAtOffice");
+    putDictionaryInAtOffice.preconditions = {dictionaryAtOffice, briefcaseAtOffice};
+    putDictionaryInAtOffice.addedEffects = {dictionaryInBriefcase};
+    putDictionaryInAtOffice.subtractedEffects = {dictionaryAtOffice};
+
+    vector<Operator> operators = {officeToHome,
+                                  homeToOffice,
+                                  takeOutPaycheckAtHome,
+                                  takeOutPaycheckAtOffice,
+                                  putPaycheckInAtHome,
+                                  putPaycheckInAtOffice,
+                                  takeOutDictionaryAtHome,
+                                  takeOutDictionaryAtOffice,
+                                  putDictionaryInAtHome,
+                                  putDictionaryInAtOffice};
+
     vector<Plan> plans = pop(start, finish, operators);
 
     cout << endl;
     cout << "Number of potencial plans: " << plans.size() << endl;
     cout << endl;
+
 
     // Display plan's Causal links
     if (plans.size() > 0)
@@ -720,7 +886,7 @@ int main()
 
             for (auto j = links.begin(); j != links.end(); ++j)
             {
-                cout << "Final: Causal Link From: " << id << " To: " << j->targetOperator << " For Condition: " << j->condition << endl;
+                cout << "Final: Causal Link From: " << plan.steps.at(id).name << " To: " << plan.steps.at(j->targetOperator).name << " For Condition: " << j->condition << endl;
             }
             ++id;
         }
@@ -734,7 +900,7 @@ int main()
 
             for (auto t = order.begin(); t != order.end(); ++t)
             {
-                cout << "Temporal Link For " << id << " To: " << t->targetOperator << " Is Before? " << t->isBefore << endl;
+                cout << "Temporal Link For " << plan.steps.at(id).name << " To: " << plan.steps.at(t->targetOperator).name << " Is Before? " << t->isBefore << endl;
             }
             ++id;
         }
@@ -755,7 +921,7 @@ int main()
                 cout << "Oops: something is wrong" << endl;
         }*/
 
-
+        // TODO: implement a topological sort instead of this... watch MIT video
         vector<vector<long>> totalOrderPlans = generateTotalOrderPlans(plans[0]);
         cout << endl;
         cout << "Total Order Plan (One of them)" << endl;
