@@ -458,6 +458,19 @@ void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
     }
 }
 
+bool causualLinkFromAToB(Plan plan, long stepA, long stepB)
+{
+    for (auto linkIt = plan.links[stepA].begin(); linkIt != plan.links[stepA].end(); ++linkIt)
+    {
+        if (linkIt->targetOperator == stepB)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // TODO: when there's the potencial to use either a SE or A, make two new branches
 void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> operators, Goal goal)
 {
@@ -467,7 +480,7 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
     {
         for (auto condItr = stepItr->second.addedEffects.begin(); condItr != stepItr->second.addedEffects.end(); ++condItr)
         {
-            if (*condItr == goal.condition)
+            if (*condItr == goal.condition /*&& (!causualLinkFromAToB(plan, goal.step, stepItr->first))*/)
             {
                 chosen.push_back(stepItr->second);
             }
@@ -478,8 +491,8 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
     for (auto chosenItr = chosen.begin(); chosenItr != chosen.end(); ++chosenItr)
     {
         // check to see if the chosen operator comes before the one in question
-        //if (BFSVertComesBeforeVert2(plan, chosenItr->id, goal.step))
-        //{
+        if (!BFSVertComesAfterVert2(plan, chosenItr->id, goal.step))
+        {
             // Simple establishment/use existing operator to satisfy goal
             Plan* partialPlan = new Plan(plan);
             CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
@@ -488,7 +501,7 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
             findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
 
             partialPlans.push(*partialPlan);
-        //}
+        }
     }
 
     for (Operator option : operators)
@@ -544,18 +557,25 @@ vector<Plan> pop(Operator initialState, Operator endGoal, vector<Operator> opera
         plan = partialPlans.front();
         partialPlans.pop();
 
-        if (plan.open.empty() && plan.threats.empty()) // check if this plan is a solution
+        if (plan.threats.empty())
         {
-            finishedPlans.push_back(plan);
-            break;
+            if (plan.open.empty() && plan.threats.empty()) // check if this plan is a solution
+            {
+                finishedPlans.push_back(plan);
+                break;
+            }
+
+            Goal* goal = selectSubgoal(plan);
+
+            if (goal != nullptr)
+                chooseOperator(partialPlans, plan, operators, *goal);
+
+        }
+        else
+        {
+            resolveThreats(partialPlans, plan);
         }
 
-        Goal* goal = selectSubgoal(plan);
-
-        if (goal != nullptr)
-            chooseOperator(partialPlans, plan, operators, *goal);
-
-        resolveThreats(partialPlans, plan);
     }
 
     return finishedPlans;
@@ -771,10 +791,12 @@ int main()
 
     vector<Plan> plans = pop(start, finish, operators);*/
 
-    // TODO: get the planner to solve the sussman problem
+    // TODO: get the planner to solve the sussman problem (Temporal links between Stack (A,B) and Stack (B,C) missing?)
 
-    /*start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-    finish.preconditions = {AonB, BonC};
+    //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+    /*finish.preconditions = {AonB, BonC};
+    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+    //finish.preconditions = {AonB};
 
     Operator unstackCA("Unstack(C,A)");
     unstackCA.preconditions = {clearC, ConA, handEmpty};
@@ -813,7 +835,7 @@ int main()
 
 
     vector<Operator> operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, putdownC};
-    vector<Plan> plans = pop(start, finish, operators);*/
+    //vector<Plan> plans = pop(start, finish, operators);*/
 
     // TODO: Briefcase domain
     /*start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
@@ -884,7 +906,7 @@ int main()
 
     // TODO: Fruit Bowl Domain 1
 
-    /*start.addedEffects = {holdingBanana, orangeOnTable, orangeNotEaten, bananaNotEaten, hungry};
+    start.addedEffects = {holdingBanana, orangeOnTable, orangeNotEaten, bananaNotEaten, hungry};
     finish.preconditions = {orangeInBowl, notHungry};
 
     Operator pickupOrangeFromTable("PickupOrangeFromTable");
@@ -918,11 +940,11 @@ int main()
     eatBanana.subtractedEffects = {bananaNotEaten, hungry};
 
 
-    vector <Operator> operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};*/
+    vector <Operator> operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};
 
     // TODO: Fruit Bowl Domain 2
 
-    start.addedEffects = {holdingPear, orangeOnTable, pearOnTable, pearNotEaten, orangeNotEaten, bananaNotEaten, hungry};
+    /*start.addedEffects = {holdingPear, orangeOnTable, pearOnTable, pearNotEaten, orangeNotEaten, bananaNotEaten, hungry};
     finish.preconditions = {pearInBowl, notHungry};
 
     Operator pickupOrangeFromTable("PickupOrangeFromTable");
@@ -970,7 +992,7 @@ int main()
     eatPear.addedEffects = {notHungry, pearEaten, handsEmpty};
     eatPear.subtractedEffects = {pearNotEaten, holdingPear, hungry};
 
-    vector <Operator> operators = {putPearInBowl, eatPear};
+    vector <Operator> operators = {putPearInBowl, eatPear};*/
 
     vector<Plan> plans = pop(start, finish, operators);
 
