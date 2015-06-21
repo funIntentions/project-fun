@@ -471,7 +471,93 @@ bool causualLinkFromAToB(Plan plan, long stepA, long stepB)
     return false;
 }
 
-// TODO: when there's the potencial to use either a SE or A, make two new branches
+void DFSVisit(Plan plan, long vert)
+{
+    long numVertices = plan.ordering.size();
+    long* parent = new long[numVertices];
+
+    for (unsigned int i = 0; i < numVertices; ++i)
+    {
+        parent[i] = -1;
+    }
+
+    list<long> stack;
+
+    parent[vert] = -1;
+    stack.push_back(vert);
+
+    vector<TemporalLink>::iterator itr;
+
+    while(!stack.empty())
+    {
+        vert = stack.back();
+        cout << vert << ": ";
+
+        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+        {
+            if (parent[itr->targetOperator] > -1)
+            {
+                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
+                parent[itr->targetOperator] = vert;
+                stack.push_back(itr->targetOperator);
+                break;
+            }
+        }
+
+        if (itr == plan.ordering[vert].end())
+        {
+            stack.pop_back();
+        }
+
+        cout << "\n";
+    }
+}
+vector<long> topologicalSort(Plan plan, long vert)
+{
+    vector<long> totalOrderPlan;
+    long numVertices = plan.ordering.size();
+    long* parent = new long[numVertices];
+
+    for (unsigned int i = 0; i < numVertices; ++i)
+    {
+        parent[i] = -1;
+    }
+
+    list<long> stack;
+
+    parent[vert] = -1;
+    stack.push_back(vert);
+
+    vector<TemporalLink>::iterator itr;
+
+    while(!stack.empty())
+    {
+        vert = stack.back();
+        cout << vert << ": ";
+
+        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+        {
+            if (parent[itr->targetOperator] < 0 && itr->isBefore)
+            {
+                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
+                parent[itr->targetOperator] = vert;
+                stack.push_back(itr->targetOperator);
+                break;
+            }
+        }
+
+        if (itr == plan.ordering[vert].end())
+        {
+            totalOrderPlan.push_back(vert);
+            stack.pop_back();
+        }
+
+        cout << "\n";
+    }
+
+    return totalOrderPlan;
+}
+
 void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> operators, Goal goal)
 {
     vector<Operator> chosen;
@@ -496,6 +582,7 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
             // Simple establishment/use existing operator to satisfy goal
             Plan* partialPlan = new Plan(plan);
             CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
+            partialPlan->addTemporalLink(goal.step, chosenItr->id, false);
             partialPlan->links[chosenItr->id].push_back(*causalLink);
             cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
             findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
@@ -794,9 +881,9 @@ int main()
     // TODO: get the planner to solve the sussman problem (Temporal links between Stack (A,B) and Stack (B,C) missing?)
 
     //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-    /*finish.preconditions = {AonB, BonC};
-    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-    //finish.preconditions = {AonB};
+    //finish.preconditions = {AonB, BonC};
+    /*start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+    finish.preconditions = {AonB, BonC};
 
     Operator unstackCA("Unstack(C,A)");
     unstackCA.preconditions = {clearC, ConA, handEmpty};
@@ -808,12 +895,12 @@ int main()
     pickupA.addedEffects = {holdingA};
     pickupA.subtractedEffects = {clearA, AOnTable, handEmpty};
 
-    Operator pickupB("PickupB");
+    Operator pickupB("Pickup(B)");
     pickupB.preconditions = {BOnTable, clearB, handEmpty};
     pickupB.addedEffects = {holdingB};
     pickupB.subtractedEffects = {BOnTable, clearB, handEmpty};
 
-    Operator pickupC("PickupC");
+    Operator pickupC("Pickup(C)");
     pickupC.preconditions = {COnTable, clearC, handEmpty};
     pickupC.addedEffects = {holdingC};
     pickupC.subtractedEffects = {COnTable, clearC, handEmpty};
@@ -834,7 +921,7 @@ int main()
     putdownC.subtractedEffects = {holdingC};
 
 
-    vector<Operator> operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, putdownC};
+    vector<Operator> operators = {unstackCA, pickupA, pickupB, stackAB, stackBC, putdownC};
     //vector<Plan> plans = pop(start, finish, operators);*/
 
     // TODO: Briefcase domain
@@ -1040,7 +1127,7 @@ int main()
         }
 
         cout << endl << "Building totoal order plan" << endl;
-        vector<long> totalOrderPlan = getTotalOrderPlan(plans[0]);
+        vector<long> totalOrderPlan = topologicalSort(plans[0], plans[0].start);//getTotalOrderPlan(plans[0]);
 
         cout << endl;
         cout << "Total Order Plan (One of them)" << endl;
@@ -1055,7 +1142,6 @@ int main()
                 cout << "Oops: something is wrong" << endl;
         }
 
-        // TODO: implement a topological sort instead of this... watch MIT video
         /*vector<vector<long>> totalOrderPlans = generateTotalOrderPlans(plans[0]);
         cout << endl;
         cout << "Total Order Plan (One of them)" << endl;
