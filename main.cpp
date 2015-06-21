@@ -52,6 +52,28 @@ enum BriefcaseGoals
     briefcaseAtOffice = 7 // 7
 };
 
+enum FruitBowlGoals
+{
+    holdingBanana, // 0
+    holdingOrange, // 1
+    holdingPear, // 2
+    pearOnTable, // 3
+    pearInBowl, // 4
+    bananaOnTable, // 5
+    bananaInBowl, // 6
+    orangeOnTable, // 7
+    orangeInBowl, // 8
+    handsEmpty, // 9
+    hungry, // 10
+    notHungry, // 11
+    orangeNotEaten, // 12
+    orangeEaten, // 13
+    bananaNotEaten, // 14
+    bananaEaten, // 15
+    pearNotEaten, // 16
+    pearEaten // 17
+};
+
 struct Operator
 {
     string name;
@@ -452,25 +474,23 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
         }
     }
 
-    if (chosen.size() > 0)
-    {
-        for (auto chosenItr = chosen.begin(); chosenItr != chosen.end(); ++chosenItr)
-        {
-            // check to see if the chosen operator comes before the one in question
-            if (BFSVertComesBeforeVert2(plan, chosenItr->id, goal.step))
-            {
-                // Simple establishment/use existing operator to satisfy goal
-                Plan* partialPlan = new Plan(plan);
-                CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                partialPlan->links[chosenItr->id].push_back(*causalLink);
-                cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
-                findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
 
-                partialPlans.push(*partialPlan);
-            }
-        }
+    for (auto chosenItr = chosen.begin(); chosenItr != chosen.end(); ++chosenItr)
+    {
+        // check to see if the chosen operator comes before the one in question
+        //if (BFSVertComesBeforeVert2(plan, chosenItr->id, goal.step))
+        //{
+            // Simple establishment/use existing operator to satisfy goal
+            Plan* partialPlan = new Plan(plan);
+            CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
+            partialPlan->links[chosenItr->id].push_back(*causalLink);
+            cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
+            findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
+
+            partialPlans.push(*partialPlan);
+        //}
     }
-    // TODO: should I put the else back here?
+
     for (Operator option : operators)
     {
         for (auto itr = option.addedEffects.begin();itr != option.addedEffects.end(); ++itr)
@@ -481,6 +501,8 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
                 CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
                 partialPlan->operatorAddition(option, goal.step, goal.condition, goal.step, NONE);
                 partialPlan->addTemporalLink(option.id, partialPlan->start, false);
+                if (goal.step != partialPlan->end)
+                    partialPlan->addTemporalLink(option.id, partialPlan->end, true);
                 cout << "A - New Causal Link From: " << partialPlan->steps.at(option.id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
                 findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
 
@@ -750,9 +772,8 @@ int main()
     vector<Plan> plans = pop(start, finish, operators);*/
 
     // TODO: get the planner to solve the sussman problem
-    /*Operator start("start");
-    Operator finish("finish");
-    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+
+    /*start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
     finish.preconditions = {AonB, BonC};
 
     Operator unstackCA("Unstack(C,A)");
@@ -795,7 +816,7 @@ int main()
     vector<Plan> plans = pop(start, finish, operators);*/
 
     // TODO: Briefcase domain
-    start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
+    /*start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
     finish.preconditions = {dictionaryAtOffice, paycheckAtHome};
 
     // TODO: Building new operators should be made much quicker/easier than this
@@ -858,7 +879,98 @@ int main()
                                   takeOutDictionaryAtHome,
                                   takeOutDictionaryAtOffice,
                                   putDictionaryInAtHome,
-                                  putDictionaryInAtOffice};
+                                  putDictionaryInAtOffice};*/
+
+
+    // TODO: Fruit Bowl Domain 1
+
+    /*start.addedEffects = {holdingBanana, orangeOnTable, orangeNotEaten, bananaNotEaten, hungry};
+    finish.preconditions = {orangeInBowl, notHungry};
+
+    Operator pickupOrangeFromTable("PickupOrangeFromTable");
+    pickupOrangeFromTable.preconditions = {handsEmpty, orangeNotEaten, orangeOnTable};
+    pickupOrangeFromTable.addedEffects = {holdingOrange};
+    pickupOrangeFromTable.subtractedEffects = {handsEmpty, orangeOnTable};
+
+    Operator pickupBananaFromTable("PickupBananaFromTable");
+    pickupBananaFromTable.preconditions = {handsEmpty, bananaNotEaten, bananaOnTable};
+    pickupBananaFromTable.addedEffects = {holdingBanana};
+    pickupBananaFromTable.subtractedEffects = {handsEmpty, bananaOnTable};
+
+    Operator pickupPearFromTable("PickupPearFromTable");
+    pickupPearFromTable.preconditions = {handsEmpty, pearNotEaten, pearOnTable};
+    pickupPearFromTable.addedEffects = {holdingPear};
+    pickupPearFromTable.subtractedEffects = {handsEmpty, pearOnTable};
+
+    Operator putOrangeInBowl("PutOrangeInBowl");
+    putOrangeInBowl.preconditions = {holdingOrange, orangeNotEaten};
+    putOrangeInBowl.addedEffects = {orangeInBowl, handsEmpty};
+    putOrangeInBowl.subtractedEffects = {holdingOrange};
+
+    Operator putBananaInBowl("PutBananaInBowl");
+    putBananaInBowl.preconditions = {holdingBanana, bananaNotEaten};
+    putBananaInBowl.addedEffects = {bananaInBowl, handsEmpty};
+    putBananaInBowl.subtractedEffects = {holdingBanana};
+
+    Operator eatBanana("EatBanana");
+    eatBanana.preconditions = {hungry, holdingBanana, bananaNotEaten};
+    eatBanana.addedEffects = {bananaEaten, notHungry, handsEmpty};
+    eatBanana.subtractedEffects = {bananaNotEaten, hungry};
+
+
+    vector <Operator> operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};*/
+
+    // TODO: Fruit Bowl Domain 2
+
+    start.addedEffects = {holdingPear, orangeOnTable, pearOnTable, pearNotEaten, orangeNotEaten, bananaNotEaten, hungry};
+    finish.preconditions = {pearInBowl, notHungry};
+
+    Operator pickupOrangeFromTable("PickupOrangeFromTable");
+    pickupOrangeFromTable.preconditions = {handsEmpty, orangeNotEaten, orangeOnTable};
+    pickupOrangeFromTable.addedEffects = {holdingOrange};
+    pickupOrangeFromTable.subtractedEffects = {handsEmpty, orangeOnTable};
+
+    Operator pickupBananaFromTable("PickupBananaFromTable");
+    pickupBananaFromTable.preconditions = {handsEmpty, bananaNotEaten, bananaOnTable};
+    pickupBananaFromTable.addedEffects = {holdingBanana};
+    pickupBananaFromTable.subtractedEffects = {handsEmpty, bananaOnTable};
+
+    Operator pickupPearFromTable("PickupPearFromTable");
+    pickupPearFromTable.preconditions = {handsEmpty, pearNotEaten, pearOnTable};
+    pickupPearFromTable.addedEffects = {holdingPear};
+    pickupPearFromTable.subtractedEffects = {handsEmpty, pearOnTable};
+
+    Operator putPearInBowl("PutPearInBowl");
+    putPearInBowl.preconditions = {holdingPear, pearNotEaten};
+    putPearInBowl.addedEffects = {pearInBowl, handsEmpty};
+    putPearInBowl.subtractedEffects = {holdingPear};
+
+    Operator putOrangeInBowl("PutOrangeInBowl");
+    putOrangeInBowl.preconditions = {holdingOrange, orangeNotEaten};
+    putOrangeInBowl.addedEffects = {orangeInBowl, handsEmpty};
+    putOrangeInBowl.subtractedEffects = {holdingOrange};
+
+    Operator putBananaInBowl("PutBananaInBowl");
+    putBananaInBowl.preconditions = {holdingBanana, bananaNotEaten};
+    putBananaInBowl.addedEffects = {bananaInBowl, handsEmpty};
+    putBananaInBowl.subtractedEffects = {holdingBanana};
+
+    Operator eatBanana("EatBanana");
+    eatBanana.preconditions = {hungry, holdingBanana, bananaNotEaten};
+    eatBanana.addedEffects = {bananaEaten, notHungry, handsEmpty};
+    eatBanana.subtractedEffects = {bananaNotEaten, hungry, holdingBanana};
+
+    Operator eatOrange("EatOrange");
+    eatOrange.preconditions = {hungry, holdingOrange, orangeNotEaten};
+    eatOrange.addedEffects = {notHungry, orangeEaten, handsEmpty};
+    eatOrange.subtractedEffects = {orangeNotEaten, hungry, holdingOrange};
+
+    Operator eatPear("EatPear");
+    eatPear.preconditions = {hungry, holdingPear, pearNotEaten};
+    eatPear.addedEffects = {notHungry, pearEaten, handsEmpty};
+    eatPear.subtractedEffects = {pearNotEaten, holdingPear, hungry};
+
+    vector <Operator> operators = {putPearInBowl, eatPear};
 
     vector<Plan> plans = pop(start, finish, operators);
 
@@ -905,7 +1017,7 @@ int main()
             ++id;
         }
 
-        /*cout << endl << "Building totoal order plan" << endl;
+        cout << endl << "Building totoal order plan" << endl;
         vector<long> totalOrderPlan = getTotalOrderPlan(plans[0]);
 
         cout << endl;
@@ -919,10 +1031,10 @@ int main()
                 cout << op->second.name << endl;
             else
                 cout << "Oops: something is wrong" << endl;
-        }*/
+        }
 
         // TODO: implement a topological sort instead of this... watch MIT video
-        vector<vector<long>> totalOrderPlans = generateTotalOrderPlans(plans[0]);
+        /*vector<vector<long>> totalOrderPlans = generateTotalOrderPlans(plans[0]);
         cout << endl;
         cout << "Total Order Plan (One of them)" << endl;
         cout << endl;
@@ -943,7 +1055,7 @@ int main()
             }
 
             cout << "=================" << endl;
-        }
+        }*/
     }
 
     return 0;
