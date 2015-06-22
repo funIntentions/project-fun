@@ -428,6 +428,7 @@ void resolveThreats(queue<Plan>& partialPlans, Plan& plan)
     }
 }
 
+// Checks to see if there are any operators existing that could threaten this link
 void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
 {
     vector<Operator> potentialThreats;
@@ -454,6 +455,43 @@ void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
             cout << "Causal Condition: " << causalLink.condition << endl;
             cout << "Operator Threat: " << potential->id << endl;
             plan.threats.push_back(*newThreat);
+        }
+    }
+
+    // now check to see if the operators subtracted effects threaten any other operators
+}
+
+// Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
+void findThreats2(Plan& plan, Operator newOperator)
+{
+    vector<Threat> potentialThreats;
+
+    for (auto subItr = newOperator.subtractedEffects.begin(); subItr != newOperator.subtractedEffects.end(); ++subItr)
+    {
+        for (long step = 0; step < plan.links.size(); ++step)
+        {
+            vector<CausalLink> stepsLinks = plan.links[0];
+            for (auto linkItr = stepsLinks.begin(); linkItr != stepsLinks.end(); ++linkItr)
+            {
+                if (linkItr->condition == (*subItr))
+                {
+                    Threat* newThreat = new Threat(step, *linkItr, newOperator.id);
+                    potentialThreats.push_back(*newThreat);
+                }
+            }
+        }
+    }
+
+    for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
+    {
+        if (!BFSVertComesBeforeVert2(plan, newOperator.id, potential->vulnerableOperator) && !BFSVertComesAfterVert2(plan, newOperator.id, potential->vulnerableLink.targetOperator)) // is within the danger interval
+        {
+            /*cout << "- Threat Found -" << endl;
+            cout << "New Operator: " << newOperator << endl;
+            cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
+            cout << "Causal Condition: " << causalLink.condition << endl;
+            cout << "Operator Threat: " << potential->id << endl;*/
+            plan.threats.push_back(*potential);
         }
     }
 }
@@ -582,11 +620,12 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
             // Simple establishment/use existing operator to satisfy goal
             Plan* partialPlan = new Plan(plan);
             CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-            partialPlan->addTemporalLink(goal.step, chosenItr->id, false);
+            if (!(goal.step == partialPlan->end || goal.step == partialPlan->start || chosenItr->id == partialPlan->end || chosenItr->id == partialPlan->start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
+                partialPlan->addTemporalLink(goal.step, chosenItr->id, false);
             partialPlan->links[chosenItr->id].push_back(*causalLink);
             cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
             findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
-
+            findThreats2(*partialPlan, partialPlan->steps[goal.step]);
             partialPlans.push(*partialPlan);
         }
     }
@@ -605,7 +644,7 @@ void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> oper
                     partialPlan->addTemporalLink(option.id, partialPlan->end, true);
                 cout << "A - New Causal Link From: " << partialPlan->steps.at(option.id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
                 findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
-
+                findThreats2(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
                 partialPlans.push(*partialPlan);
             }
         }
@@ -882,7 +921,7 @@ int main()
 
     //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
     //finish.preconditions = {AonB, BonC};
-    /*start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
     finish.preconditions = {AonB, BonC};
 
     Operator unstackCA("Unstack(C,A)");
@@ -922,7 +961,7 @@ int main()
 
 
     vector<Operator> operators = {unstackCA, pickupA, pickupB, stackAB, stackBC, putdownC};
-    //vector<Plan> plans = pop(start, finish, operators);*/
+    //vector<Plan> plans = pop(start, finish, operators);
 
     // TODO: Briefcase domain
     /*start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
@@ -993,7 +1032,7 @@ int main()
 
     // TODO: Fruit Bowl Domain 1
 
-    start.addedEffects = {holdingBanana, orangeOnTable, orangeNotEaten, bananaNotEaten, hungry};
+    /*start.addedEffects = {holdingBanana, orangeOnTable, orangeNotEaten, bananaNotEaten, hungry};
     finish.preconditions = {orangeInBowl, notHungry};
 
     Operator pickupOrangeFromTable("PickupOrangeFromTable");
@@ -1027,7 +1066,7 @@ int main()
     eatBanana.subtractedEffects = {bananaNotEaten, hungry};
 
 
-    vector <Operator> operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};
+    vector <Operator> operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};*/
 
     // TODO: Fruit Bowl Domain 2
 
