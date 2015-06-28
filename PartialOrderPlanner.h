@@ -11,7 +11,6 @@
 class PartialOrderPlanner
 {
 public:
-    //PartialOrderPlan plan;
     std::vector<PartialOrderPlan> finishedPlans;
     std::queue<PartialOrderPlan> partialPlans;
     std::vector<Operator> operators;
@@ -25,25 +24,6 @@ public:
     {
         PartialOrderPlan plan = makeInitialPlan(initialState, endGoal);
         partialPlans.push(plan);
-
-        /*
-        ConA, // 0
-        AonC, // 1
-        BonA, // 2
-        BonC, // 3
-        AonB, // 4
-        ConB, // 5
-        AOnTable, // 6
-        BOnTable, // 7
-        COnTable, // 8
-        clearB, // 9
-        clearC, // 10
-        clearA, // 11
-        holdingA, // 12
-        holdingB, // 13
-        holdingC, // 14
-        handEmpty // 15
-        */
 
         while (!partialPlans.empty())
         {
@@ -94,7 +74,7 @@ public:
     }
 
     // Checks to see if there are any operators existing that could threaten this link
-    void findThreatsToCausalLink(PartialOrderPlan& plan, long newOperator, CausalLink causalLink)
+    void findThreatsToCausalLink(PartialOrderPlan& plan, long newOperator, Goal causalLink)
     {
         std::vector<Operator> potentialThreats;
 
@@ -111,19 +91,12 @@ public:
 
         for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
         {
-            if (!BFSVertComesBeforeVert2(plan, potential->id, newOperator) && !BFSVertComesAfterVert2(plan, potential->id, causalLink.targetOperator)) // is within the danger interval
+            if (!BFSVertComesBeforeVert2(plan, potential->id, newOperator) && !BFSVertComesAfterVert2(plan, potential->id, causalLink.step)) // is within the danger interval
             {
                 Threat* newThreat = new Threat(newOperator, causalLink, potential->id);
-                /*cout << "- Threat Found -" << endl;
-                cout << "New Operator: " << newOperator << endl;
-                cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
-                cout << "Causal Condition: " << causalLink.condition << endl;
-                cout << "Operator Threat: " << potential->id << endl;*/
                 plan.threats.push_back(*newThreat);
             }
         }
-
-        // now check to see if the operators subtracted effects threaten any other operators
     }
 
     // Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
@@ -135,7 +108,7 @@ public:
         {
             for (long step = 0; step < plan.links.size(); ++step)
             {
-                std::vector<CausalLink> stepsLinks = plan.links[0];
+                std::vector<Goal> stepsLinks = plan.links[0];
                 for (auto linkItr = stepsLinks.begin(); linkItr != stepsLinks.end(); ++linkItr)
                 {
                     if (linkItr->condition == (*subItr))
@@ -149,13 +122,8 @@ public:
 
         for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
         {
-            if (!BFSVertComesBeforeVert2(plan, newOperator.id, potential->vulnerableOperator) && !BFSVertComesAfterVert2(plan, newOperator.id, potential->vulnerableLink.targetOperator)) // is within the danger interval
+            if (!BFSVertComesBeforeVert2(plan, newOperator.id, potential->vulnerableOperator) && !BFSVertComesAfterVert2(plan, newOperator.id, potential->vulnerableLink.step)) // is within the danger interval
             {
-                /*cout << "- Threat Found -" << endl;
-                cout << "New Operator: " << newOperator << endl;
-                cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
-                cout << "Causal Condition: " << causalLink.condition << endl;
-                cout << "Operator Threat: " << potential->id << endl;*/
                 plan.threats.push_back(*potential);
             }
         }
@@ -184,13 +152,11 @@ public:
 
     void promote(PartialOrderPlan& plan, Threat threat)
     {
-        //cout << "~ Promotion: " << threat.operatorsThreat << " After: " << threat.vulnerableLink.targetOperator << endl;
-        addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableLink.targetOperator, false);
+        addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableLink.step, false);
     }
 
     void demote(PartialOrderPlan& plan, const Threat& threat)
     {
-        //cout << "~ Demotion: " << threat.operatorsThreat << " Before: " << threat.vulnerableOperator << endl;
         addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableOperator, true);
     }
 
@@ -348,19 +314,17 @@ public:
     }
 
     // Simple establishment/use existing operator to satisfy goal
-    void doSimpleEstablishment(PartialOrderPlan& partialPlan, Operator& chosen, long causalTarget, int precondition)
+    void doSimpleEstablishment(PartialOrderPlan& partialPlan, Operator& chosen, Goal goal)
     {
-        CausalLink* causalLink = new CausalLink(causalTarget, precondition);
-        if (!(causalTarget == partialPlan.end || causalTarget == partialPlan.start || chosen.id == partialPlan.end || chosen.id == partialPlan.start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
-            addTemporalLink(partialPlan, causalTarget, chosen.id, false);
-        partialPlan.links[chosen.id].push_back(*causalLink);
+        if (!(goal.step == partialPlan.end || goal.step == partialPlan.start || chosen.id == partialPlan.end || chosen.id == partialPlan.start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
+            addTemporalLink(partialPlan, goal.step, chosen.id, false);
+        partialPlan.links[chosen.id].push_back(goal);
     }
 
     // add a new operator to satisfy a goal
     void doOperatorAddition(PartialOrderPlan& plan,
                           Operator& newOperator,
-                          const long& causalTarget,
-                          const int& precondition)
+                          Goal goal)
     {
         newOperator.id = plan.ordering.size();
 
@@ -368,11 +332,10 @@ public:
         addTemporalLink(plan, newOperator.id, plan.start, false);
         addTemporalLink(plan, newOperator.id, plan.end, true);
 
-        if (causalTarget != plan.end)
-            addTemporalLink(plan, newOperator.id, causalTarget, true);
+        if (goal.step != plan.end)
+            addTemporalLink(plan, newOperator.id, goal.step, true);
 
-        CausalLink causalLink(causalTarget, precondition);
-        plan.links.push_back({causalLink});
+        plan.links.push_back({goal});
 
         addGoals(plan, newOperator);
 
@@ -400,9 +363,8 @@ public:
             if (!BFSVertComesAfterVert2(plan, chosenItr->id, goal.step))
             {
                 PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
-                CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                doSimpleEstablishment(*partialPlan, *chosenItr, goal.step, goal.condition);
-                findThreatsToCausalLink(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
+                doSimpleEstablishment(*partialPlan, *chosenItr, goal);
+                findThreatsToCausalLink(*partialPlan, chosenItr->id, goal); // TODO: make this nicer... eliminate the repetition
                 findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]);
                 partialPlans.push(*partialPlan);
             }
@@ -416,14 +378,13 @@ public:
                 continue;
             }
 
-            for (auto itr = option.addedEffects.begin();itr != option.addedEffects.end(); ++itr)
+            for (auto itr = option.addedEffects.begin(); itr != option.addedEffects.end(); ++itr)
             {
                 if (*itr == goal.condition)
                 {
                     PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
-                    CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                    doOperatorAddition(*partialPlan, option, goal.step, goal.condition);
-                    findThreatsToCausalLink(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
+                    doOperatorAddition(*partialPlan, option, goal);
+                    findThreatsToCausalLink(*partialPlan, option.id, goal); // TODO: here's that repetition that I mentioned up there ^
                     findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
                     partialPlans.push(*partialPlan);
                 }

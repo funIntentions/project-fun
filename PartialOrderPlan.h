@@ -14,8 +14,6 @@
 #include <queue>
 #include <string>
 
-static const long NONE = -1;
-
 struct Operator
 {
     std::string name;
@@ -34,38 +32,29 @@ struct Goal
 {
     int condition;
     long step; // the step that the condition is for
+
     Goal(long owner, int precondition) : condition(precondition), step(owner) {}
 };
 
 struct TemporalLink
 {
+
+    long targetOperator;
+    bool isBefore; // if step1 < step2 (if step1 must happen before step2)
+
     TemporalLink(long target, bool beforeTarget) :
             targetOperator(target),
             isBefore(beforeTarget) {}
 
-    //Operator targetOperator;
-    long targetOperator;
-    bool isBefore; // if step1 < step2 (if step1 must happen before step2)
-};
-
-struct CausalLink
-{
-    CausalLink(long target, int satisfiedCondition) :
-            targetOperator(target),
-            condition(satisfiedCondition) {}
-
-    //Operator targetOperator;
-    long targetOperator;
-    int condition;
 };
 
 struct Threat
 {
     long vulnerableOperator;
-    CausalLink vulnerableLink;
+    Goal vulnerableLink;
     long operatorsThreat;
 
-    Threat (long vulnerableOp, CausalLink causalLink, long threat)
+    Threat (long vulnerableOp, Goal causalLink, long threat)
             : vulnerableOperator(vulnerableOp), vulnerableLink(causalLink), operatorsThreat(threat) {}
 };
 
@@ -73,12 +62,16 @@ struct PartialOrderPlan
 {
     std::unordered_map<long, Operator> steps; // TODO: check if unordered_map is the right map for the job.
     std::vector< std::vector<TemporalLink> > ordering;
-    std::vector< std::vector<CausalLink> > links;
+    std::vector< std::vector<Goal> > links;
     std::vector<Threat> threats;
     std::queue<Goal> open;
     long start;
     long end;
 
+    PartialOrderPlan()
+    {
+
+    }
 };
 
 

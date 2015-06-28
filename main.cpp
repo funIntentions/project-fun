@@ -11,8 +11,6 @@
 
 using namespace std;
 
-//static const long NONE = -1;
-
 enum Goals
 {
     tableCleared,
@@ -390,11 +388,11 @@ int main()
         int id = 0;
         for (auto itr = plan.links.begin(); itr != plan.links.end(); ++itr)
         {
-            vector<CausalLink> links = *itr;
+            vector<Goal> links = *itr;
 
             for (auto j = links.begin(); j != links.end(); ++j)
             {
-                cout << "Final: Causal Link From: " << plan.steps.at(id).name << " To: " << plan.steps.at(j->targetOperator).name << " For Condition: " << j->condition << endl;
+                cout << "Final: Causal Link From: " << plan.steps.at(id).name << " To: " << plan.steps.at(j->step).name << " For Condition: " << j->condition << endl;
             }
             ++id;
         }
