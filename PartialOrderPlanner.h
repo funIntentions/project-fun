@@ -32,17 +32,16 @@ public:
 
             if (plan.threats.empty())
             {
-                if (plan.open.empty() && plan.threats.empty()) // check if this plan is a solution
+                if (plan.open.empty())
                 {
-                    finishedPlans.push_back(plan);
+                    finishedPlans.push_back(plan); // no threats and no open goals left - success!
                     break;
                 }
-
-                Goal* goal = selectSubgoal(plan);
-
-                if (goal != nullptr)
-                    chooseOperator(plan, *goal);
-
+                else
+                {
+                    Goal goal = selectOpenGoal(plan);
+                    chooseOperator(plan, goal);
+                }
             }
             else
             {
@@ -204,18 +203,10 @@ public:
         return plan;
     }
 
-    Goal* selectSubgoal(PartialOrderPlan& plan)
+    Goal selectOpenGoal(PartialOrderPlan& plan)
     {
-        if (plan.open.size() == 0)
-        {
-            return nullptr;
-        }
-
-        Goal* goal = new Goal(plan.open.front());
+        Goal goal = plan.open.front();
         plan.open.pop();
-
-        /*cout << "- Goal Selected -" << endl;
-        cout << "Goal Condition: " << goal->condition << " For Step: " << goal->step << endl;*/
 
         return goal;
     }
