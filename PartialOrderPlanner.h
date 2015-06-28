@@ -94,7 +94,7 @@ public:
     }
 
     // Checks to see if there are any operators existing that could threaten this link
-    void findThreats(PartialOrderPlan& plan, long newOperator, CausalLink causalLink)
+    void findThreatsToCausalLink(PartialOrderPlan& plan, long newOperator, CausalLink causalLink)
     {
         std::vector<Operator> potentialThreats;
 
@@ -127,7 +127,7 @@ public:
     }
 
     // Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
-    void findThreats2(PartialOrderPlan& plan, Operator newOperator)
+    void findThreatsCausedByOperator(PartialOrderPlan& plan, Operator newOperator)
     {
         std::vector<Threat> potentialThreats;
 
@@ -216,14 +216,24 @@ public:
     PartialOrderPlan makeInitialPlan(Operator& initialState, Operator& endGoal)
     {
         PartialOrderPlan plan;
-        //NOTE: can't form temporal links right from the start as Operator's ids are initially set to -1 :(...
-        operatorAddition(plan, initialState, NONE, NONE, NONE, NONE);
-        operatorAddition(plan, endGoal, NONE, NONE, NONE, NONE);
+
+        initialState.id = plan.ordering.size();
+        plan.links.push_back({});
+        plan.ordering.push_back({});
+
+        endGoal.id = plan.ordering.size();
+        plan.links.push_back({});
+        plan.ordering.push_back({});
 
         addTemporalLink(plan, initialState.id, endGoal.id, true);
 
         plan.start = initialState.id;
         plan.end = endGoal.id;
+
+        plan.steps[initialState.id] = initialState;
+        plan.steps[endGoal.id] = endGoal;
+
+        addGoals(plan, endGoal);
 
         return plan;
     }
@@ -248,9 +258,10 @@ public:
     {
         long numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
+
         for (unsigned int i = 0; i < numVertices; ++i)
         {
-        visited[i] = false;
+            visited[i] = false;
         }
 
         std::list<long> queue;
@@ -262,34 +273,35 @@ public:
 
         while(!queue.empty())
         {
-        vert = queue.front();
-        queue.pop_front();
+            vert = queue.front();
+            queue.pop_front();
 
-        if (vert == vert2) return true;
+            if (vert == vert2) return true;
 
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-        if (!visited[itr->targetOperator])
-        {
-        if (itr->isBefore)
-        {
-        visited[itr->targetOperator] = true;
-        queue.push_back(itr->targetOperator);
-        }
-        }
-        }
+            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+            {
+                if (!visited[itr->targetOperator])
+                {
+                    if (itr->isBefore)
+                    {
+                        visited[itr->targetOperator] = true;
+                        queue.push_back(itr->targetOperator);
+                    }
+                }
+            }
         }
 
         return false;
-        }
+    }
 
     bool BFSVertComesAfterVert2(PartialOrderPlan plan, long vert, long vert2)
     {
         long numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
+
         for (unsigned int i = 0; i < numVertices; ++i)
         {
-        visited[i] = false;
+            visited[i] = false;
         }
 
         std::list<long> queue;
@@ -301,26 +313,26 @@ public:
 
         while(!queue.empty())
         {
-        vert = queue.front();
-        queue.pop_front();
+            vert = queue.front();
+            queue.pop_front();
 
-        if (vert == vert2) return true;
+            if (vert == vert2) return true;
 
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-        if (!visited[itr->targetOperator])
-        {
-        if (!itr->isBefore)
-        {
-        visited[itr->targetOperator] = true;
-        queue.push_back(itr->targetOperator);
-        }
-        }
-        }
+            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+            {
+                if (!visited[itr->targetOperator])
+                {
+                    if (!itr->isBefore)
+                    {
+                        visited[itr->targetOperator] = true;
+                        queue.push_back(itr->targetOperator);
+                    }
+                }
+            }
         }
 
         return false;
-        }
+    }
 
     bool alreadyUsed(PartialOrderPlan plan, Operator op) // TODO: find a way so that I don't have to limit the number of potencial ops
     {
@@ -335,38 +347,32 @@ public:
         return false;
     }
 
-    // TODO: operator addition should always add the temporal links for start and finish. Might not need the operatorBefore if it will always be start.
-    void operatorAddition(PartialOrderPlan& plan,
-                              Operator& newOperator,
-                              const long& causalTarget,
-                              const int& precondition,
-                              const long& operatorBefore,
-                              const long& operatorAfter)
+    // Simple establishment/use existing operator to satisfy goal
+    void doSimpleEstablishment(PartialOrderPlan& partialPlan, Operator& chosen, long causalTarget, int precondition)
+    {
+        CausalLink* causalLink = new CausalLink(causalTarget, precondition);
+        if (!(causalTarget == partialPlan.end || causalTarget == partialPlan.start || chosen.id == partialPlan.end || chosen.id == partialPlan.start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
+            addTemporalLink(partialPlan, causalTarget, chosen.id, false);
+        partialPlan.links[chosen.id].push_back(*causalLink);
+    }
+
+    // add a new operator to satisfy a goal
+    void doOperatorAddition(PartialOrderPlan& plan,
+                          Operator& newOperator,
+                          const long& causalTarget,
+                          const int& precondition)
     {
         newOperator.id = plan.ordering.size();
 
         plan.ordering.push_back({});
+        addTemporalLink(plan, newOperator.id, plan.start, false);
+        addTemporalLink(plan, newOperator.id, plan.end, true);
 
-        if (operatorBefore >= 0)
-        {
-            addTemporalLink(plan, newOperator.id, operatorBefore, true);
-        }
+        if (causalTarget != plan.end)
+            addTemporalLink(plan, newOperator.id, causalTarget, true);
 
-        if (operatorAfter >= 0)
-        {
-            addTemporalLink(plan, newOperator.id, operatorAfter, false);
-        }
-
-        if (causalTarget >= 0)
-        {
-            CausalLink causalLink(causalTarget, precondition);
-            plan.links.push_back({causalLink});
-        }
-
-        else
-        {
-            plan.links.push_back({});
-        }
+        CausalLink causalLink(causalTarget, precondition);
+        plan.links.push_back({causalLink});
 
         addGoals(plan, newOperator);
 
@@ -393,15 +399,11 @@ public:
             // check to see if the chosen operator comes before the one in question
             if (!BFSVertComesAfterVert2(plan, chosenItr->id, goal.step))
             {
-                // Simple establishment/use existing operator to satisfy goal
                 PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
                 CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                if (!(goal.step == partialPlan->end || goal.step == partialPlan->start || chosenItr->id == partialPlan->end || chosenItr->id == partialPlan->start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
-                    addTemporalLink(*partialPlan, goal.step, chosenItr->id, false);
-                partialPlan->links[chosenItr->id].push_back(*causalLink);
-                //std::cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
-                findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
-                findThreats2(*partialPlan, partialPlan->steps[goal.step]);
+                doSimpleEstablishment(*partialPlan, *chosenItr, goal.step, goal.condition);
+                findThreatsToCausalLink(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
+                findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]);
                 partialPlans.push(*partialPlan);
             }
         }
@@ -420,13 +422,9 @@ public:
                 {
                     PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
                     CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                    operatorAddition(*partialPlan, option, goal.step, goal.condition, goal.step, -1);
-                    addTemporalLink(*partialPlan, option.id, partialPlan->start, false);
-                    if (goal.step != partialPlan->end)
-                        addTemporalLink(*partialPlan, option.id, partialPlan->end, true);
-                    //std::cout << "A - New Causal Link From: " << partialPlan->steps.at(option.id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
-                    findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
-                    findThreats2(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
+                    doOperatorAddition(*partialPlan, option, goal.step, goal.condition);
+                    findThreatsToCausalLink(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
+                    findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
                     partialPlans.push(*partialPlan);
                 }
             }
