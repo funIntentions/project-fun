@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include "PartialOrderPlanner.h"
+#include "tests/Sussman.h"
 
 using namespace std;
 
@@ -19,26 +20,6 @@ enum Goals
     outGlasses,
     outPlates,
     outSilverware
-};
-
-enum SussmanGoals
-{
-    ConA, // 0
-    AonC, // 1
-    BonA, // 2
-    BonC, // 3
-    AonB, // 4
-    ConB, // 5
-    AOnTable, // 6
-    BOnTable, // 7
-    COnTable, // 8
-    clearB, // 9
-    clearC, // 10
-    clearA, // 11
-    holdingA, // 12
-    holdingB, // 13
-    holdingC, // 14
-    handEmpty // 15
 };
 
 enum BriefcaseGoals
@@ -201,10 +182,12 @@ void DFSVisit(PartialOrderPlan plan, long vert)
 
 int main()
 {
+    // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
+    
     // TODO: store this "setting the table" example somewhere
-    Operator start("start");
-    Operator finish("finish");
+    //Operator start("start");
+    //Operator finish("finish");
 
     /*start.addedEffects = {tableCleared};
     finish.preconditions = {onTableCloth, outGlasses, outPlates, outSilverware};
@@ -227,77 +210,10 @@ int main()
 
     vector<Plan> plans = pop(start, finish, operators);*/
 
-    // TODO: get the planner to solve the sussman problem (Temporal links between Stack (A,B) and Stack (B,C) missing?)
-
-    //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-    //finish.preconditions = {AonB, BonC};
-    start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-    finish.preconditions = {AonB, BonC};
-
-    Operator unstackCA("Unstack(C,A)");
-    unstackCA.preconditions = {clearC, ConA, handEmpty};
-    unstackCA.addedEffects = {holdingC, clearA};
-    unstackCA.subtractedEffects = {clearC, ConA, handEmpty};
-
-    Operator pickupA("Pickup(A)");
-    pickupA.preconditions = {AOnTable, clearA, handEmpty};
-    pickupA.addedEffects = {holdingA};
-    pickupA.subtractedEffects = {clearA, AOnTable, handEmpty};
-
-    Operator pickupB("Pickup(B)");
-    pickupB.preconditions = {BOnTable, clearB, handEmpty};
-    pickupB.addedEffects = {holdingB};
-    pickupB.subtractedEffects = {BOnTable, clearB, handEmpty};
-
-    Operator pickupC("Pickup(C)");
-    pickupC.preconditions = {COnTable, clearC, handEmpty};
-    pickupC.addedEffects = {holdingC};
-    pickupC.subtractedEffects = {COnTable, clearC, handEmpty};
-
-    Operator stackAB("Stack(A,B)");
-    stackAB.preconditions = {holdingA, clearB};
-    stackAB.addedEffects = {AonB, clearA, handEmpty};
-    stackAB.subtractedEffects = {holdingA, clearB};
-
-    Operator stackBC("Stack(B,C)");
-    stackBC.preconditions = {holdingB, clearC};
-    stackBC.addedEffects = {BonC, clearB, handEmpty};
-    stackBC.subtractedEffects = {holdingB, clearC};
-
-    Operator stackCA("Stack(C,A)");
-    stackCA.preconditions = {holdingC, clearA};
-    stackCA.addedEffects = {ConA, clearC, handEmpty};
-    stackCA.subtractedEffects = {holdingC, clearA};
-
-    Operator stackCB("Stack(C,B)");
-    stackCB.preconditions = {holdingC, clearB};
-    stackCB.addedEffects = {ConB, clearC, handEmpty};
-    stackCB.subtractedEffects = {holdingC, clearB};
-
-    Operator putdownC("Putdown(C)");
-    putdownC.preconditions = {holdingC};
-    putdownC.addedEffects = {COnTable, clearC, handEmpty};
-    putdownC.subtractedEffects = {holdingC};
-
-    Operator putdownA("Putdown(A)");
-    putdownA.preconditions = {holdingA};
-    putdownA.addedEffects = {AOnTable, clearA, handEmpty};
-    putdownA.subtractedEffects = {holdingA};
-
-    Operator putdownB("Putdown(B)");
-    putdownB.preconditions = {holdingB};
-    putdownB.addedEffects = {BOnTable, clearB, handEmpty};
-    putdownB.subtractedEffects = {holdingB};
-
-
-    vector<Operator> operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, stackCA, stackCB, putdownC, putdownA, putdownB};
-    //vector<Plan> plans = pop(start, finish, operators);
-
     // TODO: Briefcase domain
     /*start.addedEffects = {briefcaseAtHome, dictionaryAtHome, paycheckInBriefcase};
     finish.preconditions = {dictionaryAtOffice, paycheckAtHome};
 
-    // TODO: Building new operators should be made much quicker/easier than this
     Operator homeToOffice("HomeToOffice");
     homeToOffice.preconditions = {briefcaseAtHome};
     homeToOffice.addedEffects = {briefcaseAtOffice};
@@ -450,8 +366,9 @@ int main()
 
     vector <Operator> operators = {putPearInBowl, eatPear};*/
 
-    PartialOrderPlanner partialOrderPlanner(operators);
-    vector<PartialOrderPlan> plans = partialOrderPlanner.pop(start, finish);
+    SussmanDomain sussmanDomain;
+    PartialOrderPlanner partialOrderPlanner(sussmanDomain.operators);
+    vector<PartialOrderPlan> plans = partialOrderPlanner.pop(sussmanDomain.start, sussmanDomain.finish);
 
     cout << endl;
     cout << "Number of potencial plans: " << plans.size() << endl;
