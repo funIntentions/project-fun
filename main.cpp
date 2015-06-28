@@ -6,10 +6,11 @@
 #include <list>
 #include <queue>
 #include <string>
+#include "PartialOrderPlanner.h"
 
 using namespace std;
 
-static const long NONE = -1;
+//static const long NONE = -1;
 
 enum Goals
 {
@@ -74,483 +75,7 @@ enum FruitBowlGoals
     pearEaten // 17
 };
 
-struct Operator
-{
-    string name;
-    long id;
-    vector<int> preconditions;
-    vector<int> addedEffects;
-    vector<int> subtractedEffects;
-
-    Operator(string op = "") : name(op)
-    {
-        id = -1;
-    }
-};
-
-struct Goal
-{
-    int condition;
-    long step; // the step that the condition is for
-    Goal(long owner, int precondition) : condition(precondition), step(owner) {}
-};
-
-struct TemporalLink
-{
-    TemporalLink(long target, bool beforeTarget) :
-            targetOperator(target),
-            isBefore(beforeTarget) {}
-
-    //Operator targetOperator;
-    long targetOperator;
-    bool isBefore; // if step1 < step2 (if step1 must happen before step2)
-};
-
-struct CausalLink
-{
-    CausalLink(long target, int satisfiedCondition) :
-            targetOperator(target),
-            condition(satisfiedCondition) {}
-
-    //Operator targetOperator;
-    long targetOperator;
-    int condition;
-};
-
-struct State
-{
-public:
-    State() {}
-
-    vector<int> variables;
-
-    void addVariables(vector<int> vars)
-    {
-        vector<int>::iterator itr = vars.begin();
-
-        while (itr != vars.end())
-        {
-            if (find(begin(variables), end(variables), *itr) == variables.end())
-            {
-                variables.push_back(*itr);
-            }
-
-            ++itr;
-        }
-    }
-
-    void removeVariables(vector<int> vars)
-    {
-        vector<int>::iterator itr = vars.begin();
-        while (itr != vars.end())
-        {
-            variables.erase(remove(variables.begin(), variables.end(), *itr), variables.end());
-            ++itr;
-        }
-    }
-
-};
-
-struct Threat
-{
-    long vulnerableOperator;
-    CausalLink vulnerableLink;
-    long operatorsThreat;
-
-    Threat (long vulnerableOp, CausalLink causalLink, long threat)
-            : vulnerableOperator(vulnerableOp), vulnerableLink(causalLink), operatorsThreat(threat) {}
-};
-
-struct Plan
-{
-    // TODO: determine if unordered_map is the best fit for this
-    State worldState;
-    unordered_map<long, Operator> steps;
-    vector< vector<TemporalLink> > ordering;
-    vector< vector<CausalLink> > links;
-    vector<Threat> threats;
-    queue<Goal> open;
-    long start;
-    long end;
-
-    // PONDER: Is it better to leave plan as plain data?
-    void addGoals(Operator newOperator)
-    {
-        vector<int>::iterator itr = newOperator.preconditions.begin();
-
-        for (;itr != newOperator.preconditions.end();++itr)
-        {
-            open.push(Goal(newOperator.id, *itr));
-        }
-    }
-
-    void addTemporalLink(long op, long target, bool isBefore)
-    {
-        TemporalLink temporalLinkBefore(target, isBefore);
-        ordering[op].push_back(temporalLinkBefore);
-
-        TemporalLink temporalLinkAfterNew(op, !isBefore);
-        ordering[target].push_back(temporalLinkAfterNew);
-    }
-
-    // TODO: operator addition should always add the temporal links for start and finish. Might not need the operatorBefore if it will always be start.
-    void operatorAddition(Operator& newOperator,
-                              const long& causalTarget,
-                              const int& precondition,
-                              const long& operatorBefore,
-                              const long& operatorAfter)
-    {
-        newOperator.id = ordering.size();
-
-        ordering.push_back({});
-
-        if (operatorBefore >= 0)
-        {
-            addTemporalLink(newOperator.id, operatorBefore, true);
-        }
-
-        if (operatorAfter >= 0)
-        {
-            addTemporalLink(newOperator.id, operatorAfter, false);
-        }
-
-        if (causalTarget >= 0)
-        {
-            CausalLink causalLink(causalTarget, precondition);
-            links.push_back({causalLink});
-        }
-        else
-        {
-            links.push_back({});
-        }
-
-        addGoals(newOperator);
-
-        steps[newOperator.id] = newOperator;
-    }
-};
-
-//TODO: this method should be turned into a constructor probably
-Plan makeInitialPlan(Operator& initialState, Operator& endGoal)
-{
-    Plan plan;
-    //NOTE: can't form temporal links right from the start as Operator's ids are initially set to -1 :(...
-    plan.operatorAddition(initialState, NONE, NONE, NONE, NONE);
-    plan.operatorAddition(endGoal, NONE, NONE, NONE, NONE);
-
-    plan.addTemporalLink(initialState.id, endGoal.id, true);
-
-    plan.start = initialState.id;
-    plan.end = endGoal.id;
-
-    return plan;
-}
-
-Goal* selectSubgoal(Plan& plan)
-{
-    if (plan.open.size() == 0)
-    {
-        return nullptr;
-    }
-
-    Goal* goal = new Goal(plan.open.front());
-    plan.open.pop();
-
-    cout << "- Goal Selected -" << endl;
-    cout << "Goal Condition: " << goal->condition << " For Step: " << goal->step << endl;
-
-    return goal;
-}
-
-bool BFSVertComesBeforeVert2(Plan plan, long vert, long vert2)
-{
-    long numVertices = plan.steps.size();
-    bool* visited = new bool[numVertices];
-    for (unsigned int i = 0; i < numVertices; ++i)
-    {
-        visited[i] = false;
-    }
-
-    list<long> queue;
-
-    visited[vert] = true;
-    queue.push_back(vert);
-
-    vector<TemporalLink>::iterator itr;
-
-    while(!queue.empty())
-    {
-        vert = queue.front();
-        queue.pop_front();
-
-        if (vert == vert2) return true;
-
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-            if (!visited[itr->targetOperator])
-            {
-                if (itr->isBefore)
-                {
-                    visited[itr->targetOperator] = true;
-                    queue.push_back(itr->targetOperator);
-                }
-            }
-        }
-    }
-
-    return false;
-}
-
-bool BFSVertComesAfterVert2(Plan plan, long vert, long vert2)
-{
-    long numVertices = plan.steps.size();
-    bool* visited = new bool[numVertices];
-    for (unsigned int i = 0; i < numVertices; ++i)
-    {
-        visited[i] = false;
-    }
-
-    list<long> queue;
-
-    visited[vert] = true;
-    queue.push_back(vert);
-
-    vector<TemporalLink>::iterator itr;
-
-    while(!queue.empty())
-    {
-        vert = queue.front();
-        queue.pop_front();
-
-        if (vert == vert2) return true;
-
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-            if (!visited[itr->targetOperator])
-            {
-                if (!itr->isBefore)
-                {
-                    visited[itr->targetOperator] = true;
-                    queue.push_back(itr->targetOperator);
-                }
-            }
-        }
-    }
-
-    return false;
-}
-
-void BFS(Plan plan, long vert)
-{
-    long numVertices = plan.steps.size();
-    bool* visited = new bool[numVertices];
-    for (unsigned int i = 0; i < numVertices; ++i)
-    {
-        visited[i] = false;
-    }
-
-    list<long> queue;
-
-    visited[vert] = true;
-    queue.push_back(vert);
-
-    vector<TemporalLink>::iterator itr;
-
-    while(!queue.empty())
-    {
-        vert = queue.front();
-        cout << vert << ": ";
-        queue.pop_front();
-
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-            if (!visited[itr->targetOperator])
-            {
-                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
-                visited[itr->targetOperator] = true;
-                queue.push_back(itr->targetOperator);
-            }
-        }
-
-        cout << "\n";
-    }
-}
-
-void promote(Plan& plan, Threat threat)
-{
-    cout << "~ Promotion: " << threat.operatorsThreat << " After: " << threat.vulnerableLink.targetOperator << endl;
-    plan.addTemporalLink(threat.operatorsThreat, threat.vulnerableLink.targetOperator, false);
-}
-
-void demote(Plan& plan, const Threat& threat)
-{
-    cout << "~ Demotion: " << threat.operatorsThreat << " Before: " << threat.vulnerableOperator << endl;
-    plan.addTemporalLink(threat.operatorsThreat, threat.vulnerableOperator, true);
-}
-
-bool isConsistent(Plan& plan, const Threat& threat)
-{
-    vector<TemporalLink> temporalLinks = plan.ordering[threat.operatorsThreat];
-
-    for (auto link = temporalLinks.begin(); link != temporalLinks.end(); ++link)
-    {
-        vector<TemporalLink> targetsTemporalLinks = plan.ordering[link->targetOperator];
-        for (auto targetLink = targetsTemporalLinks.begin(); targetLink != targetsTemporalLinks.end(); ++targetLink)
-        {
-            if (targetLink->targetOperator == threat.operatorsThreat && link->isBefore == targetLink->isBefore)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-void resolveThreats(queue<Plan>& partialPlans, Plan& plan)
-{
-    if (!plan.threats.empty())
-    {
-        Threat threat(plan.threats.back());
-        plan.threats.pop_back();
-
-        Plan* newPartialPlan = new Plan(plan);
-        promote(*newPartialPlan, threat);
-
-        if (isConsistent(*newPartialPlan, threat))
-            partialPlans.push(*newPartialPlan);
-
-        newPartialPlan = new Plan(plan);
-        demote(*newPartialPlan, threat);
-
-        if (isConsistent(*newPartialPlan, threat))
-            partialPlans.push(*newPartialPlan);
-    }
-}
-
-// Checks to see if there are any operators existing that could threaten this link
-void findThreats(Plan& plan, long newOperator, CausalLink causalLink)
-{
-    vector<Operator> potentialThreats;
-
-    for (auto stepItr = plan.steps.begin(); stepItr != plan.steps.end(); ++stepItr)
-    {
-        for (auto condItr = stepItr->second.subtractedEffects.begin(); condItr != stepItr->second.subtractedEffects.end(); ++condItr)
-        {
-            if (*condItr == causalLink.condition)
-            {
-                potentialThreats.push_back(stepItr->second);
-            }
-        }
-    }
-
-    for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
-    {
-        if (!BFSVertComesBeforeVert2(plan, potential->id, newOperator) && !BFSVertComesAfterVert2(plan, potential->id, causalLink.targetOperator)) // is within the danger interval
-        {
-            Threat* newThreat = new Threat(newOperator, causalLink, potential->id);
-            cout << "- Threat Found -" << endl;
-            cout << "New Operator: " << newOperator << endl;
-            cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
-            cout << "Causal Condition: " << causalLink.condition << endl;
-            cout << "Operator Threat: " << potential->id << endl;
-            plan.threats.push_back(*newThreat);
-        }
-    }
-
-    // now check to see if the operators subtracted effects threaten any other operators
-}
-
-// Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
-void findThreats2(Plan& plan, Operator newOperator)
-{
-    vector<Threat> potentialThreats;
-
-    for (auto subItr = newOperator.subtractedEffects.begin(); subItr != newOperator.subtractedEffects.end(); ++subItr)
-    {
-        for (long step = 0; step < plan.links.size(); ++step)
-        {
-            vector<CausalLink> stepsLinks = plan.links[0];
-            for (auto linkItr = stepsLinks.begin(); linkItr != stepsLinks.end(); ++linkItr)
-            {
-                if (linkItr->condition == (*subItr))
-                {
-                    Threat* newThreat = new Threat(step, *linkItr, newOperator.id);
-                    potentialThreats.push_back(*newThreat);
-                }
-            }
-        }
-    }
-
-    for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
-    {
-        if (!BFSVertComesBeforeVert2(plan, newOperator.id, potential->vulnerableOperator) && !BFSVertComesAfterVert2(plan, newOperator.id, potential->vulnerableLink.targetOperator)) // is within the danger interval
-        {
-            /*cout << "- Threat Found -" << endl;
-            cout << "New Operator: " << newOperator << endl;
-            cout << "Causal Target Operator: " << causalLink.targetOperator << endl;
-            cout << "Causal Condition: " << causalLink.condition << endl;
-            cout << "Operator Threat: " << potential->id << endl;*/
-            plan.threats.push_back(*potential);
-        }
-    }
-}
-
-bool causualLinkFromAToB(Plan plan, long stepA, long stepB)
-{
-    for (auto linkIt = plan.links[stepA].begin(); linkIt != plan.links[stepA].end(); ++linkIt)
-    {
-        if (linkIt->targetOperator == stepB)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void DFSVisit(Plan plan, long vert)
-{
-    long numVertices = plan.ordering.size();
-    long* parent = new long[numVertices];
-
-    for (unsigned int i = 0; i < numVertices; ++i)
-    {
-        parent[i] = -1;
-    }
-
-    list<long> stack;
-
-    parent[vert] = -1;
-    stack.push_back(vert);
-
-    vector<TemporalLink>::iterator itr;
-
-    while(!stack.empty())
-    {
-        vert = stack.back();
-        cout << vert << ": ";
-
-        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-        {
-            if (parent[itr->targetOperator] > -1)
-            {
-                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
-                parent[itr->targetOperator] = vert;
-                stack.push_back(itr->targetOperator);
-                break;
-            }
-        }
-
-        if (itr == plan.ordering[vert].end())
-        {
-            stack.pop_back();
-        }
-
-        cout << "\n";
-    }
-}
-vector<long> topologicalSort(Plan plan, long vert)
+vector<long> topologicalSort(PartialOrderPlan plan, long vert)
 {
     vector<long> totalOrderPlan;
     long numVertices = plan.ordering.size();
@@ -596,236 +121,7 @@ vector<long> topologicalSort(Plan plan, long vert)
     return totalOrderPlan;
 }
 
-void chooseOperator(queue<Plan>& partialPlans, Plan& plan, vector<Operator> operators, Goal goal)
-{
-    vector<Operator> chosen;
-
-    for (auto stepItr = plan.steps.begin(); stepItr != plan.steps.end(); ++stepItr)
-    {
-        for (auto condItr = stepItr->second.addedEffects.begin(); condItr != stepItr->second.addedEffects.end(); ++condItr)
-        {
-            if (*condItr == goal.condition /*&& (!causualLinkFromAToB(plan, goal.step, stepItr->first))*/)
-            {
-                chosen.push_back(stepItr->second);
-            }
-        }
-    }
-
-
-    for (auto chosenItr = chosen.begin(); chosenItr != chosen.end(); ++chosenItr)
-    {
-        // check to see if the chosen operator comes before the one in question
-        if (!BFSVertComesAfterVert2(plan, chosenItr->id, goal.step))
-        {
-            // Simple establishment/use existing operator to satisfy goal
-            Plan* partialPlan = new Plan(plan);
-            CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-            if (!(goal.step == partialPlan->end || goal.step == partialPlan->start || chosenItr->id == partialPlan->end || chosenItr->id == partialPlan->start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
-                partialPlan->addTemporalLink(goal.step, chosenItr->id, false);
-            partialPlan->links[chosenItr->id].push_back(*causalLink);
-            cout << "SE - New Causal Link From: " << partialPlan->steps.at(chosenItr->id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
-            findThreats(*partialPlan, chosenItr->id, *causalLink); // TODO: make this nicer... eliminate the repetition
-            findThreats2(*partialPlan, partialPlan->steps[goal.step]);
-            partialPlans.push(*partialPlan);
-        }
-    }
-
-    for (Operator option : operators)
-    {
-        for (auto itr = option.addedEffects.begin();itr != option.addedEffects.end(); ++itr)
-        {
-            if (*itr == goal.condition)
-            {
-                Plan* partialPlan = new Plan(plan);
-                CausalLink* causalLink = new CausalLink(goal.step, goal.condition);
-                partialPlan->operatorAddition(option, goal.step, goal.condition, goal.step, NONE);
-                partialPlan->addTemporalLink(option.id, partialPlan->start, false);
-                if (goal.step != partialPlan->end)
-                    partialPlan->addTemporalLink(option.id, partialPlan->end, true);
-                cout << "A - New Causal Link From: " << partialPlan->steps.at(option.id).name << " To: " << partialPlan->steps.at(causalLink->targetOperator).name << " For Condition: " << causalLink->condition << endl;
-                findThreats(*partialPlan, option.id, *causalLink); // TODO: here's that repetition that I mentioned up there ^
-                findThreats2(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
-                partialPlans.push(*partialPlan);
-            }
-        }
-    }
-}
-
-vector<Plan> pop(Operator initialState, Operator endGoal, vector<Operator> operators)
-{
-    Plan plan = makeInitialPlan(initialState, endGoal);
-
-    vector<Plan> finishedPlans;
-    queue<Plan> partialPlans;
-    partialPlans.push(plan);
-
-    /*
-    ConA, // 0
-    AonC, // 1
-    BonA, // 2
-    BonC, // 3
-    AonB, // 4
-    ConB, // 5
-    AOnTable, // 6
-    BOnTable, // 7
-    COnTable, // 8
-    clearB, // 9
-    clearC, // 10
-    clearA, // 11
-    holdingA, // 12
-    holdingB, // 13
-    holdingC, // 14
-    handEmpty // 15
-    */
-
-    while (!partialPlans.empty())
-    {
-        plan = partialPlans.front();
-        partialPlans.pop();
-
-        if (plan.threats.empty())
-        {
-            if (plan.open.empty() && plan.threats.empty()) // check if this plan is a solution
-            {
-                finishedPlans.push_back(plan);
-                break;
-            }
-
-            Goal* goal = selectSubgoal(plan);
-
-            if (goal != nullptr)
-                chooseOperator(partialPlans, plan, operators, *goal);
-
-        }
-        else
-        {
-            resolveThreats(partialPlans, plan);
-        }
-
-    }
-
-    return finishedPlans;
-}
-
-struct UnfinishedTotalOrderPlan
-{
-    bool* visited;
-    vector<long> plan;
-    list<long> nextSteps;
-
-    /*UnfinishedTotalOrderPlan(bool* vertsVisited, vector<long> planSoFar, vector<long> newSteps)
-    {
-        visited = new bool[](vertsVisited);
-        plan = vector<long>(planSoFar);
-        nextSteps = vector<long>(newSteps);
-    }
-
-    UnfinishedTotalOrderPlan(int numVertices)
-    {
-        visited = new bool[numVertices];
-    }*/
-
-};
-
-void addNewPlanForEachPermutation(queue<UnfinishedTotalOrderPlan>& unfinishedPlans, const UnfinishedTotalOrderPlan& currentPlan, vector<long> newOperators)
-{
-    sort (newOperators.begin(), newOperators.end());
-
-    do
-    {
-        UnfinishedTotalOrderPlan newPlan(currentPlan);
-
-        for (auto opItr = newOperators.begin(); opItr != newOperators.end(); ++opItr)
-        {
-            newPlan.nextSteps.push_back(*opItr);
-        }
-
-        unfinishedPlans.push(newPlan);
-    }
-    while (next_permutation(newOperators.begin(), newOperators.end()));
-}
-
-bool processNextSteps(queue<UnfinishedTotalOrderPlan>& unfinishedPlans, UnfinishedTotalOrderPlan& totalOrderPlan, Plan plan)
-{
-    long vert = totalOrderPlan.nextSteps.front();
-    totalOrderPlan.plan.push_back(vert);
-    totalOrderPlan.nextSteps.pop_front();
-
-    vector<long> newlyAdded;
-
-    for (auto itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
-    {
-        if (!totalOrderPlan.visited[itr->targetOperator])
-        {
-            if (itr->isBefore && itr->targetOperator != plan.end)
-            {
-                totalOrderPlan.visited[itr->targetOperator] = true;
-                newlyAdded.push_back(itr->targetOperator);
-            }
-        }
-    }
-
-    if (newlyAdded.empty() && totalOrderPlan.nextSteps.empty())
-        return true; // plan complete
-
-    addNewPlanForEachPermutation(unfinishedPlans, totalOrderPlan, newlyAdded);
-
-    return false;
-}
-
-vector<vector<long>> generateTotalOrderPlans(const Plan& plan)
-{
-    vector<vector<long>> finishedPlans;
-    queue<UnfinishedTotalOrderPlan> unfinishedPlans;
-    UnfinishedTotalOrderPlan initialPlan;
-
-    long numVertices = plan.steps.size();
-    initialPlan.visited = new bool[numVertices];
-    for (unsigned int i = 0; i < numVertices; ++i)
-    {
-        initialPlan.visited[i] = false;
-    }
-
-    vector<long> nextSteps;
-
-    // Get first steps (this is a bit of an awkward step)
-    for (auto temporalLink = plan.ordering[plan.start].begin(); temporalLink != plan.ordering[plan.start].end(); ++temporalLink)
-    {
-        long target = temporalLink->targetOperator;
-        bool next = true;
-
-        for (auto targetTemporalLink = plan.ordering[target].begin(); targetTemporalLink != plan.ordering[target].end(); ++targetTemporalLink)
-        {
-            if (!targetTemporalLink->isBefore && targetTemporalLink->targetOperator != plan.start)
-            {
-                next = false;
-            }
-        }
-
-        if (next)
-        {
-            initialPlan.visited[temporalLink->targetOperator] = true;
-            nextSteps.push_back(temporalLink->targetOperator);
-        }
-    }
-
-    addNewPlanForEachPermutation(unfinishedPlans, initialPlan, nextSteps);
-
-    while (!unfinishedPlans.empty()) // process unfinished plans until they're all finished
-    {
-        UnfinishedTotalOrderPlan totalOrderPlan = unfinishedPlans.front();
-        unfinishedPlans.pop();
-
-        if (processNextSteps(unfinishedPlans, totalOrderPlan, plan))
-        {
-            finishedPlans.push_back(totalOrderPlan.plan);
-        }
-    }
-
-    return finishedPlans;
-}
-
-vector<long> getTotalOrderPlan(Plan plan)
+void BFS(PartialOrderPlan plan, long vert)
 {
     long numVertices = plan.steps.size();
     bool* visited = new bool[numVertices];
@@ -834,59 +130,73 @@ vector<long> getTotalOrderPlan(Plan plan)
         visited[i] = false;
     }
 
-    vector<long> totalOrderPlan;
     list<long> queue;
 
-    // Get first steps (this is a bit of an awkward step)
-    for (auto temporalLink = plan.ordering[plan.start].begin(); temporalLink != plan.ordering[plan.start].end(); ++temporalLink)
-    {
-        long target = temporalLink->targetOperator;
-        bool next = true;
-
-        for (auto targetTemporalLink = plan.ordering[target].begin(); targetTemporalLink != plan.ordering[target].end(); ++targetTemporalLink)
-        {
-            if (!targetTemporalLink->isBefore && targetTemporalLink->targetOperator != plan.start)
-            {
-                next = false;
-            }
-        }
-
-        if (next)
-        {
-            visited[temporalLink->targetOperator] = true;
-            queue.push_back(temporalLink->targetOperator);
-        }
-    }
-
-    // TODO: Spawn multiple plans depending on how many potencial starts there are.
+    visited[vert] = true;
+    queue.push_back(vert);
 
     vector<TemporalLink>::iterator itr;
 
     while(!queue.empty())
     {
-        long vert = queue.front();
-        totalOrderPlan.push_back(vert);
+        vert = queue.front();
+        cout << vert << ": ";
         queue.pop_front();
-
-        vector<long> newlyAdded;
 
         for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
         {
             if (!visited[itr->targetOperator])
             {
-                if (itr->isBefore && itr->targetOperator != plan.end)
-                {
-                    visited[itr->targetOperator] = true;
-                    newlyAdded.push_back(itr->targetOperator);
-                    queue.push_back(itr->targetOperator);
-                }
+                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
+                visited[itr->targetOperator] = true;
+                queue.push_back(itr->targetOperator);
             }
         }
 
-        //TODO: check how many are possible next steps, from those generate all the permutations and spawn that many we plans.
+        cout << "\n";
+    }
+}
+
+void DFSVisit(PartialOrderPlan plan, long vert)
+{
+    long numVertices = plan.ordering.size();
+    long* parent = new long[numVertices];
+
+    for (unsigned int i = 0; i < numVertices; ++i)
+    {
+        parent[i] = -1;
     }
 
-    return totalOrderPlan;
+    list<long> stack;
+
+    parent[vert] = -1;
+    stack.push_back(vert);
+
+    vector<TemporalLink>::iterator itr;
+
+    while(!stack.empty())
+    {
+        vert = stack.back();
+        cout << vert << ": ";
+
+        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+        {
+            if (parent[itr->targetOperator] > -1)
+            {
+                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
+                parent[itr->targetOperator] = vert;
+                stack.push_back(itr->targetOperator);
+                break;
+            }
+        }
+
+        if (itr == plan.ordering[vert].end())
+        {
+            stack.pop_back();
+        }
+
+        cout << "\n";
+    }
 }
 
 int main()
@@ -954,13 +264,33 @@ int main()
     stackBC.addedEffects = {BonC, clearB, handEmpty};
     stackBC.subtractedEffects = {holdingB, clearC};
 
+    Operator stackCA("Stack(C,A)");
+    stackCA.preconditions = {holdingC, clearA};
+    stackCA.addedEffects = {ConA, clearC, handEmpty};
+    stackCA.subtractedEffects = {holdingC, clearA};
+
+    Operator stackCB("Stack(C,B)");
+    stackCB.preconditions = {holdingC, clearB};
+    stackCB.addedEffects = {ConB, clearC, handEmpty};
+    stackCB.subtractedEffects = {holdingC, clearB};
+
     Operator putdownC("Putdown(C)");
     putdownC.preconditions = {holdingC};
     putdownC.addedEffects = {COnTable, clearC, handEmpty};
     putdownC.subtractedEffects = {holdingC};
 
+    Operator putdownA("Putdown(A)");
+    putdownA.preconditions = {holdingA};
+    putdownA.addedEffects = {AOnTable, clearA, handEmpty};
+    putdownA.subtractedEffects = {holdingA};
 
-    vector<Operator> operators = {unstackCA, pickupA, pickupB, stackAB, stackBC, putdownC};
+    Operator putdownB("Putdown(B)");
+    putdownB.preconditions = {holdingB};
+    putdownB.addedEffects = {BOnTable, clearB, handEmpty};
+    putdownB.subtractedEffects = {holdingB};
+
+
+    vector<Operator> operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, stackCA, stackCB, putdownC, putdownA, putdownB};
     //vector<Plan> plans = pop(start, finish, operators);
 
     // TODO: Briefcase domain
@@ -1120,7 +450,8 @@ int main()
 
     vector <Operator> operators = {putPearInBowl, eatPear};*/
 
-    vector<Plan> plans = pop(start, finish, operators);
+    PartialOrderPlanner partialOrderPlanner(operators);
+    vector<PartialOrderPlan> plans = partialOrderPlanner.pop(start, finish);
 
     cout << endl;
     cout << "Number of potencial plans: " << plans.size() << endl;
@@ -1130,7 +461,7 @@ int main()
     // Display plan's Causal links
     if (plans.size() > 0)
     {
-        Plan plan = plans[0];
+        PartialOrderPlan plan = plans[0];
 
         cout << endl;
         for (auto l = plan.steps.begin(); l != plan.steps.end(); ++l)
