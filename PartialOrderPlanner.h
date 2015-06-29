@@ -47,13 +47,12 @@ public:
             {
                 resolveThreats(partialPlans, plan);
             }
-
         }
 
         return finishedPlans;
     }
 
-    void addGoals(PartialOrderPlan& plan, Operator newOperator)
+    void addOpenGoals(PartialOrderPlan& plan, Operator newOperator)
     {
         std::vector<int>::iterator itr = newOperator.preconditions.begin();
 
@@ -107,7 +106,7 @@ public:
         {
             for (long step = 0; step < plan.links.size(); ++step)
             {
-                std::vector<Goal> stepsLinks = plan.links[0];
+                std::vector<Goal> stepsLinks = plan.links[step];
                 for (auto linkItr = stepsLinks.begin(); linkItr != stepsLinks.end(); ++linkItr)
                 {
                     if (linkItr->condition == (*subItr))
@@ -128,6 +127,21 @@ public:
         }
     }
 
+    void findAllThreats(PartialOrderPlan& plan)
+    {
+        std::vector<Threat> potentialThreats;
+
+        for (auto operatorItr = plan.steps.begin(); operatorItr != plan.steps.end(); ++operatorItr)
+        {
+            Operator step = operatorItr->second;
+
+            for (auto effectsItr = step.subtractedEffects.begin(); effectsItr != step.subtractedEffects.end(); ++effectsItr)
+            {
+
+            }
+        }
+    }
+
     void resolveThreats(std::queue<PartialOrderPlan>& partialPlans, PartialOrderPlan& plan)
     {
         if (!plan.threats.empty())
@@ -138,13 +152,13 @@ public:
             PartialOrderPlan* newPartialPlan = new PartialOrderPlan(plan);
             promote(*newPartialPlan, threat);
 
-            if (isConsistent(*newPartialPlan, threat))
+            if (!isCyclicPlan(*newPartialPlan, newPartialPlan->start))
                 partialPlans.push(*newPartialPlan);
 
             newPartialPlan = new PartialOrderPlan(plan);
             demote(*newPartialPlan, threat);
 
-            if (isConsistent(*newPartialPlan, threat))
+            if (!isCyclicPlan(*newPartialPlan, newPartialPlan->start))
                 partialPlans.push(*newPartialPlan);
         }
     }
@@ -159,23 +173,57 @@ public:
         addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableOperator, true);
     }
 
-    bool isConsistent(PartialOrderPlan& plan, const Threat& threat)
+    bool isCyclicPlan(PartialOrderPlan plan, long vert)
     {
-        std::vector<TemporalLink> temporalLinks = plan.ordering[threat.operatorsThreat];
+        long numVertices = plan.ordering.size();
+        long* parent = new long[numVertices];
 
-        for (auto link = temporalLinks.begin(); link != temporalLinks.end(); ++link)
+        for (unsigned int i = 0; i < numVertices; ++i)
         {
-            std::vector<TemporalLink> targetsTemporalLinks = plan.ordering[link->targetOperator];
-            for (auto targetLink = targetsTemporalLinks.begin(); targetLink != targetsTemporalLinks.end(); ++targetLink)
+            parent[i] = -1;
+        }
+
+        std::list<long> stack;
+
+        parent[vert] = -1;
+        stack.push_back(vert);
+
+        std::vector<TemporalLink>::iterator itr;
+
+        while(!stack.empty())
+        {
+            vert = stack.back();
+
+            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
             {
-                if (targetLink->targetOperator == threat.operatorsThreat && link->isBefore == targetLink->isBefore)
+                if (itr->isBefore)
                 {
-                    return false;
+                    if (parent[itr->targetOperator] < 0)
+                    {
+                        parent[itr->targetOperator] = vert;
+                        stack.push_back(itr->targetOperator);
+                        break;
+                    }
+                    else
+                    {
+                        for (auto ancestor = stack.begin(); ancestor != stack.end(); ++ancestor)
+                        {
+                            if (*ancestor == itr->targetOperator)
+                            {
+                                return true; // has cycle
+                            }
+                        }
+                    }
                 }
+            }
+
+            if (itr == plan.ordering[vert].end())
+            {
+                stack.pop_back();
             }
         }
 
-        return true;
+        return false;
     }
 
     PartialOrderPlan makeInitialPlan(Operator& initialState, Operator& endGoal)
@@ -198,7 +246,7 @@ public:
         plan.steps[initialState.id] = initialState;
         plan.steps[endGoal.id] = endGoal;
 
-        addGoals(plan, endGoal);
+        addOpenGoals(plan, endGoal);
 
         return plan;
     }
@@ -328,7 +376,7 @@ public:
 
         plan.links.push_back({goal});
 
-        addGoals(plan, newOperator);
+        addOpenGoals(plan, newOperator);
 
         plan.steps[newOperator.id] = newOperator;
     }

@@ -42,10 +42,23 @@ public:
         start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
         finish.preconditions = {AonB, BonC};
 
+        //start.addedEffects = {AonB, BonC, COnTable, clearA, handEmpty};
+        //finish.preconditions = {AonC};
+
         Operator unstackCA("Unstack(C,A)");
         unstackCA.preconditions = {clearC, ConA, handEmpty};
         unstackCA.addedEffects = {holdingC, clearA};
         unstackCA.subtractedEffects = {clearC, ConA, handEmpty};
+
+        Operator unstackAB("Unstack(A,B)");
+        unstackAB.preconditions = {clearA, AonB, handEmpty};
+        unstackAB.addedEffects = {holdingA, clearB};
+        unstackAB.subtractedEffects = {clearA, AonB, handEmpty};
+
+        Operator unstackBC("Unstack(B,C)");
+        unstackBC.preconditions = {clearB, BonC, handEmpty};
+        unstackBC.addedEffects = {holdingB, clearC};
+        unstackBC.subtractedEffects = {clearB, BonC, handEmpty};
 
         Operator pickupA("Pickup(A)");
         pickupA.preconditions = {AOnTable, clearA, handEmpty};
@@ -66,6 +79,11 @@ public:
         stackAB.preconditions = {holdingA, clearB};
         stackAB.addedEffects = {AonB, clearA, handEmpty};
         stackAB.subtractedEffects = {holdingA, clearB};
+
+        Operator stackAC("Stack(A,C)");
+        stackAC.preconditions = {holdingA, clearC};
+        stackAC.addedEffects = {AonC, clearA, handEmpty};
+        stackAC.subtractedEffects = {holdingA, clearC};
 
         Operator stackBC("Stack(B,C)");
         stackBC.preconditions = {holdingB, clearC};
@@ -97,7 +115,7 @@ public:
         putdownB.addedEffects = {BOnTable, clearB, handEmpty};
         putdownB.subtractedEffects = {holdingB};
 
-        operators = {unstackCA, pickupA, pickupB, pickupC, stackAB, stackBC, stackCA, stackCB, putdownC, putdownA, putdownB};
+        operators = {unstackCA, unstackAB, unstackBC, pickupA, pickupB, pickupC, stackAB, stackBC, stackCA, stackCB, stackAC, putdownC, putdownA, putdownB};
     }
 };
 

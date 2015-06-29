@@ -160,7 +160,7 @@ void DFSVisit(PartialOrderPlan plan, long vert)
 
         for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
         {
-            if (parent[itr->targetOperator] > -1)
+            if (parent[itr->targetOperator] < 0 && itr->isBefore)
             {
                 cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
                 parent[itr->targetOperator] = vert;
@@ -176,6 +176,64 @@ void DFSVisit(PartialOrderPlan plan, long vert)
 
         cout << "\n";
     }
+}
+
+bool hasCycle(PartialOrderPlan plan, long vert)
+{
+    long numVertices = plan.ordering.size();
+    long* parent = new long[numVertices];
+
+    for (unsigned int i = 0; i < numVertices; ++i)
+    {
+        parent[i] = -1;
+    }
+
+    list<long> stack;
+
+    parent[vert] = -1;
+    stack.push_back(vert);
+
+    vector<TemporalLink>::iterator itr;
+
+    while(!stack.empty())
+    {
+        vert = stack.back();
+        cout << "Visiting: " << plan.steps[vert].name << endl;
+
+        for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+        {
+            if (itr->isBefore)
+            {
+                if (parent[itr->targetOperator] < 0)
+                {
+                    parent[itr->targetOperator] = vert;
+                    stack.push_back(itr->targetOperator);
+                    break;
+                }
+                else
+                {
+                    for (auto ancestor = stack.begin(); ancestor != stack.end(); ++ancestor)
+                    {
+                        if (*ancestor == itr->targetOperator)
+                        {
+                            cout << "\nCycle Found! With: " << plan.steps[itr->targetOperator].name << "\n" << endl;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (itr == plan.ordering[vert].end())
+        {
+            cout << "Finished Visiting: " << vert << endl;
+            stack.pop_back();
+        }
+
+        cout << "\n";
+    }
+
+    return false;
 }
 
 int main()
@@ -377,6 +435,10 @@ int main()
     if (plans.size() > 0)
     {
         PartialOrderPlan plan = plans[0];
+
+
+        hasCycle(plan, plan.start);
+
 
         cout << endl;
         for (auto l = plan.steps.begin(); l != plan.steps.end(); ++l)
