@@ -78,7 +78,7 @@ struct ComparePlans
 {
     bool operator()(PartialOrderPlan const &plan1, PartialOrderPlan const &plan2)
     {
-        return (plan1.open.size() > plan2.open.size());
+        return (plan1.steps.size() > plan2.steps.size());
     }
 };
 
