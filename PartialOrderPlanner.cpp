@@ -11,7 +11,7 @@ std::vector<PartialOrderPlan> PartialOrderPlanner::pop(Operator initialState, Op
 
         while (!partialPlans.empty())
         {
-            plan = partialPlans.front();
+            plan = partialPlans.top();
             partialPlans.pop();
 
             if (plan.threats.empty())
@@ -29,7 +29,7 @@ std::vector<PartialOrderPlan> PartialOrderPlanner::pop(Operator initialState, Op
             }
             else
             {
-                resolveThreats(partialPlans, plan);
+                resolveThreats(plan);
             }
         }
 
@@ -126,7 +126,7 @@ void PartialOrderPlanner::findAllThreats(PartialOrderPlan& plan)
         }
     }
 
-void PartialOrderPlanner::resolveThreats(std::queue<PartialOrderPlan>& partialPlans, PartialOrderPlan& plan)
+void PartialOrderPlanner::resolveThreats(PartialOrderPlan& plan)
 {
         if (!plan.threats.empty())
         {

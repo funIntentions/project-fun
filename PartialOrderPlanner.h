@@ -12,7 +12,8 @@ class PartialOrderPlanner
 {
 public:
     std::vector<PartialOrderPlan> finishedPlans;
-    std::queue<PartialOrderPlan> partialPlans;
+    std::priority_queue<PartialOrderPlan, std::vector<PartialOrderPlan>, ComparePlans> partialPlans;
+    //std::queue<PartialOrderPlan> partialPlans;
     std::vector<Operator> operators;
 
     PartialOrderPlanner(std::vector<Operator> domainOperators) : operators(domainOperators)
@@ -34,7 +35,7 @@ public:
 
     void findAllThreats(PartialOrderPlan& plan);
 
-    void resolveThreats(std::queue<PartialOrderPlan>& partialPlans, PartialOrderPlan& plan);
+    void resolveThreats(PartialOrderPlan& plan);
 
     void promote(PartialOrderPlan& plan, Threat threat);
 

@@ -39,11 +39,11 @@ public:
         start.name = "start";
         finish.name = "finish";
 
-        start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-        finish.preconditions = {AonB, BonC};
+        //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+        //finish.preconditions = {AonB, BonC};
 
-        //start.addedEffects = {AonB, BonC, COnTable, clearA, handEmpty};
-        //finish.preconditions = {AonC};
+        start.addedEffects = {AonB, BonC, COnTable, clearA, handEmpty};
+        finish.preconditions = {AonC};
 
         Operator unstackCA("Unstack(C,A)");
         unstackCA.preconditions = {clearC, ConA, handEmpty};

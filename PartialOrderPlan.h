@@ -74,5 +74,13 @@ struct PartialOrderPlan
     }
 };
 
+struct ComparePlans
+{
+    bool operator()(PartialOrderPlan const &plan1, PartialOrderPlan const &plan2)
+    {
+        return (plan1.open.size() > plan2.open.size());
+    }
+};
+
 
 #endif //PARTIALORDERPLANNER_PARTIALORDERPLAN_H
