@@ -14,6 +14,7 @@
 #include <queue>
 #include <string>
 
+// TODO: rename Operator to step
 struct Operator
 {
     std::string name;

@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <list>
 #include <queue>
-#include <string>
 #include "PartialOrderPlanner.h"
 #include "tests/Sussman.h"
 #include "tests/Briefcase.h"
@@ -200,21 +199,13 @@ int main()
 {
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
-    
-    Operator start("start");
-    Operator finish("finish");
 
     SussmanDomain sussmanDomain;
     BriefcaseDomain briefcaseDomain;
     FruitBowlDomain fruitBowlDomain;
     TableDomain tableDomain;
     PartialOrderPlanner partialOrderPlanner(sussmanDomain.operators);
-    vector<PartialOrderPlan> plans = partialOrderPlanner.pop(sussmanDomain.start, sussmanDomain.finish);
-
-    cout << endl;
-    cout << "Number of potencial plans: " << plans.size() << endl;
-    cout << endl;
-
+    vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(sussmanDomain.start, sussmanDomain.finish);
 
     // Display plan's Causal links
     if (plans.size() > 0)

@@ -4,7 +4,7 @@
 
 #include "PartialOrderPlanner.h"
 
-std::vector<PartialOrderPlan> PartialOrderPlanner::pop(Operator initialState, Operator endGoal)
+std::vector<PartialOrderPlan> PartialOrderPlanner::findPartialOrderPlan(Operator initialState, Operator endGoal)
 {
         PartialOrderPlan plan = makeInitialPlan(initialState, endGoal);
         partialPlans.push(plan);
@@ -36,15 +36,13 @@ std::vector<PartialOrderPlan> PartialOrderPlanner::pop(Operator initialState, Op
         return finishedPlans;
     }
 
-void PartialOrderPlanner::addOpenGoals(PartialOrderPlan& plan, Operator newOperator)
+void PartialOrderPlanner::addOpenGoals(PartialOrderPlan& plan, const Operator& newOperator)
 {
-        std::vector<int>::iterator itr = newOperator.preconditions.begin();
-
-        for (;itr != newOperator.preconditions.end();++itr)
-        {
-            plan.open.push(Goal(newOperator.id, *itr));
-        }
+    for (auto itr = newOperator.preconditions.begin() ;itr != newOperator.preconditions.end();++itr)
+    {
+        plan.open.push(Goal(newOperator.id, *itr));
     }
+}
 
 void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, long op, long target, bool isBefore)
 {
@@ -73,16 +71,16 @@ void PartialOrderPlanner::findThreatsToCausalLink(PartialOrderPlan& plan, long n
 
         for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
         {
-            if (!BFSVertComesBeforeVert2(plan, potential->id, newOperator) && !BFSVertComesAfterVert2(plan, potential->id, causalLink.step)) // is within the danger interval
+            if (!step1IsBeforeStep2(plan, potential->id, newOperator) && !step1IsAfterStep2(plan, potential->id, causalLink.step)) // is within the danger interval
             {
-                Threat* newThreat = new Threat(newOperator, causalLink, potential->id);
-                plan.threats.push_back(*newThreat);
+                Threat newThreat(newOperator, causalLink, potential->id);
+                plan.threats.push_back(newThreat);
             }
         }
     }
 
 // Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
-void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, Operator newOperator)
+void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, const Operator& newOperator)
 {
         std::vector<Threat> potentialThreats;
 
@@ -95,8 +93,8 @@ void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, Op
                 {
                     if (linkItr->condition == (*subItr))
                     {
-                        Threat* newThreat = new Threat(step, *linkItr, newOperator.id);
-                        potentialThreats.push_back(*newThreat);
+                        Threat newThreat(step, *linkItr, newOperator.id);
+                        potentialThreats.push_back(newThreat);
                     }
                 }
             }
@@ -104,7 +102,7 @@ void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, Op
 
         for (auto potential = potentialThreats.begin(); potential != potentialThreats.end(); ++potential)
         {
-            if (!BFSVertComesBeforeVert2(plan, newOperator.id, potential->vulnerableOperator) && !BFSVertComesAfterVert2(plan, newOperator.id, potential->vulnerableLink.step)) // is within the danger interval
+            if (!step1IsBeforeStep2(plan, newOperator.id, potential->vulnerableOperator) && !step1IsAfterStep2(plan, newOperator.id, potential->vulnerableLink.step)) // is within the danger interval
             {
                 plan.threats.push_back(*potential);
             }
@@ -113,7 +111,7 @@ void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, Op
 
 void PartialOrderPlanner::findAllThreats(PartialOrderPlan& plan)
 {
-        std::vector<Threat> potentialThreats;
+        /*std::vector<Threat> potentialThreats;
 
         for (auto operatorItr = plan.steps.begin(); operatorItr != plan.steps.end(); ++operatorItr)
         {
@@ -123,8 +121,8 @@ void PartialOrderPlanner::findAllThreats(PartialOrderPlan& plan)
             {
 
             }
-        }
-    }
+        }*/
+}
 
 void PartialOrderPlanner::resolveThreats(PartialOrderPlan& plan)
 {
@@ -133,21 +131,21 @@ void PartialOrderPlanner::resolveThreats(PartialOrderPlan& plan)
             Threat threat(plan.threats.back());
             plan.threats.pop_back();
 
-            PartialOrderPlan* newPartialPlan = new PartialOrderPlan(plan);
-            promote(*newPartialPlan, threat);
+            PartialOrderPlan promotedPartialPlan(plan);
+            promote(promotedPartialPlan, threat);
 
-            if (!isCyclicPlan(*newPartialPlan, newPartialPlan->start))
-                partialPlans.push(*newPartialPlan);
+            if (!isCyclicPlan(promotedPartialPlan))
+                partialPlans.push(promotedPartialPlan);
 
-            newPartialPlan = new PartialOrderPlan(plan);
-            demote(*newPartialPlan, threat);
+            PartialOrderPlan demotedPartialPlan(plan);
+            demote(demotedPartialPlan, threat);
 
-            if (!isCyclicPlan(*newPartialPlan, newPartialPlan->start))
-                partialPlans.push(*newPartialPlan);
+            if (!isCyclicPlan(demotedPartialPlan))
+                partialPlans.push(demotedPartialPlan);
         }
     }
 
-void PartialOrderPlanner::promote(PartialOrderPlan& plan, Threat threat)
+void PartialOrderPlanner::promote(PartialOrderPlan& plan, const Threat& threat)
 {
         addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableLink.step, false);
     }
@@ -157,7 +155,7 @@ void PartialOrderPlanner::demote(PartialOrderPlan& plan, const Threat& threat)
         addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableOperator, true);
     }
 
-bool PartialOrderPlanner::isCyclicPlan(PartialOrderPlan plan, long vert)
+bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
 {
         long numVertices = plan.ordering.size();
         long* parent = new long[numVertices];
@@ -169,22 +167,22 @@ bool PartialOrderPlanner::isCyclicPlan(PartialOrderPlan plan, long vert)
 
         std::list<long> stack;
 
-        parent[vert] = -1;
-        stack.push_back(vert);
+        parent[plan.start] = -1;
+        stack.push_back(plan.start);
 
-        std::vector<TemporalLink>::iterator itr;
+        std::vector<TemporalLink>::const_iterator itr;
 
         while(!stack.empty())
         {
-            vert = stack.back();
+            long step = stack.back();
 
-            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+            for (itr = plan.ordering[step].begin(); itr != plan.ordering[step].end(); ++itr)
             {
                 if (itr->isBefore)
                 {
                     if (parent[itr->targetOperator] < 0)
                     {
-                        parent[itr->targetOperator] = vert;
+                        parent[itr->targetOperator] = step;
                         stack.push_back(itr->targetOperator);
                         break;
                     }
@@ -201,7 +199,7 @@ bool PartialOrderPlanner::isCyclicPlan(PartialOrderPlan plan, long vert)
                 }
             }
 
-            if (itr == plan.ordering[vert].end())
+            if (itr == plan.ordering[step].end())
             {
                 stack.pop_back();
             }
@@ -243,7 +241,7 @@ Goal PartialOrderPlanner::selectOpenGoal(PartialOrderPlan& plan)
         return goal;
     }
 
-bool PartialOrderPlanner::BFSVertComesBeforeVert2(PartialOrderPlan plan, long vert, long vert2)
+bool PartialOrderPlanner::step1IsBeforeStep2(const PartialOrderPlan& plan, long step1, long step2)
 {
         long numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
@@ -255,19 +253,19 @@ bool PartialOrderPlanner::BFSVertComesBeforeVert2(PartialOrderPlan plan, long ve
 
         std::list<long> queue;
 
-        visited[vert] = true;
-        queue.push_back(vert);
+        visited[step1] = true;
+        queue.push_back(step1);
 
-        std::vector<TemporalLink>::iterator itr;
+        std::vector<TemporalLink>::const_iterator itr;
 
         while(!queue.empty())
         {
-            vert = queue.front();
+            long step = queue.front();
             queue.pop_front();
 
-            if (vert == vert2) return true;
+            if (step == step2) return true;
 
-            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+            for (itr = plan.ordering[step].begin(); itr != plan.ordering[step].end(); ++itr)
             {
                 if (!visited[itr->targetOperator])
                 {
@@ -281,9 +279,9 @@ bool PartialOrderPlanner::BFSVertComesBeforeVert2(PartialOrderPlan plan, long ve
         }
 
         return false;
-    }
+}
 
-bool PartialOrderPlanner::BFSVertComesAfterVert2(PartialOrderPlan plan, long vert, long vert2)
+bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, long step1, long step2)
 {
         long numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
@@ -295,19 +293,19 @@ bool PartialOrderPlanner::BFSVertComesAfterVert2(PartialOrderPlan plan, long ver
 
         std::list<long> queue;
 
-        visited[vert] = true;
-        queue.push_back(vert);
+        visited[step1] = true;
+        queue.push_back(step1);
 
-        std::vector<TemporalLink>::iterator itr;
+        std::vector<TemporalLink>::const_iterator itr;
 
         while(!queue.empty())
         {
-            vert = queue.front();
+            long step = queue.front();
             queue.pop_front();
 
-            if (vert == vert2) return true;
+            if (step == step2) return true;
 
-            for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
+            for (itr = plan.ordering[step].begin(); itr != plan.ordering[step].end(); ++itr)
             {
                 if (!visited[itr->targetOperator])
                 {
@@ -323,7 +321,7 @@ bool PartialOrderPlanner::BFSVertComesAfterVert2(PartialOrderPlan plan, long ver
         return false;
     }
 
-bool PartialOrderPlanner::alreadyUsed(PartialOrderPlan plan, Operator op) // TODO: find a way so that I don't have to limit the number of potencial ops
+bool PartialOrderPlanner::alreadyUsed(const PartialOrderPlan& plan, const Operator& op) // TODO: find a way so that I don't have to limit the number of potencial ops (& the string compare)
 {
         for (auto itr = plan.steps.begin(); itr != plan.steps.end(); ++itr)
         {
@@ -383,13 +381,13 @@ void PartialOrderPlanner::chooseOperator(PartialOrderPlan& plan, Goal goal)
         for (auto chosenItr = chosen.begin(); chosenItr != chosen.end(); ++chosenItr)
         {
             // check to see if the chosen operator comes before the one in question
-            if (!BFSVertComesAfterVert2(plan, chosenItr->id, goal.step))
+            if (!step1IsAfterStep2(plan, chosenItr->id, goal.step))
             {
-                PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
-                doSimpleEstablishment(*partialPlan, *chosenItr, goal);
-                findThreatsToCausalLink(*partialPlan, chosenItr->id, goal); // TODO: make this nicer... eliminate the repetition
-                findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]);
-                partialPlans.push(*partialPlan);
+                PartialOrderPlan partialPlan(plan);
+                doSimpleEstablishment(partialPlan, *chosenItr, goal);
+                findThreatsToCausalLink(partialPlan, chosenItr->id, goal); // TODO: make this nicer... eliminate the repetition
+                findThreatsCausedByOperator(partialPlan, partialPlan.steps[goal.step]);
+                partialPlans.push(partialPlan);
             }
         }
 
@@ -405,11 +403,11 @@ void PartialOrderPlanner::chooseOperator(PartialOrderPlan& plan, Goal goal)
             {
                 if (*itr == goal.condition)
                 {
-                    PartialOrderPlan* partialPlan = new PartialOrderPlan(plan);
-                    doOperatorAddition(*partialPlan, option, goal);
-                    findThreatsToCausalLink(*partialPlan, option.id, goal); // TODO: here's that repetition that I mentioned up there ^
-                    findThreatsCausedByOperator(*partialPlan, partialPlan->steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
-                    partialPlans.push(*partialPlan);
+                    PartialOrderPlan partialPlan(plan);
+                    doOperatorAddition(partialPlan, option, goal);
+                    findThreatsToCausalLink(partialPlan, option.id, goal); // TODO: here's that repetition that I mentioned up there ^
+                    findThreatsCausedByOperator(partialPlan, partialPlan.steps[goal.step]); // TODO: do I need this here? I know I do for SE but A as well?
+                    partialPlans.push(partialPlan);
                 }
             }
         }
