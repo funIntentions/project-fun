@@ -44,7 +44,8 @@ void PartialOrderPlanner::addOpenGoals(PartialOrderPlan& plan, const Operator& n
     }
 }
 
-void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, long op, long target, bool isBefore)
+// Orders two steps in the plan by adding a temporal link between them
+void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, long op, long target, bool isBefore) // TODO: rename these parameters (step1, isBefore, step2)
 {
         TemporalLink temporalLinkBefore(target, isBefore);
         plan.ordering[op].push_back(temporalLinkBefore);
@@ -79,7 +80,7 @@ void PartialOrderPlanner::findThreatsToCausalLink(PartialOrderPlan& plan, long n
         }
     }
 
-// Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
+// Checks if newOperator is a threat to any existing links (needed for SE & possibly Addition as well?)
 void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, const Operator& newOperator)
 {
         std::vector<Threat> potentialThreats;
@@ -145,15 +146,23 @@ void PartialOrderPlanner::resolveThreats(PartialOrderPlan& plan)
         }
     }
 
+//
+//  S1 ----link----> S2
+//  |
+//  -------> S3 (threatens link)
+//
+
+// Forces the threatening step to come after the link (i.e. S3 after S2)
 void PartialOrderPlanner::promote(PartialOrderPlan& plan, const Threat& threat)
 {
-        addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableLink.step, false);
-    }
+    addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableLink.step, false);
+}
 
+// Forces the threatening step to come before the link (i.e S3 before S1)
 void PartialOrderPlanner::demote(PartialOrderPlan& plan, const Threat& threat)
 {
-        addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableOperator, true);
-    }
+    addTemporalLink(plan, threat.operatorsThreat, threat.vulnerableOperator, true);
+}
 
 bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
 {
@@ -208,6 +217,7 @@ bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
         return false;
     }
 
+// Adds the starting step (specifying initial effects) and the final step (specifying preconditions)
 PartialOrderPlan PartialOrderPlanner::makeInitialPlan(Operator& initialState, Operator& endGoal)
 {
         PartialOrderPlan plan;
@@ -334,7 +344,7 @@ bool PartialOrderPlanner::alreadyUsed(const PartialOrderPlan& plan, const Operat
         return false;
     }
 
-// Simple establishment/use existing operator to satisfy goal
+// Simple establishment/use existing operator to satisfy the goal
 void PartialOrderPlanner::doSimpleEstablishment(PartialOrderPlan& partialPlan, Operator& chosen, Goal goal)
 {
         if (!(goal.step == partialPlan.end || goal.step == partialPlan.start || chosen.id == partialPlan.end || chosen.id == partialPlan.start)) // TODO: have a better way to ensure temporal links are properly added and there aren't ugly checks like this...
@@ -342,7 +352,7 @@ void PartialOrderPlanner::doSimpleEstablishment(PartialOrderPlan& partialPlan, O
         partialPlan.links[chosen.id].push_back(goal);
     }
 
-// add a new operator to satisfy a goal
+// Add a new operator to satisfy the goal
 void PartialOrderPlanner::doOperatorAddition(PartialOrderPlan& plan,
                       Operator& newOperator,
                       Goal goal)
