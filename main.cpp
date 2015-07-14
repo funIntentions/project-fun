@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include "PartialOrderPlanner.h"
 #include "tests/Sussman.h"
 #include "tests/Briefcase.h"
@@ -7,6 +8,85 @@
 #include "tests/Table.h"
 #include "helper/extras.h"
 
+std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
+    std::stringstream ss(s);
+    std::string item;
+
+    while (std::getline(ss, item, delimiter))
+    {
+        tokens.push_back(item);
+    }
+
+    return tokens;
+}
+
+struct Command
+{
+    Command()
+    {
+
+    }
+
+    string verb;
+    string noun;
+};
+
+Command& parseInput(const std::string& input, Command& command)
+{
+    std::vector<std::string> words;
+
+    split(input, ' ', words);
+
+    if (words.size() != 2)
+    {
+        command.verb = "invalid";
+        command.noun = "llama";
+    }
+    else
+    {
+        command.verb = words.at(0);
+        command.noun = words.at(1);
+    }
+
+    return command;
+}
+
+struct World
+{
+
+};
+
+struct Adventure
+{
+    World world;
+
+    Adventure()
+    {
+    }
+
+    void beginAdventure()
+    {
+        string input;
+        Command command;
+
+        while (!finished(command))
+        {
+            input.clear();
+            cout << "What will Krulg do now? ";
+            getline(cin, input);
+            command.verb.clear();
+            command.noun.clear();
+
+            command = parseInput(input, command);
+            cout << command.verb << " " << command.noun << endl;
+        }
+    }
+
+    bool finished(Command command)
+    {
+        return (command.verb == "QUIT");
+    }
+};
 
 
 int main()
@@ -14,7 +94,7 @@ int main()
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
 
-    SussmanDomain sussmanDomain;
+    /*SussmanDomain sussmanDomain;
     BriefcaseDomain briefcaseDomain;
     FruitBowlDomain fruitBowlDomain;
     TableDomain tableDomain;
@@ -25,7 +105,11 @@ int main()
     if (plans.size() > 0)
     {
         printPlanInformation(plans[0]);
-    }
+    }*/
+
+    Adventure adventure;
+
+    adventure.beginAdventure();
 
     return 0;
 }
