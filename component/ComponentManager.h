@@ -1,0 +1,43 @@
+//
+// Created by dan on 14/07/15.
+//
+
+#ifndef PARTIALORDERPLANNER_COMPONENTMANAGER_H
+#define PARTIALORDERPLANNER_COMPONENTMANAGER_H
+
+#include <unordered_map>
+#include "../entity/EntityManager.h"
+
+struct Instance {int i;};
+
+class ComponentManager
+{
+protected:
+
+    std::unordered_map<unsigned, unsigned> _map;
+
+    Instance MakeInstance(int i)
+    {
+        Instance inst = {i};
+        return inst;
+    }
+
+public:
+
+    ComponentManager() {}
+
+    Instance Lookup(Entity e)
+    {
+        std::unordered_map<unsigned,unsigned>::iterator it;
+        if ((it = _map.find(e.index())) != _map.end())
+            return MakeInstance(it->second);
+        return {-1};
+    }
+
+    virtual void SpawnComponents(std::vector<Entity> e) = 0;
+
+    virtual void Destroy(unsigned i) = 0;
+};
+
+
+#endif //PARTIALORDERPLANNER_COMPONENTMANAGER_H

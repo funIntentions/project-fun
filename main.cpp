@@ -7,6 +7,8 @@
 #include "tests/FruitBowl.h"
 #include "tests/Table.h"
 #include "helper/extras.h"
+#include "entity/EntityManager.h"
+#include "component/ComponentManagers.h"
 
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
@@ -53,6 +55,32 @@ Command& parseInput(const std::string& input, Command& command)
 
 struct World
 {
+private:
+    EntityManager entityManager;
+    DescriptionComponentManager descriptionComponentManager;
+    std::vector<Entity> entities;
+public:
+    World()
+    {
+        Entity bat = entityManager.Create();
+        Entity snail = entityManager.Create();
+        Entity mysteryTroll = entityManager.Create();
+
+        entities.push_back(bat);
+        entities.push_back(snail);
+        entities.push_back(mysteryTroll);
+
+        descriptionComponentManager.SpawnComponent(bat, "Bat", "Bat rhymes with chat, which is exactly what this bat likes to do! Unreal!");
+        descriptionComponentManager.SpawnComponent(snail, "Snail", "Modest and quick witted. A dinner party is never dull with this chap around");
+    }
+
+    void processCommand(Command command)
+    {
+        if (command.verb == "Examine")
+        {
+            descriptionComponentManager.ExamineEntityWithName(command.noun);
+        }
+    }
 
 };
 
@@ -78,7 +106,7 @@ struct Adventure
             command.noun.clear();
 
             command = parseInput(input, command);
-            cout << command.verb << " " << command.noun << endl;
+            world.processCommand(command);
         }
     }
 
