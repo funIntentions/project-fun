@@ -9,6 +9,7 @@
 #include "helper/extras.h"
 #include "entity/EntityManager.h"
 #include "component/ComponentManagers.h"
+#include "tests/WorldLocation.h"
 
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
@@ -58,27 +59,47 @@ struct World
 private:
     EntityManager entityManager;
     DescriptionComponentManager descriptionComponentManager;
-    std::vector<Entity> entities;
+    LocationComponentManager locationComponentManager;
+    std::vector<Entity> entitiesCloseBy;
+    Entity player;
 public:
     World()
     {
-        Entity bat = entityManager.Create();
-        Entity snail = entityManager.Create();
-        Entity mysteryTroll = entityManager.Create();
+        player = entityManager.create();
+        Entity bat = entityManager.create();
+        Entity snail = entityManager.create();
+        Entity mysteryTroll = entityManager.create();
 
-        entities.push_back(bat);
-        entities.push_back(snail);
-        entities.push_back(mysteryTroll);
+        descriptionComponentManager.spawnComponent(player, "Player", "I'm looking really good today.");
+        descriptionComponentManager.spawnComponent(bat, "Bat", "Bat rhymes with chat, which is exactly what this bat likes to do! Unreal!");
+        descriptionComponentManager.spawnComponent(snail, "Snail", "Modest and quick witted. A dinner party is never dull with this chap around");
 
-        descriptionComponentManager.SpawnComponent(bat, "Bat", "Bat rhymes with chat, which is exactly what this bat likes to do! Unreal!");
-        descriptionComponentManager.SpawnComponent(snail, "Snail", "Modest and quick witted. A dinner party is never dull with this chap around");
+        locationComponentManager.spawnComponent(player, WorldLocation::Darkvoid);
+        locationComponentManager.spawnComponent(bat, WorldLocation::Marshland);
+        locationComponentManager.spawnComponent(snail, WorldLocation::Ashplanes);
     }
 
     void processCommand(Command command)
     {
         if (command.verb == "Examine")
         {
-            descriptionComponentManager.ExamineEntityWithName(command.noun);
+            descriptionComponentManager.examineEntityWithName(command.noun);
+        }
+        else if (command.verb == "Travel")
+        {
+            int location = locationComponentManager.findLocation(command.noun);
+
+            if (location != -1)
+            {
+
+                locationComponentManager.changeEntitiesLocation(player, (WorldLocation)location);
+                entitiesCloseBy = locationComponentManager.getEntitiesInLocation((WorldLocation)location);
+
+                for (Entity entity : entitiesCloseBy)
+                {
+                    descriptionComponentManager.examineEntity(entity);
+                }
+            }
         }
     }
 
@@ -115,7 +136,6 @@ struct Adventure
         return (command.verb == "QUIT");
     }
 };
-
 
 int main()
 {

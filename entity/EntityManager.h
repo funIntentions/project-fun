@@ -30,13 +30,13 @@ private:
     std::vector<unsigned char> _generation;
     std::deque<unsigned> _freeIndices;
 
-    Entity MakeEntity(unsigned idx, unsigned char gen);
+    Entity makeEntity(unsigned idx, unsigned char gen);
 
 public:
 
-    Entity Create();
-    bool Alive(Entity e) const;
-    void Destroy(Entity e);
+    Entity create();
+    bool alive(Entity e) const;
+    void destroy(Entity e);
 
 };
 

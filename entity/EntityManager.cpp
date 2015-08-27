@@ -6,14 +6,14 @@
 #include "EntityManager.h"
 
 
-Entity EntityManager::MakeEntity(unsigned idx, unsigned char gen)
+Entity EntityManager::makeEntity(unsigned idx, unsigned char gen)
 {
     Entity newEntity;
     newEntity.id = (idx | gen);
     return newEntity;
 }
 
-Entity EntityManager::Create()
+Entity EntityManager::create()
 {
     unsigned idx;
 
@@ -29,15 +29,15 @@ Entity EntityManager::Create()
         assert(idx < (1 << ENTITY_INDEX_BITS));
     }
 
-    return MakeEntity(idx, _generation[idx]);
+    return makeEntity(idx, _generation[idx]);
 }
 
-bool EntityManager::Alive(Entity e) const
+bool EntityManager::alive(Entity e) const
 {
     return _generation[e.index()] == e.generation();
 }
 
-void EntityManager::Destroy(Entity e)
+void EntityManager::destroy(Entity e)
 {
     const unsigned idx = e.index();
     ++_generation[idx];

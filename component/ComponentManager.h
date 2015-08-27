@@ -16,7 +16,7 @@ protected:
 
     std::unordered_map<unsigned, unsigned> _map;
 
-    Instance MakeInstance(int i)
+    Instance makeInstance(int i)
     {
         Instance inst = {i};
         return inst;
@@ -26,17 +26,15 @@ public:
 
     ComponentManager() {}
 
-    Instance Lookup(Entity e)
+    Instance lookup(Entity e)
     {
         std::unordered_map<unsigned,unsigned>::iterator it;
         if ((it = _map.find(e.index())) != _map.end())
-            return MakeInstance(it->second);
+            return makeInstance(it->second);
         return {-1};
     }
 
-    virtual void SpawnComponents(std::vector<Entity> e) = 0;
-
-    virtual void Destroy(unsigned i) = 0;
+    virtual void destroy(unsigned i) = 0;
 };
 
 
