@@ -10,6 +10,7 @@
 #include "entity/EntityManager.h"
 #include "component/ComponentManagers.h"
 #include "tests/WorldLocation.h"
+#include "tests/Krulg.h"
 
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
@@ -142,18 +143,21 @@ int main()
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
 
-    /*SussmanDomain sussmanDomain;
+    Krulg krulg;
+    SussmanDomain sussmanDomain;
     BriefcaseDomain briefcaseDomain;
     FruitBowlDomain fruitBowlDomain;
     TableDomain tableDomain;
-    PartialOrderPlanner partialOrderPlanner(sussmanDomain.operators);
-    vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(sussmanDomain.start, sussmanDomain.finish);
+    PartialOrderPlanner partialOrderPlanner(krulg.operators);
+    vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(krulg.start, krulg.finish);
 
     // Display plan's Causal links
     if (plans.size() > 0)
     {
-        printPlanInformation(plans[0]);
-    }*/
+        //printPlanInformation(plans[0]);
+    }
+
+
 
     Adventure adventure;
 

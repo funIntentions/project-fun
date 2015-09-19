@@ -243,5 +243,24 @@ void printPlanInformation(PartialOrderPlan plan)
     }
 }
 
+vector<long> getTotalOrderPlan(PartialOrderPlan plan)
+{
+    cout << endl << "Building totoal order plan" << endl;
+    vector<long> totalOrderPlan = topologicalSort(plan, plan.start);
+
+    cout << endl;
+    cout << "Total Order Plan (One of them)" << endl;
+    cout << endl;
+
+    for (auto step = totalOrderPlan.begin(); step != totalOrderPlan.end(); ++step)
+    {
+        unordered_map<long, Operator>::const_iterator op = plan.steps.find(*step);
+        if (op != plan.steps.end())
+            cout << op->second.name << endl;
+        else
+            cout << "Oops: something is wrong" << endl;
+    }
+}
+
 
 #endif //PARTIALORDERPLANNER_EXTRAS_H
