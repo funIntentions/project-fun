@@ -22,6 +22,7 @@ struct Operator
     std::vector<int> preconditions;
     std::vector<int> addedEffects;
     std::vector<int> subtractedEffects;
+    bool playerAction = false;
 
     Operator(std::string op = "") : name(op)
     {

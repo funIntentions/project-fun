@@ -63,21 +63,69 @@ private:
     LocationComponentManager locationComponentManager;
     std::vector<Entity> entitiesCloseBy;
     Entity player;
+    Krulg krulg;
+    Operator worldState;
+    PartialOrderPlanner* partialOrderPlanner;
 public:
     World()
     {
+        partialOrderPlanner = new PartialOrderPlanner(krulg.operators);
+        worldState = krulg.start;
+
         player = entityManager.create();
-        Entity bat = entityManager.create();
-        Entity snail = entityManager.create();
+        Entity marshland = entityManager.create();
+        Entity ashplane = entityManager.create();
         Entity mysteryTroll = entityManager.create();
 
         descriptionComponentManager.spawnComponent(player, "Player", "I'm looking really good today.");
-        descriptionComponentManager.spawnComponent(bat, "Bat", "Bat rhymes with chat, which is exactly what this bat likes to do! Unreal!");
-        descriptionComponentManager.spawnComponent(snail, "Snail", "Modest and quick witted. A dinner party is never dull with this chap around");
+        descriptionComponentManager.spawnComponent(marshland, "Marshland", "Very quishy.");
+        descriptionComponentManager.spawnComponent(ashplane, "Ashplane", "Try not to inhale.");
 
         locationComponentManager.spawnComponent(player, WorldLocation::Darkvoid);
-        locationComponentManager.spawnComponent(bat, WorldLocation::Marshland);
-        locationComponentManager.spawnComponent(snail, WorldLocation::Ashplanes);
+        locationComponentManager.spawnComponent(marshland, WorldLocation::Marshland);
+        locationComponentManager.spawnComponent(ashplane, WorldLocation::Ashplanes);
+    }
+
+    void processPlan()
+    {
+        vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish);
+        PartialOrderPlan plan = plans[0];
+
+        vector<long> totalOrderPlan = getTotalOrderPlan(plan);
+
+        if (totalOrderPlan.size() > 0)
+        {
+            unordered_map<long, Operator>::const_iterator op = plan.steps.find(*totalOrderPlan.begin());
+            if (op != plan.steps.end())
+            {
+                cout << op->second.name << endl;
+
+                if (op->second.playerAction)
+                {
+                    alterWorldState(op->second);
+                }
+            }
+        }
+    }
+
+    void alterWorldState(Operator op)
+    {
+        for (int state : op.addedEffects)
+        {
+            if (std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state) != worldState.addedEffects.end())
+            {
+                worldState.addedEffects.push_back(state);
+            }
+        }
+
+        for (int state : op.subtractedEffects)
+        {
+            std::vector<int>::const_iterator it = std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state);
+            if (it != worldState.addedEffects.end())
+            {
+                worldState.addedEffects.erase(it);
+            }
+        }
     }
 
     void processCommand(Command command)
@@ -96,10 +144,11 @@ public:
                 locationComponentManager.changeEntitiesLocation(player, (WorldLocation)location);
                 entitiesCloseBy = locationComponentManager.getEntitiesInLocation((WorldLocation)location);
 
-                for (Entity entity : entitiesCloseBy)
+                /*for (Entity entity : entitiesCloseBy)
                 {
                     descriptionComponentManager.examineEntity(entity);
-                }
+                }*/
+
             }
         }
     }
@@ -108,10 +157,16 @@ public:
 
 struct Adventure
 {
-    World world;
+    World* world;
 
     Adventure()
     {
+        world = new World();
+    }
+
+    ~Adventure()
+    {
+        delete(world);
     }
 
     void beginAdventure()
@@ -128,7 +183,7 @@ struct Adventure
             command.noun.clear();
 
             command = parseInput(input, command);
-            world.processCommand(command);
+            world->processCommand(command);
         }
     }
 
@@ -143,7 +198,7 @@ int main()
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
 
-    Krulg krulg;
+    /*Krulg krulg;
     SussmanDomain sussmanDomain;
     BriefcaseDomain briefcaseDomain;
     FruitBowlDomain fruitBowlDomain;
@@ -154,10 +209,8 @@ int main()
     // Display plan's Causal links
     if (plans.size() > 0)
     {
-        //printPlanInformation(plans[0]);
-    }
-
-
+        printPlanInformation(plans[0]);
+    }*/
 
     Adventure adventure;
 

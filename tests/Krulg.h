@@ -55,51 +55,61 @@ public:
         helpMarshland.preconditions = {marshlandNotHelped, marshlandNotEnslaved, inMarshland};
         helpMarshland.addedEffects = {marshlandHelped};
         helpMarshland.subtractedEffects = {marshlandNotHelped};
+        helpMarshland.playerAction = true;
 
         Operator helpAshplane("Help Ashplane");
         helpAshplane.preconditions = {ashplaneNotHelped, ashplaneNotEnslaved, inAshplane};
         helpAshplane.addedEffects = {ashplaneHelped};
         helpAshplane.subtractedEffects = {ashplaneNotHelped};
+        helpAshplane.playerAction = true;
 
         Operator enslaveMarshland("Enslave Marshland");
         enslaveMarshland.preconditions = {marshlandNotHelped, marshlandNotEnslaved, inMarshland};
         enslaveMarshland.addedEffects = {marshlandEnslaved, krulgWanted};
         enslaveMarshland.subtractedEffects = {marshlandNotEnslaved, krulgNotWanted};
+        enslaveMarshland.playerAction = true;
 
         Operator enslaveAshplane("Enslave Ashplane");
         enslaveAshplane.preconditions = {ashplaneNotHelped, ashplaneNotEnslaved, inAshplane};
         enslaveAshplane.addedEffects = {ashplaneEnslaved, krulgWanted};
         enslaveAshplane.subtractedEffects = {ashplaneNotEnslaved, krulgNotWanted};
+        enslaveAshplane.playerAction = true;
 
         Operator darkVoidToAshplane("Travel to Ashplane from Darkvoid");
         darkVoidToAshplane.preconditions = {notInAshplane, inDarkvoid};
         darkVoidToAshplane.addedEffects = {inAshplane, notInDarkvoid};
         darkVoidToAshplane.subtractedEffects = {inDarkvoid, notInAshplane};
+        darkVoidToAshplane.playerAction = true;
 
         Operator darkVoidToMarshland("Travel to Marshland from Darkvoid");
         darkVoidToMarshland.preconditions = {notInMarshland, inDarkvoid};
         darkVoidToMarshland.addedEffects = {inMarshland, notInDarkvoid};
         darkVoidToMarshland.subtractedEffects = {inDarkvoid, notInMarshland};
+        darkVoidToMarshland.playerAction = true;
 
         Operator ashplaceToMarshland("Travel to Marshland from Ashplane");
         ashplaceToMarshland.preconditions = {notInMarshland, inAshplane};
         ashplaceToMarshland.addedEffects = {inMarshland, notInAshplane};
         ashplaceToMarshland.subtractedEffects = {inAshplane, notInMarshland};
+        ashplaceToMarshland.playerAction = true;
 
         Operator ashplaneToDarkvoid("Travel to Darkvoid from Ashplane");
         ashplaneToDarkvoid.preconditions = {notInDarkvoid, inAshplane};
         ashplaneToDarkvoid.addedEffects = {inDarkvoid, notInAshplane};
         ashplaneToDarkvoid.subtractedEffects = {inAshplane, notInDarkvoid};
+        ashplaneToDarkvoid.playerAction = true;
 
         Operator marshlandToAshplane("Travel to Ashplane from Marshland");
         marshlandToAshplane.preconditions = {notInAshplane, inMarshland};
         marshlandToAshplane.addedEffects = {inAshplane, notInMarshland};
         marshlandToAshplane.subtractedEffects = {inMarshland, notInAshplane};
+        marshlandToAshplane.playerAction = true;
 
         Operator marshlandToDarkvoid("Travel to Darkvoid from Marshland");
         marshlandToDarkvoid.preconditions = {notInDarkvoid, inMarshland};
         marshlandToDarkvoid.addedEffects = {inDarkvoid, notInMarshland};
         marshlandToDarkvoid.subtractedEffects = {inMarshland, notInDarkvoid};
+        marshlandToDarkvoid.playerAction = true;
 
         Operator falsifyEvidence("Falsify Evidence");
         falsifyEvidence.preconditions = {noFalsifiedEvidence, marshlandHelped, ashplaneHelped, marshlandNotEnslaved, ashplaneNotEnslaved, krulgNotWanted};

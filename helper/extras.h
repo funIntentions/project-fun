@@ -260,6 +260,8 @@ vector<long> getTotalOrderPlan(PartialOrderPlan plan)
         else
             cout << "Oops: something is wrong" << endl;
     }
+
+    return totalOrderPlan;
 }
 
 
