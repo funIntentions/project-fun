@@ -30,13 +30,13 @@ vector<long> topologicalSort(PartialOrderPlan plan, long vert)
     while(!stack.empty())
     {
         vert = stack.back();
-        cout << vert << ": ";
+        //cout << vert << ": ";
 
         for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
         {
             if (parent[itr->targetOperator] < 0 && itr->isBefore)
             {
-                cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
+                //cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
                 parent[itr->targetOperator] = vert;
                 stack.push_back(itr->targetOperator);
                 break;
@@ -49,7 +49,7 @@ vector<long> topologicalSort(PartialOrderPlan plan, long vert)
             stack.pop_back();
         }
 
-        cout << "\n";
+        //cout << "\n";
     }
 
     return totalOrderPlan;
@@ -245,7 +245,7 @@ void printPlanInformation(PartialOrderPlan plan)
 
 vector<long> getTotalOrderPlan(PartialOrderPlan plan)
 {
-    cout << endl << "Building totoal order plan" << endl;
+    cout << endl << "Building total order plan" << endl;
     vector<long> totalOrderPlan = topologicalSort(plan, plan.start);
 
     cout << endl;
@@ -260,6 +260,8 @@ vector<long> getTotalOrderPlan(PartialOrderPlan plan)
         else
             cout << "Oops: something is wrong" << endl;
     }
+
+    cout << endl;
 
     return totalOrderPlan;
 }

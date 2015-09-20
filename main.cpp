@@ -97,19 +97,17 @@ public:
 
             vector<long> totalOrderPlan = getTotalOrderPlan(plan);
 
-            if (totalOrderPlan.size() > 0)
+            if (totalOrderPlan.size() > 2)
             {
-                /*unordered_map<long, Operator>::const_iterator op = plan.steps.find(*(totalOrderPlan.begin() + 2));
+                unordered_map<long, Operator>::const_iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
                 if (op != plan.steps.end())
                 {
-                    cout << op->second.name << endl;
-
                     if (!op->second.playerAction && (op->second.name != "finish" && op->second.name != "start"))
                     {
                         alterWorldState(op->second);
                         processPlan();
                     }
-                }*/
+                }
             }
         }
     }
