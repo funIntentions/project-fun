@@ -8,6 +8,7 @@ std::vector<PartialOrderPlan> PartialOrderPlanner::findPartialOrderPlan(Operator
 {
         PartialOrderPlan plan = makeInitialPlan(initialState, endGoal);
         partialPlans.push(plan);
+        finishedPlans.clear();
 
         while (!partialPlans.empty())
         {

@@ -71,6 +71,7 @@ public:
     {
         partialOrderPlanner = new PartialOrderPlanner(krulg.operators);
         worldState = krulg.start;
+        processPlan();
 
         player = entityManager.create();
         Entity marshland = entityManager.create();
@@ -89,21 +90,26 @@ public:
     void processPlan()
     {
         vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish);
-        PartialOrderPlan plan = plans[0];
 
-        vector<long> totalOrderPlan = getTotalOrderPlan(plan);
-
-        if (totalOrderPlan.size() > 0)
+        if (plans.size() > 0)
         {
-            unordered_map<long, Operator>::const_iterator op = plan.steps.find(*totalOrderPlan.begin());
-            if (op != plan.steps.end())
-            {
-                cout << op->second.name << endl;
+            PartialOrderPlan plan = plans[0];
 
-                if (op->second.playerAction)
+            vector<long> totalOrderPlan = getTotalOrderPlan(plan);
+
+            if (totalOrderPlan.size() > 0)
+            {
+                /*unordered_map<long, Operator>::const_iterator op = plan.steps.find(*(totalOrderPlan.begin() + 2));
+                if (op != plan.steps.end())
                 {
-                    alterWorldState(op->second);
-                }
+                    cout << op->second.name << endl;
+
+                    if (!op->second.playerAction && (op->second.name != "finish" && op->second.name != "start"))
+                    {
+                        alterWorldState(op->second);
+                        processPlan();
+                    }
+                }*/
             }
         }
     }
@@ -112,7 +118,7 @@ public:
     {
         for (int state : op.addedEffects)
         {
-            if (std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state) != worldState.addedEffects.end())
+            if (std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state) == worldState.addedEffects.end())
             {
                 worldState.addedEffects.push_back(state);
             }
@@ -134,13 +140,61 @@ public:
         {
             descriptionComponentManager.examineEntityWithName(command.noun);
         }
+        else if (command.verb == "Enslave")
+        {
+            WorldLocation playerLocation = locationComponentManager.getLocationForEntity(player);
+            int location = locationComponentManager.findLocation(command.noun);
+
+            if (location != -1)
+            {
+                Operator playerAction;
+                if (playerLocation == location)
+                {
+                    if (playerLocation == Marshland)
+                    {
+                        playerAction = *krulg.enslaveMarshland;
+                    }
+                    else if (playerLocation == Ashplanes)
+                    {
+                        playerAction = *krulg.enslaveAshplane;
+                    }
+                }
+
+                alterWorldState(playerAction);
+            }
+        }
+        else if (command.verb == "Help")
+        {
+            WorldLocation playerLocation = locationComponentManager.getLocationForEntity(player);
+            int location = locationComponentManager.findLocation(command.noun);
+
+            if (location != -1)
+            {
+                Operator playerAction;
+                if (playerLocation == location)
+                {
+                    if (playerLocation == Marshland)
+                    {
+                        playerAction = *krulg.helpMarshland;
+                    }
+                    else if (playerLocation == Ashplanes)
+                    {
+                        playerAction = *krulg.helpAshplane;
+                    }
+                }
+
+                alterWorldState(playerAction);
+            }
+        }
         else if (command.verb == "Travel")
         {
+            WorldLocation playerLocation = locationComponentManager.getLocationForEntity(player);
             int location = locationComponentManager.findLocation(command.noun);
 
             if (location != -1)
             {
 
+                WorldLocation nextLocation = (WorldLocation)location;
                 locationComponentManager.changeEntitiesLocation(player, (WorldLocation)location);
                 entitiesCloseBy = locationComponentManager.getEntitiesInLocation((WorldLocation)location);
 
@@ -148,9 +202,47 @@ public:
                 {
                     descriptionComponentManager.examineEntity(entity);
                 }*/
+                Operator playerAction;
 
+                if (playerLocation == Marshland)
+                {
+                    if (nextLocation == Ashplanes)
+                    {
+                        playerAction = *krulg.marshlandToAshplane;
+                    }
+                    else if (nextLocation == Darkvoid)
+                    {
+                        playerAction = *krulg.marshlandToDarkvoid;
+                    }
+                }
+                else if (playerLocation == Ashplanes)
+                {
+                    if (nextLocation == Marshland)
+                    {
+                        playerAction = *krulg.ashplaneToMarshland;
+                    }
+                    else if (nextLocation == Darkvoid)
+                    {
+                        playerAction = *krulg.ashplaneToDarkvoid;
+                    }
+                }
+                else if (playerLocation == Darkvoid)
+                {
+                    if (nextLocation == Marshland)
+                    {
+                        playerAction = *krulg.darkvoidToMarshland;
+                    }
+                    else if (nextLocation == Ashplanes)
+                    {
+                        playerAction = *krulg.darkvoidToAshplane;
+                    }
+                }
+
+                alterWorldState(playerAction);
             }
         }
+
+        processPlan();
     }
 
 };

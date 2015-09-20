@@ -175,6 +175,11 @@ public:
         return -1;
     }
 
+    WorldLocation getLocationForEntity(Entity entity)
+    {
+        return _data.location[entity.id];
+    }
+
     void changeEntitiesLocation(Entity entity, WorldLocation location)
     {
         _data.location[entity.id] = location;
