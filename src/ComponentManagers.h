@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_COMPONENTMANAGERS_H
 
 #include "ComponentManager.h"
-#include "../tests/WorldLocation.h"
+#include "tests/WorldLocation.h"
 
 class DescriptionComponentManager : public ComponentManager
 {

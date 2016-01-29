@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_COMPONENTMANAGER_H
 
 #include <unordered_map>
-#include "../entity/EntityManager.h"
+#include "EntityManager.h"
 
 struct Instance {int i;};
 

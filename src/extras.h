@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_EXTRAS_H
 #define PARTIALORDERPLANNER_EXTRAS_H
 
-#include "../PartialOrderPlan.h"
+#include "PartialOrderPlan.h"
 
 using namespace std;
 
@@ -235,7 +235,7 @@ void printPlanInformation(PartialOrderPlan plan)
 
     for (auto step = totalOrderPlan.begin(); step != totalOrderPlan.end(); ++step)
     {
-        unordered_map<long, Operator>::const_iterator op = plan.steps.find(*step);
+        unordered_map<long, Operator>::iterator op = plan.steps.find(*step);
         if (op != plan.steps.end())
             cout << op->second.name << endl;
         else
@@ -254,7 +254,7 @@ vector<long> getTotalOrderPlan(PartialOrderPlan plan)
 
     for (auto step = totalOrderPlan.begin(); step != totalOrderPlan.end(); ++step)
     {
-        unordered_map<long, Operator>::const_iterator op = plan.steps.find(*step);
+        unordered_map<long, Operator>::iterator op = plan.steps.find(*step);
         if (op != plan.steps.end())
             cout << op->second.name << endl;
         else

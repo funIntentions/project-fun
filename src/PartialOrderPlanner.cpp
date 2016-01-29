@@ -148,9 +148,9 @@ void PartialOrderPlanner::resolveThreats(PartialOrderPlan& plan)
     }
 
 //
-//  S1 ----link----> S2
+//  S1 ----link----> p S2
 //  |
-//  -------> S3 (threatens link)
+//  -------> S3 ~p (threatens link)
 //
 
 // Forces the threatening step to come after the link (i.e. S3 after S2)

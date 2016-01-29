@@ -6,9 +6,9 @@
 #include "tests/Briefcase.h"
 #include "tests/FruitBowl.h"
 #include "tests/Table.h"
-#include "helper/extras.h"
-#include "entity/EntityManager.h"
-#include "component/ComponentManagers.h"
+#include "extras.h"
+#include "EntityManager.h"
+#include "ComponentManagers.h"
 #include "tests/WorldLocation.h"
 #include "tests/Krulg.h"
 
@@ -99,7 +99,7 @@ public:
 
             if (totalOrderPlan.size() > 2)
             {
-                unordered_map<long, Operator>::const_iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
+                unordered_map<long, Operator>::iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
                 if (op != plan.steps.end())
                 {
                     if (!op->second.playerAction && (op->second.name != "finish" && op->second.name != "start"))
@@ -124,7 +124,7 @@ public:
 
         for (int state : op.subtractedEffects)
         {
-            std::vector<int>::const_iterator it = std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state);
+            std::vector<int>::iterator it = std::find(worldState.addedEffects.begin(), worldState.addedEffects.end(), state);
             if (it != worldState.addedEffects.end())
             {
                 worldState.addedEffects.erase(it);
