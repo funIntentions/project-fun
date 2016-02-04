@@ -1,0 +1,14 @@
+ (:action Put
+ :parameters (location ?l, briefcase ?c, object ?o)
+ :preconditions (not(in(?o, ?c)) and at(?l, ?c) and at(?l, ?o))
+ :effects (not(at(?l, ?o)) and in(?o, ?c)) )
+
+ (:action Remove
+ :parameters (location ?l, briefcase ?c, object ?o)
+ :preconditions (in(?o, ?c) and at(?l, ?c))
+ :effects (at(?l, ?o) and not(in(?o, ?c))) )
+
+ (:action Move
+ :parameters (location ?l, briefcase ?c, location ?l2)
+ :preconditions ((at(?l, ?c)) and not(at(?l2, ?c)))
+ :effects (at(?l2, ?c) and not(at(?l, ?c))) )

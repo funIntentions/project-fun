@@ -266,5 +266,4 @@ vector<long> getTotalOrderPlan(PartialOrderPlan plan)
     return totalOrderPlan;
 }
 
-
 #endif //PARTIALORDERPLANNER_EXTRAS_H

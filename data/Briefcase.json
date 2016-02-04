@@ -1,0 +1,35 @@
+
+{
+  "entities" :
+          [
+            "dictionary",
+            "paycheck",
+            "briefcase",
+            "home",
+            "office"
+          ],
+  "actions" :
+          [
+            {
+              "name" : "put",
+              "params" : [{"location" : "l"}, {"briefcase" : "c"}, {"object" : "o"}],
+              "positivePreconditions" :
+              [
+                {"name" : "at", "params" : ["l", "c"]},
+                {"name" : "at", "params" : ["l", "o"]}
+              ],
+              "negativePreconditions" :
+              [
+                {"name" : "in", "params" : ["o", "c"]}
+              ],
+              "addedEffects" :
+              [
+                {"name" : "in", "params" : ["o", "c"]}
+              ],
+              "subtractedEffects" :
+              [
+                {"name" : "at", "params" : ["l", "o"]}
+              ]
+            }
+          ]
+}
