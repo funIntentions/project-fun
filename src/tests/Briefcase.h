@@ -169,7 +169,6 @@ namespace std {
 }
 
 std::unordered_map<Predicate, size_t> predicates;
-std::vector<std::string> entities;
 
 size_t addPredicate(Predicate predicate)
 {
@@ -187,7 +186,6 @@ struct Task
     std::string name;
     std::vector<std::string> parameters;
     std::vector<Predicate> positivePreconditions;
-    std::vector<Predicate> negativePreconditions;
     std::vector<Predicate> addedEffects;
     std::vector<Predicate> subtractedEffects;
 
@@ -196,12 +194,78 @@ struct Task
     }
 };
 
-//Task createTask(rapidjson::Value taskObject)
-//{
-//    Task task;
-//    rapidjson::Value::ConstMemberIterator member_itr = taskObject.MemberBegin();
-//    printf("Type of member %s is %s\n", member_itr->name.GetString(), kTypeNames[member_itr->value.GetType()]);
-//}
+std::unordered_map<std::string, Task> tasks;
+std::vector<std::string> entities;
+std::vector<Operator> operators;
+
+Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities)
+{
+    Operator anOperator;
+    anOperator.name = templateTask.name;
+
+    assert(templateTask.parameters.size() == entities.size());
+
+    std::unordered_map<std::string, std::string> paramMapping;
+    for (int i = 0; i < templateTask.parameters.size(); ++i)
+    {
+        paramMapping.insert({templateTask.parameters[i], entities[i]});
+    }
+
+    for (Predicate precondition : templateTask.positivePreconditions)
+    {
+        Predicate newPrecondition;
+        newPrecondition.type = precondition.type;
+
+        for (std::string param : precondition.params)
+        {
+            auto itr = paramMapping.find(param);
+            if (itr != paramMapping.end())
+            {
+                newPrecondition.params.push_back(itr->second);
+            }
+        }
+
+        anOperator.preconditions.push_back(addPredicate(newPrecondition));
+    }
+
+    for (Predicate effect : templateTask.addedEffects)
+    {
+        Predicate newEffect;
+        newEffect.type = effect.type;
+
+        for (std::string param : effect.params)
+        {
+            auto itr = paramMapping.find(param);
+            if (itr != paramMapping.end())
+            {
+                newEffect.params.push_back(itr->second);
+            }
+        }
+
+        anOperator.addedEffects.push_back(addPredicate(newEffect));
+    }
+
+    for (Predicate effect : templateTask.subtractedEffects)
+    {
+        Predicate newEffect;
+        newEffect.type = effect.type;
+
+        for (std::string param : effect.params)
+        {
+            auto itr = paramMapping.find(param);
+            if (itr != paramMapping.end())
+            {
+                newEffect.params.push_back(itr->second);
+            }
+        }
+
+        anOperator.subtractedEffects.push_back(addPredicate(newEffect));
+    }
+
+    return anOperator;
+}
+
+
 
 void parseJsonData()
 {
@@ -262,12 +326,12 @@ void parseJsonData()
                     assert(param->IsString());
                     predicate.params.push_back(param->GetString());
                 }
-                std::cout << addPredicate(predicate);
+
                 task.positivePreconditions.push_back(predicate);
             }
         }
 
-        member_itr = action_itr->FindMember("negativePreconditions");
+        /*member_itr = action_itr->FindMember("negativePreconditions");
         if (member_itr != document.MemberEnd())
         {
             assert(member_itr->value.IsArray());
@@ -288,7 +352,7 @@ void parseJsonData()
                 std::cout << addPredicate(predicate);
                 task.negativePreconditions.push_back(predicate);
             }
-        }
+        }*/
 
 
         member_itr = action_itr->FindMember("addedEffects");
@@ -309,7 +373,6 @@ void parseJsonData()
                     predicate.params.push_back(param->GetString());
                 }
 
-                std::cout << addPredicate(predicate);
                 task.addedEffects.push_back(predicate);
             }
         }
@@ -332,17 +395,24 @@ void parseJsonData()
                     predicate.params.push_back(param->GetString());
                 }
 
-                std::cout << addPredicate(predicate);
                 task.subtractedEffects.push_back(predicate);
             }
         }
+
+        // Generate Params
+        /*std::vector<std::string> partialParams[entities.size()];
+
+        for (int param = 0; param < task.parameters.size(); ++param)
+        {
+            for (int entity = 0; entity < entities.size(); ++entity)
+            {
+                partialParams[entity].push_back(entities[entity]);
+            }
+        }*/
+        tasks.insert({task.name, task});
     }
-}
 
-
-void createOperator()
-{
-
+    //Operator anOperator = generateOperator(task, {"Home", "Briefcase", "Paycheck"});
 }
 
 #endif //PARTIALORDERPLANNER_BRIEFCASE_H
