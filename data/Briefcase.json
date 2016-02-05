@@ -12,7 +12,7 @@
           [
             {
               "name" : "put",
-              "params" : [{"location" : "l"}, {"briefcase" : "c"}, {"object" : "o"}],
+              "params" : [{"name" : "l"}, {"name" : "c"}, {"name" : "o"}],
               "positivePreconditions" :
               [
                 {"name" : "at", "params" : ["l", "c"]},

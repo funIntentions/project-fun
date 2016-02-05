@@ -8,6 +8,7 @@
 #include "../PartialOrderPlan.h"
 #include <tuple>
 #include <fstream>
+#include <algorithm>
 #include "rapidjson/reader.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/document.h"
@@ -137,6 +138,71 @@ public:
 
 };
 
+static const char* kTypeNames[] =
+        { "Null", "False", "True", "Object", "Array", "String", "Number" };
+
+struct Predicate
+{
+    std::string type;
+    std::vector<std::string> params;
+
+    bool operator==(const Predicate& other) const {
+        return (type == other.type
+                && params == other.params);
+    }
+};
+
+namespace std {
+    template <>
+    struct hash<Predicate>
+    {
+        std::size_t operator()(const Predicate& predicate) const
+        {
+            std::size_t seed = 0;
+            for(auto& param : predicate.params) {
+                seed ^= std::hash<std::string>()(param) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+
+            return (std::hash<std::string>()(predicate.type)) ^ seed;
+        }
+    };
+}
+
+std::unordered_map<Predicate, size_t> predicates;
+std::vector<std::string> entities;
+
+size_t addPredicate(Predicate predicate)
+{
+    size_t id = predicates.size();
+    auto itr = predicates.find(predicate);
+    if (itr != predicates.end())
+        id = itr->second;
+    else
+        predicates.insert({predicate, id});
+    return id;
+}
+
+struct Task
+{
+    std::string name;
+    std::vector<std::string> parameters;
+    std::vector<Predicate> positivePreconditions;
+    std::vector<Predicate> negativePreconditions;
+    std::vector<Predicate> addedEffects;
+    std::vector<Predicate> subtractedEffects;
+
+    Task(std::string op = "") : name(op)
+    {
+    }
+};
+
+//Task createTask(rapidjson::Value taskObject)
+//{
+//    Task task;
+//    rapidjson::Value::ConstMemberIterator member_itr = taskObject.MemberBegin();
+//    printf("Type of member %s is %s\n", member_itr->name.GetString(), kTypeNames[member_itr->value.GetType()]);
+//}
+
 void parseJsonData()
 {
     std::ifstream in("data/Briefcase.json");
@@ -146,17 +212,133 @@ void parseJsonData()
     rapidjson::Document document;
     document.Parse(json);
 
-    assert(document.HasMember("hello"));
-    assert(document["hello"].IsString());
-    printf("hello = %s\n", document["hello"].GetString());
+    const rapidjson::Value& e = document["entities"];
+    assert(e.IsArray());
 
-    const rapidjson::Value& a = document["a"];
+    for (auto entity_itr = e.Begin(); entity_itr != e.End(); ++entity_itr)
+    {
+        assert(entity_itr->IsString());
+        entities.push_back(entity_itr->GetString());
+    }
+
+    const rapidjson::Value& a = document["actions"];
     assert(a.IsArray());
 
-    for (rapidjson::Value::ConstValueIterator itr = a.Begin(); itr != a.End(); ++itr)
-        printf("%d ", itr->GetInt());
+    for (auto action_itr = a.Begin(); action_itr != a.End(); ++action_itr)
+    {
+        assert(action_itr->IsObject());
+        Task task;
 
+        auto member_itr = action_itr->FindMember("name");
+        if (member_itr != action_itr->MemberEnd())
+            task.name = member_itr->value.GetString();
+
+        member_itr = action_itr->FindMember("params");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto param_itr = member_itr->value.Begin(); param_itr != member_itr->value.End(); ++param_itr)
+            {
+                assert(param_itr->IsObject());
+                auto param_member = param_itr->FindMember("name");
+                task.parameters.push_back(param_member->value.GetString());
+            }
+        }
+
+        member_itr = action_itr->FindMember("positivePreconditions");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+                std::cout << addPredicate(predicate);
+                task.positivePreconditions.push_back(predicate);
+            }
+        }
+
+        member_itr = action_itr->FindMember("negativePreconditions");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                std::cout << addPredicate(predicate);
+                task.negativePreconditions.push_back(predicate);
+            }
+        }
+
+
+        member_itr = action_itr->FindMember("addedEffects");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                std::cout << addPredicate(predicate);
+                task.addedEffects.push_back(predicate);
+            }
+        }
+
+        member_itr = action_itr->FindMember("subtractedEffects");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                std::cout << addPredicate(predicate);
+                task.subtractedEffects.push_back(predicate);
+            }
+        }
+    }
 }
+
 
 void createOperator()
 {
