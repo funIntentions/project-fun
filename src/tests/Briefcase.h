@@ -197,11 +197,14 @@ struct Task
 std::unordered_map<std::string, Task> tasks;
 std::vector<std::string> entities;
 std::vector<Operator> operators;
+std::vector<Operator> briefcaseOperators;
+Operator briefcaseStart;
+Operator briefcaseEnd;
 
-Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities)
+Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities, std::string temp) // TODO: Remove temp and the string compare
 {
     Operator anOperator;
-    anOperator.name = templateTask.name;
+    anOperator.name = templateTask.name + temp;
 
     assert(templateTask.parameters.size() == entities.size());
 
@@ -264,8 +267,6 @@ Operator generateOperator(const Task& templateTask, const std::vector<std::strin
 
     return anOperator;
 }
-
-
 
 void parseJsonData()
 {
@@ -331,30 +332,6 @@ void parseJsonData()
             }
         }
 
-        /*member_itr = action_itr->FindMember("negativePreconditions");
-        if (member_itr != document.MemberEnd())
-        {
-            assert(member_itr->value.IsArray());
-            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
-            {
-                assert(itr->IsObject());
-                Predicate predicate;
-                auto name_itr = itr->FindMember("name");
-                predicate.type = name_itr->value.GetString();
-                auto param_itr = itr->FindMember("params");
-
-                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
-                {
-                    assert(param->IsString());
-                    predicate.params.push_back(param->GetString());
-                }
-
-                std::cout << addPredicate(predicate);
-                task.negativePreconditions.push_back(predicate);
-            }
-        }*/
-
-
         member_itr = action_itr->FindMember("addedEffects");
         if (member_itr != document.MemberEnd())
         {
@@ -409,10 +386,50 @@ void parseJsonData()
                 partialParams[entity].push_back(entities[entity]);
             }
         }*/
+
         tasks.insert({task.name, task});
     }
 
-    //Operator anOperator = generateOperator(task, {"Home", "Briefcase", "Paycheck"});
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Paycheck"}, "0"));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Dictionary"}, "1"));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Paycheck"}, "2"));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Dictionary"}, "3"));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Dictionary"}, "4"));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Paycheck"}, "5"));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Dictionary"}, "6"));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Paycheck"}, "7"));
+    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Home", "Briefcase", "Office"}, "8"));
+    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Office", "Briefcase", "Home"}, "9"));
+
+    Predicate startPredicate;
+    startPredicate.type = "at";
+    startPredicate.params = {"Home", "Dictionary"};
+    Predicate startPredicate2;
+    startPredicate2.type = "at";
+    startPredicate2.params = {"Home", "Briefcase"};
+    Predicate startPredicate3;
+    startPredicate3.type = "in";
+    startPredicate3.params = {"Paycheck", "Briefcase"};
+
+    Predicate endPredicate;
+    endPredicate.type = "at";
+    endPredicate.params = {"Office", "Dictionary"};
+    Predicate endPredicate2;
+    endPredicate2.type = "at";
+    endPredicate2.params = {"Home", "Paycheck"};
+
+    size_t sp = addPredicate(startPredicate);
+    size_t sp2 = addPredicate(startPredicate2);
+    size_t sp3 = addPredicate(startPredicate3);
+
+    size_t ep = addPredicate(endPredicate);
+    size_t ep2 = addPredicate(endPredicate2);
+
+    briefcaseStart.name = "start";
+    briefcaseStart.addedEffects = {sp, sp2, sp3};
+
+    briefcaseEnd.name = "end";
+    briefcaseEnd.preconditions = {ep, ep2};
 }
 
 #endif //PARTIALORDERPLANNER_BRIEFCASE_H

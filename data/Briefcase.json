@@ -18,10 +18,6 @@
                 {"name" : "at", "params" : ["l", "c"]},
                 {"name" : "at", "params" : ["l", "o"]}
               ],
-              "negativePreconditions" :
-              [
-                {"name" : "in", "params" : ["o", "c"]}
-              ],
               "addedEffects" :
               [
                 {"name" : "in", "params" : ["o", "c"]}
@@ -40,9 +36,6 @@
                 {"name" : "at", "params" : ["l", "c"]},
                 {"name" : "in", "params" : ["o", "c"]}
               ],
-              "negativePreconditions" :
-              [
-              ],
               "addedEffects" :
               [
                 {"name" : "at", "params" : ["l", "o"]}
@@ -60,16 +53,13 @@
               [
                 {"name" : "at", "params" : ["l", "c"]}
               ],
-              "negativePreconditions" :
-              [
-              ],
               "addedEffects" :
               [
                 {"name" : "at", "params" : ["l2", "c"]}
               ],
               "subtractedEffects" :
               [
-                {"name" : "in", "params" : ["l", "c"]}
+                {"name" : "at", "params" : ["l", "c"]}
               ]
             }
           ]
