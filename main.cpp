@@ -102,7 +102,7 @@ public:
                 unordered_map<long, Operator>::iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
                 if (op != plan.steps.end())
                 {
-                    if (!op->second.playerAction && (op->second.name != "finish" && op->second.name != "start"))
+                    if ((op->second.name != "finish" && op->second.name != "start"))
                     {
                         alterWorldState(op->second);
                         processPlan();
@@ -300,8 +300,8 @@ int main()
     BriefcaseDomain briefcaseDomain;
     FruitBowlDomain fruitBowlDomain;
     TableDomain tableDomain;
-    PartialOrderPlanner partialOrderPlanner(krulg.operators);
-    vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(krulg.start, krulg.finish);
+    PartialOrderPlanner partialOrderPlanner(sussmanDomain.operators);
+    vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(sussmanDomain.start, sussmanDomain.finish);
 
     // Display plan's Causal links
     if (plans.size() > 0)

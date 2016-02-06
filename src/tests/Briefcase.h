@@ -201,10 +201,10 @@ std::vector<Operator> briefcaseOperators;
 Operator briefcaseStart;
 Operator briefcaseEnd;
 
-Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities, std::string temp) // TODO: Remove temp and the string compare
+Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities)
 {
     Operator anOperator;
-    anOperator.name = templateTask.name + temp;
+    anOperator.name = templateTask.name;
 
     assert(templateTask.parameters.size() == entities.size());
 
@@ -390,16 +390,16 @@ void parseJsonData()
         tasks.insert({task.name, task});
     }
 
-    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Paycheck"}, "0"));
-    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Dictionary"}, "1"));
-    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Paycheck"}, "2"));
-    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Dictionary"}, "3"));
-    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Dictionary"}, "4"));
-    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Paycheck"}, "5"));
-    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Dictionary"}, "6"));
-    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Paycheck"}, "7"));
-    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Home", "Briefcase", "Office"}, "8"));
-    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Office", "Briefcase", "Home"}, "9"));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Paycheck"}));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Home", "Briefcase", "Dictionary"}));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Paycheck"}));
+    briefcaseOperators.push_back(generateOperator(tasks["put"], {"Office", "Briefcase", "Dictionary"}));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Dictionary"}));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Office", "Briefcase", "Paycheck"}));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Dictionary"}));
+    briefcaseOperators.push_back(generateOperator(tasks["remove"], {"Home", "Briefcase", "Paycheck"}));
+    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Home", "Briefcase", "Office"}));
+    briefcaseOperators.push_back(generateOperator(tasks["move"], {"Office", "Briefcase", "Home"}));
 
     Predicate startPredicate;
     startPredicate.type = "at";

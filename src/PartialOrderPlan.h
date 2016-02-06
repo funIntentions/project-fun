@@ -22,13 +22,44 @@ struct Operator
     std::vector<int> preconditions;
     std::vector<int> addedEffects;
     std::vector<int> subtractedEffects;
-    bool playerAction = false;
 
     Operator(std::string op = "") : name(op)
     {
         id = -1;
     }
+
+    bool operator==(const Operator& other) const
+    {
+        return (name.compare(other.name) == 0)
+                && preconditions == other.preconditions
+                && addedEffects == other.addedEffects
+                && subtractedEffects == other.subtractedEffects;
+    }
 };
+
+namespace std {
+    template <>
+    struct hash<Operator>
+    {
+        std::size_t operator()(const Operator& anOperator) const
+        {
+            std::size_t seed = 0;
+            for(auto& pre : anOperator.preconditions) {
+                seed ^= std::hash<int>()(pre) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+
+            for(auto& effect : anOperator.addedEffects) {
+                seed ^= std::hash<int>()(effect) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+
+            for(auto& effect : anOperator.subtractedEffects) {
+                seed ^= std::hash<int>()(effect) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+
+            return (std::hash<std::string>()(anOperator.name)) ^ seed;
+        }
+    };
+}
 
 struct Goal
 {
@@ -63,6 +94,7 @@ struct Threat
 struct PartialOrderPlan
 {
     std::unordered_map<long, Operator> steps; // TODO: check if unordered_map is the right map for the job.
+    std::unordered_map<Operator, int> stepsDone;
     std::vector< std::vector<TemporalLink> > ordering;
     std::vector< std::vector<Goal> > links;
     std::vector<Threat> threats;

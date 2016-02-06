@@ -218,7 +218,7 @@ bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
         return false;
     }
 
-// Adds the starting step (specifying initial effects) and the final step (specifying preconditions)
+// Adds the starting step (specifying initial effects) and the final step (specifying preconditions) TODO: Can this method use operator addition method?
 PartialOrderPlan PartialOrderPlanner::makeInitialPlan(Operator& initialState, Operator& endGoal)
 {
         PartialOrderPlan plan;
@@ -238,6 +238,9 @@ PartialOrderPlan PartialOrderPlanner::makeInitialPlan(Operator& initialState, Op
 
         plan.steps[initialState.id] = initialState;
         plan.steps[endGoal.id] = endGoal;
+
+        plan.stepsDone.insert({initialState, 0});
+        plan.stepsDone.insert({endGoal, 0});
 
         addOpenGoals(plan, endGoal);
 
@@ -334,16 +337,16 @@ bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, long s
 
 bool PartialOrderPlanner::alreadyUsed(const PartialOrderPlan& plan, const Operator& op) // TODO: find a way so that I don't have to limit the number of potencial ops (& the string compare)
 {
-        for (auto itr = plan.steps.begin(); itr != plan.steps.end(); ++itr)
+        /*for (auto itr = plan.steps.begin(); itr != plan.steps.end(); ++itr)
         {
             if (itr->second.name.compare(op.name) == 0)
             {
                 return true;
             }
-        }
-
-        return false;
-    }
+        }*/
+    auto itr = plan.stepsDone.find(op);
+    return itr != plan.stepsDone.end();
+}
 
 // Simple establishment/use existing operator to satisfy the goal
 void PartialOrderPlanner::doSimpleEstablishment(PartialOrderPlan& partialPlan, Operator& chosen, Goal goal)
@@ -372,6 +375,7 @@ void PartialOrderPlanner::doOperatorAddition(PartialOrderPlan& plan,
         addOpenGoals(plan, newOperator);
 
         plan.steps[newOperator.id] = newOperator;
+        plan.stepsDone.insert({newOperator, 0});
     }
 
 void PartialOrderPlanner::chooseOperator(PartialOrderPlan& plan, Goal goal)
