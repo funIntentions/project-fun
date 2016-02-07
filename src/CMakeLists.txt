@@ -16,11 +16,11 @@ set(HEADER_FILES
         tests/WorldLocation.h
         tests/Krulg.h
         extras.h
-        )
+        Schedules/Schedule.h)
 
 set(SOURCE_FILES
         PartialOrderPlanner.cpp
         EntityManager.cpp
-        )
+        Schedules/Schedule.cpp Schedules/ScheduleEntry.cpp Schedules/ScheduleEntry.h Schedules/Action.cpp Schedules/Action.h)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

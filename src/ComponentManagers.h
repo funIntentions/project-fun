@@ -228,4 +228,10 @@ public:
     }
 };
 
+/*
+class ScheduleComponentManager : public ComponentManager
+{
+
+};*/
+
 #endif //PARTIALORDERPLANNER_COMPONENTMANAGERS_H

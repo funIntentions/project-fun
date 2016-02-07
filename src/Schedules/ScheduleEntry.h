@@ -1,0 +1,14 @@
+//
+// Created by Dan on 2/6/2016.
+//
+
+#ifndef PARTIALORDERPLANNER_SCHEDULEENTRY_H
+#define PARTIALORDERPLANNER_SCHEDULEENTRY_H
+
+
+class ScheduleEntry {
+
+};
+
+
+#endif //PARTIALORDERPLANNER_SCHEDULEENTRY_H
