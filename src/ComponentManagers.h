@@ -5,6 +5,9 @@
 #ifndef PARTIALORDERPLANNER_COMPONENTMANAGERS_H
 #define PARTIALORDERPLANNER_COMPONENTMANAGERS_H
 
+#include <Schedules/Action.h>
+#include <Schedules/Schedule.h>
+#include <Schedules/ScheduleInstance.h>
 #include "ComponentManager.h"
 #include "tests/WorldLocation.h"
 
@@ -228,10 +231,78 @@ public:
     }
 };
 
-/*
 class ScheduleComponentManager : public ComponentManager
 {
+private:
+    struct InstanceData
+    {
+        unsigned size;
+        std::vector<Entity> entity;
+        std::vector<ActionInstance*> currentAction;
+        std::vector<ScheduleInstance*> currentSchedule;
+    };
 
-};*/
+    InstanceData _data;
+
+    std::unordered_map<int, Schedule*> schedules;
+    std::unordered_map<int, ScheduleEntry*> scheduleEntryTemplates;
+    std::unordered_map<int, Action*> actions;
+
+public:
+
+    ScheduleComponentManager() : ComponentManager()
+    {
+        _data.size = 0;
+    }
+
+    void runSchedules(double lastTime, double currentTime, double deltaTime)
+    {
+        for (int i = 0; i < _data.size; ++i)
+        {
+            if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
+            {
+                _data.currentSchedule[i]->startNextScheduleEntry();
+                _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+            }
+
+            if (_data.currentAction[i]->perform(deltaTime))
+                _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+
+        }
+    }
+
+    // TODO: Replace all this test data
+    void spawnComponent(Entity entity)
+    {
+        _map.emplace(entity.index(), _data.size);
+        _data.entity.push_back(entity);
+        ActionInstance* action = new ActionInstance(new Action("testAction", 0), 5, 0);
+        _data.currentAction.push_back(action);
+        ScheduleInstance* schedule = new ScheduleInstance(new Schedule("test", 0));
+        _data.currentSchedule.push_back(schedule);
+
+        ++_data.size;
+    }
+
+    void destroy(unsigned i)
+    {
+        unsigned last = _data.size - 1;
+        Entity e = _data.entity[i];
+        Entity last_e = _data.entity[last];
+
+        _data.entity[i] = _data.entity[last];
+        _data.currentAction[i] = _data.currentAction[last];
+        _data.currentSchedule[i] = _data.currentSchedule[last];
+
+        _map[last_e.index()] =  i;
+        _map.erase(e.index());
+
+        _data.entity.pop_back();
+        _data.currentAction.pop_back();
+        _data.currentSchedule.pop_back();
+
+        --_data.size;
+    }
+};
 
 #endif //PARTIALORDERPLANNER_COMPONENTMANAGERS_H

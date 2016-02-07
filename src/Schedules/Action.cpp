@@ -3,3 +3,14 @@
 //
 
 #include "Action.h"
+
+double Action::calculateDuration() const
+{
+    // TODO: calculateRange using randomness.
+    return minDuration;
+}
+
+ActionInstance* Action::createActionInstance(int index = 0) const
+{
+    return new ActionInstance(this, calculateDuration(), index);
+}
