@@ -20,11 +20,10 @@ private:
 public:
     Schedule(const std::string& name, int id) : name(name), id(id) {}
     ~Schedule() {}
+    void addEntry(ScheduleEntry* entry) { scheduleEntries.push_back(entry); }
 
     int nextEntry(int entryIndex) const;
-
     ActionInstance* chooseNewAction(int entryIndex);
-
     double getEndTime(int entryIndex) const;
 
     const std::string& getName() const { return name; }

@@ -8,6 +8,7 @@
 #include <Schedules/Action.h>
 #include <Schedules/Schedule.h>
 #include <Schedules/ScheduleInstance.h>
+#include <Schedules/ScheduleEntry.h>
 #include "ComponentManager.h"
 #include "tests/WorldLocation.h"
 
@@ -253,6 +254,46 @@ public:
     ScheduleComponentManager() : ComponentManager()
     {
         _data.size = 0;
+
+        Action* read = new Action("read read", 0);
+        Action* dance = new Action("dance dance", 1);
+        actions.insert({read->getId(), read});
+        actions.insert({dance->getId(), dance});
+
+        ScheduleEntry* reading = new SimpleScheduleEntry("reading", 0, 0);
+        ScheduleEntry* dancing = new SimpleScheduleEntry("dancing", 1, 12);
+        scheduleEntryTemplates.insert({reading->getId(), reading});
+        scheduleEntryTemplates.insert({dancing->getId(), dancing});
+
+        reading->addAction(read);
+        dancing->addAction(dance);
+
+        Schedule* sunday = new Schedule("Sunday", 0);
+        sunday->addEntry(reading);
+        sunday->addEntry(dancing);
+
+        schedules.insert({sunday->getId(), sunday});
+    }
+
+    ~ScheduleComponentManager()
+    {
+        for (auto it = schedules.begin(); it != schedules.end(); ++it)
+        {
+            delete it->second;
+        }
+        schedules.clear();
+
+        for (auto it = scheduleEntryTemplates.begin(); it != scheduleEntryTemplates.end(); ++it)
+        {
+            delete it->second;
+        }
+        scheduleEntryTemplates.clear();
+
+        for (auto it = actions.begin(); it != actions.end(); ++it)
+        {
+            delete it->second;
+        }
+        actions.clear();
     }
 
     void runSchedules(double lastTime, double currentTime, double deltaTime)
