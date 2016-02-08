@@ -294,26 +294,25 @@ int main()
     ScheduleComponentManager scheduleComponentManager;
 
     double t = 0.0;
-    double deltaTimeMin = 1.0;
 
     scheduleComponentManager.spawnComponent(entityOne, t);
-    scheduleComponentManager.spawnComponent(entityTwo, t);
+    //scheduleComponentManager.spawnComponent(entityTwo, t);
+
+    double HOURS_IN_DAY = 24;
 
     auto currentTime = chrono::high_resolution_clock::now();
-    while (t < 48)
+    while (t < 300)
     {
         auto newTime = chrono::high_resolution_clock::now();
-        double frameTime = chrono::duration_cast<chrono::milliseconds>(newTime - currentTime).count()/1000.0;
-
-        if (frameTime < deltaTimeMin)
-            continue;
-
+        double frameTime = chrono::duration_cast<chrono::nanoseconds>(newTime - currentTime).count()/1000000000.0;
         currentTime = newTime;
 
         scheduleComponentManager.runSchedules(t, t + frameTime, frameTime);
         t += frameTime;
 
-        //cout << "Time: " << t << endl;
+        if (t >= HOURS_IN_DAY) {
+            t = fmod(t, HOURS_IN_DAY);
+        }
     }
 
 

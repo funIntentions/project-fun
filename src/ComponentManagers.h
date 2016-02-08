@@ -260,8 +260,8 @@ public:
         actions.insert({read->getId(), read});
         actions.insert({dance->getId(), dance});
 
-        ScheduleEntry* reading = new SimpleScheduleEntry("reading", 0, 0);
-        ScheduleEntry* dancing = new SimpleScheduleEntry("dancing", 1, 12);
+        ScheduleEntry* reading = new SimpleScheduleEntry("reading", 0, 20);
+        ScheduleEntry* dancing = new SimpleScheduleEntry("dancing", 1, 10);
         scheduleEntryTemplates.insert({reading->getId(), reading});
         scheduleEntryTemplates.insert({dancing->getId(), dancing});
 
@@ -302,16 +302,16 @@ public:
         {
             if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
             {
-                std::cout << "New Entry" << std::endl;
+                std::cout << "Entity: " << i << " New Entry" << std::endl;
                 _data.currentSchedule[i]->startNextScheduleEntry();
                 _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
-                std::cout << "New Action: " << _data.currentAction[i]->getActionName() << std::endl;
+                std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
             }
 
             if (_data.currentAction[i]->perform(deltaTime))
             {
                 _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
-                std::cout << "New Action: " << _data.currentAction[i]->getActionName() << std::endl;
+                std::cout << "Entity: " << i << " New Action 2: " << _data.currentAction[i]->getActionName() << std::endl;
             }
 
         }

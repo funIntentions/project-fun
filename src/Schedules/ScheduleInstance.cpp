@@ -25,8 +25,7 @@ void ScheduleInstance::startNextScheduleEntry()
 
 bool ScheduleInstance::timeIsUp(double lastTime, double currentTime)
 {
-    std::cout << "EntryEndTime: " << entryEndTime << " lastTime: " << lastTime << " currentTime: " << currentTime << std::endl;
-    return (entryEndTime < lastTime && entryEndTime >= currentTime);
+    return (entryEndTime > lastTime && entryEndTime <= currentTime); // TODO: when time wraps, 24 to 0, if the end time is 0 this wont trigger and the behaviour will never end.
 }
 
 ActionInstance* ScheduleInstance::chooseNewAction()
