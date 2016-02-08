@@ -7,12 +7,12 @@
 
 // Simple Schedule Entry
 
-virtual void SimpleScheduleEntry::addAction(Action* a)
+void SimpleScheduleEntry::addAction(Action* a)
 {
     action = a;
 }
 
-virtual ActionInstance* SimpleScheduleEntry::chooseNewAction()
+ActionInstance* SimpleScheduleEntry::chooseNewAction()
 {
     return action->createActionInstance();
 }

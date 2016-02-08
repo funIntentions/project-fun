@@ -18,6 +18,12 @@ bool ActionInstance::perform(double deltaTime)
     return (duration <= 0);
 }
 
-const int ActionInstance::getActionId() const {
+int ActionInstance::getActionId() const
+{
     return action->getId();
+}
+
+const std::string& ActionInstance::getActionName() const
+{
+    return action->getName();
 }

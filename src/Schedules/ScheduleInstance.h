@@ -16,10 +16,9 @@ private:
 public:
     ScheduleInstance(Schedule* schedule);
 
+    void chooseEntryForTime(double currentTime);
     void startNextScheduleEntry();
-
     bool timeIsUp(double lastTime, double currentTime);
-
     ActionInstance* chooseNewAction();
 
     int getId() const;

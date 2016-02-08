@@ -4,10 +4,17 @@
 
 #include "ScheduleInstance.h"
 #include "Schedule.h"
+#include <iostream>
 
 ScheduleInstance::ScheduleInstance(Schedule* s)
 {
     schedule = s;
+}
+
+void ScheduleInstance::chooseEntryForTime(double currentTime)
+{
+    entryIndex = schedule->getEntryAtTime(currentTime);
+    entryEndTime = schedule->getEndTime(entryIndex);
 }
 
 void ScheduleInstance::startNextScheduleEntry()
@@ -18,6 +25,7 @@ void ScheduleInstance::startNextScheduleEntry()
 
 bool ScheduleInstance::timeIsUp(double lastTime, double currentTime)
 {
+    std::cout << "EntryEndTime: " << entryEndTime << " lastTime: " << lastTime << " currentTime: " << currentTime << std::endl;
     return (entryEndTime < lastTime && entryEndTime >= currentTime);
 }
 

@@ -11,6 +11,29 @@ int Schedule::nextEntry(int entryIndex) const
     return (entryIndex + 1) % scheduleEntries.size();
 }
 
+int Schedule::getEntryAtTime(double currentTime) const
+{
+    if (scheduleEntries.size() == 1)
+        return 0;
+
+    for (unsigned int i = 0; i < scheduleEntries.size(); ++i)
+    {
+        double startTime = scheduleEntries[i]->getStartTime();
+        double endTime = getEndTime(i);
+
+        if (endTime >= startTime)
+        {
+            if (currentTime >= startTime && currentTime < endTime) return i;
+        }
+        else
+        {
+            if (currentTime >= startTime || currentTime) return i;
+        }
+    }
+
+    return 0;
+}
+
 ActionInstance* Schedule::chooseNewAction(int entryIndex)
 {
     return scheduleEntries[entryIndex]->chooseNewAction();

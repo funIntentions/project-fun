@@ -11,6 +11,7 @@
 #include "ComponentManagers.h"
 #include "tests/WorldLocation.h"
 #include "tests/Krulg.h"
+#include <chrono>
 
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
@@ -285,7 +286,38 @@ struct Adventure
 
 int main()
 {
-    parseJsonData();
+    cout << chrono::high_resolution_clock::period::den << endl;
+    EntityManager entityManager;
+    Entity entityOne = entityManager.create();
+    Entity entityTwo = entityManager.create();
+
+    ScheduleComponentManager scheduleComponentManager;
+
+    double t = 0.0;
+    double deltaTimeMin = 1.0;
+
+    scheduleComponentManager.spawnComponent(entityOne, t);
+    scheduleComponentManager.spawnComponent(entityTwo, t);
+
+    auto currentTime = chrono::high_resolution_clock::now();
+    while (t < 48)
+    {
+        auto newTime = chrono::high_resolution_clock::now();
+        double frameTime = chrono::duration_cast<chrono::milliseconds>(newTime - currentTime).count()/1000.0;
+
+        if (frameTime < deltaTimeMin)
+            continue;
+
+        currentTime = newTime;
+
+        scheduleComponentManager.runSchedules(t, t + frameTime, frameTime);
+        t += frameTime;
+
+        //cout << "Time: " << t << endl;
+    }
+
+
+    /*parseJsonData();
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
     PartialOrderPlanner partialOrderPlanner(briefcaseOperators);
@@ -293,7 +325,7 @@ int main()
     if (plans.size() > 0)
     {
         printPlanInformation(plans[0]);
-    }
+    }*/
 
     /*Krulg krulg;
     SussmanDomain sussmanDomain;

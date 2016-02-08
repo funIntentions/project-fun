@@ -5,6 +5,8 @@
 #ifndef PARTIALORDERPLANNER_ACTIONINSTANCE_H
 #define PARTIALORDERPLANNER_ACTIONINSTANCE_H
 
+#include <string>
+
 class Action;
 
 class ActionInstance {
@@ -18,12 +20,14 @@ public:
 
     bool perform(double deltaTime);
 
-    const int getActionId() const;
-
-    double getDuration() const {
+    const std::string& getActionName() const;
+    int getActionId() const;
+    double getDuration() const
+    {
         return duration;
     }
-    int getIndex() const {
+    int getIndex() const
+    {
         return index;
     }
 };

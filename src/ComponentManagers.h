@@ -255,8 +255,8 @@ public:
     {
         _data.size = 0;
 
-        Action* read = new Action("read read", 0);
-        Action* dance = new Action("dance dance", 1);
+        Action* read = new Action("read read", 0, 3, 6);
+        Action* dance = new Action("dance dance", 1, 4, 8);
         actions.insert({read->getId(), read});
         actions.insert({dance->getId(), dance});
 
@@ -302,25 +302,38 @@ public:
         {
             if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
             {
+                std::cout << "New Entry" << std::endl;
                 _data.currentSchedule[i]->startNextScheduleEntry();
                 _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+                std::cout << "New Action: " << _data.currentAction[i]->getActionName() << std::endl;
             }
 
             if (_data.currentAction[i]->perform(deltaTime))
+            {
                 _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+                std::cout << "New Action: " << _data.currentAction[i]->getActionName() << std::endl;
+            }
 
         }
     }
 
     // TODO: Replace all this test data
-    void spawnComponent(Entity entity)
+    void spawnComponent(Entity entity, double currentTime)
     {
+        assert(schedules.size() > 0);
+
         _map.emplace(entity.index(), _data.size);
         _data.entity.push_back(entity);
-        ActionInstance* action = new ActionInstance(new Action("testAction", 0), 5, 0);
-        _data.currentAction.push_back(action);
-        ScheduleInstance* schedule = new ScheduleInstance(new Schedule("test", 0));
-        _data.currentSchedule.push_back(schedule);
+
+        auto it = schedules.find(0);
+        if (it != schedules.end())
+        {
+            Schedule* schedule = it->second;
+            ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
+            scheduleInstance->chooseEntryForTime(currentTime);
+            _data.currentSchedule.push_back(scheduleInstance);
+            _data.currentAction.push_back(scheduleInstance->chooseNewAction());
+        }
 
         ++_data.size;
     }

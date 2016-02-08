@@ -17,7 +17,8 @@ private:
 
     double calculateDuration() const;
 public:
-    Action(const std::string& name, int id) : name(name), id(id) {}
+    Action(const std::string& name, int id, double minDuration, double maxDuration)
+            : name(name), id(id), minDuration(minDuration), maxDuration(maxDuration) {}
     ~Action(){}
 
     const std::string& getName() const { return name; }

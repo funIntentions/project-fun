@@ -17,7 +17,7 @@ protected:
     double startTime;
 public:
     ScheduleEntry(const std::string& name, int id, double startTime)
-        : id(id), startTime(startTime) {}
+        : name(name), id(id), startTime(startTime) {}
     virtual ~ScheduleEntry() {}
 
     virtual void addAction(Action* action) = 0;

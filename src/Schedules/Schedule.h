@@ -21,6 +21,7 @@ public:
     Schedule(const std::string& name, int id) : name(name), id(id) {}
     ~Schedule() {}
     void addEntry(ScheduleEntry* entry) { scheduleEntries.push_back(entry); }
+    int getEntryAtTime(double currentTime) const;
 
     int nextEntry(int entryIndex) const;
     ActionInstance* chooseNewAction(int entryIndex);
