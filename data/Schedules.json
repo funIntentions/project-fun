@@ -1,0 +1,58 @@
+{
+  "actions" :
+  [
+    {
+      "name" : "dance",
+      "minDuration" : 0.5,
+      "maxDuration" : 3
+    },
+    {
+      "name" : "read",
+      "minDuration" : 1,
+      "maxDuration" : 4
+    }
+  ],
+  "scheduleEntryTemplates" :
+  [
+    {
+      "name" : "playTemplate",
+      "type" : "simple",
+      "actions" :
+      [
+        {
+          "name" : "dance"
+        }
+      ]
+    },
+    {
+      "name" : "learnTemplate",
+      "type" : "simple",
+      "actions" :
+      [
+        {
+          "name" : "read"
+        }
+      ]
+    }
+  ],
+  "schedules" :
+          [
+            {
+              "name" : "student",
+              "entries" :
+                      [
+                        {
+                          "name" : "play",
+                          "template" : "playTemplate",
+                          "startTime" : 16
+                        },
+                        {
+                          "name" : "learn",
+                          "template" : "learnTemplate",
+                          "startTime" : 8
+                        }
+                      ]
+
+            }
+          ]
+}

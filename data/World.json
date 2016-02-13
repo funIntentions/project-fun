@@ -1,0 +1,9 @@
+{
+  "entities" :
+          [
+            {
+              "name" : "Timmy",
+              "schedule" : "student"
+            }
+          ]
+}
