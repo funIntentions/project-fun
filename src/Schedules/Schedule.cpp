@@ -8,7 +8,7 @@
 
 int Schedule::nextEntry(int entryIndex) const
 {
-    return (entryIndex + 1) % scheduleEntries.size();
+    return (entryIndex + 1) % scheduleEntries.size(); //TODO: will break when size == 0?
 }
 
 int Schedule::getEntryAtTime(double currentTime) const

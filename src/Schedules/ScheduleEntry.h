@@ -22,6 +22,7 @@ public:
 
     virtual void addAction(Action* action) = 0;
     virtual ActionInstance* chooseNewAction() = 0;
+    virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime) = 0;
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }
@@ -38,6 +39,7 @@ public:
 
     virtual void addAction(Action* action);
     virtual ActionInstance* chooseNewAction();
+    virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 };
 
 #endif //PARTIALORDERPLANNER_SCHEDULEENTRY_H

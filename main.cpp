@@ -295,7 +295,7 @@ int main()
 
     double t = 0.0;
 
-    scheduleComponentManager.spawnComponent(entityOne, t);
+    //scheduleComponentManager.spawnComponent(entityOne, t);
     //scheduleComponentManager.spawnComponent(entityTwo, t);
 
     double HOURS_IN_DAY = 24;
