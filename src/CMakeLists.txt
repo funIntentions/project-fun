@@ -21,6 +21,6 @@ set(HEADER_FILES
 set(SOURCE_FILES
         PartialOrderPlanner.cpp
         EntityManager.cpp
-        Schedules/Schedule.cpp Schedules/ScheduleEntry.cpp Schedules/ScheduleEntry.h Schedules/Action.cpp Schedules/Action.h Schedules/ActionInstance.cpp Schedules/ActionInstance.h Schedules/ScheduleInstance.cpp Schedules/ScheduleInstance.h)
+        Schedules/Schedule.cpp Schedules/ScheduleEntry.cpp Schedules/ScheduleEntry.h Schedules/Action.cpp Schedules/Action.h Schedules/ActionInstance.cpp Schedules/ActionInstance.h Schedules/ScheduleInstance.cpp Schedules/ScheduleInstance.h ScheduleComponentManager.cpp ScheduleComponentManager.h)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})
