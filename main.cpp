@@ -13,6 +13,7 @@
 #include "tests/Krulg.h"
 #include <chrono>
 #include <ScheduleComponentManager.h>
+#include <framework/Game.h>
 
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
@@ -285,63 +286,10 @@ struct Adventure
     }
 };
 
-void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
-{
-    std::ifstream in("data/World.json");
-    std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-    const char* json = contents.c_str();
-
-    rapidjson::Document document;
-    document.Parse(json);
-
-    const rapidjson::Value& a = document["entities"];
-    assert(a.IsArray());
-
-    for (auto entityData = a.Begin(); entityData != a.End(); ++entityData)
-    {
-        Entity entity = entityManager.create();
-
-        std::string entityName;
-        std::string scheduleName;
-
-        auto nameItr = entityData->FindMember("name");
-        if (nameItr != entityData->MemberEnd())
-            entityName = nameItr->value.GetString();
-
-        auto scheduleItr = entityData->FindMember("schedule");
-        if (scheduleItr != entityData->MemberEnd())
-            scheduleName = scheduleItr->value.GetString();
-
-        scheduleComponentManager.spawnComponent(entity, scheduleName, 0);
-    }
-}
-
 int main()
 {
-    cout << chrono::high_resolution_clock::period::den << endl;
-    EntityManager entityManager;
-    ScheduleComponentManager scheduleComponentManager;
-
-    readEntities(entityManager, scheduleComponentManager);
-
-    double t = 0.0;
-
-    double HOURS_IN_DAY = 24;
-
-    auto currentTime = chrono::high_resolution_clock::now();
-    while (t < 300)
-    {
-        auto newTime = chrono::high_resolution_clock::now();
-        double frameTime = chrono::duration_cast<chrono::nanoseconds>(newTime - currentTime).count()/1000000000.0;
-        currentTime = newTime;
-
-        scheduleComponentManager.runSchedules(t, t + frameTime, frameTime);
-        t += frameTime;
-
-        if (t >= HOURS_IN_DAY) {
-            t = fmod(t, HOURS_IN_DAY);
-        }
-    }
+    Game game;
+    game.run();
 
 
     /*parseJsonData();
