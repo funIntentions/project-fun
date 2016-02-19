@@ -13,11 +13,12 @@
 #include <fstream>
 #include <rapidjson/document.h>
 #include <math.h>
+#include "Graphics.h"
 
 class Game
 {
 public:
-    Game() : //_graphics(new Graphics()),
+    Game() : _graphics(new Graphics()),
              //_input(new Input()),
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager())
@@ -37,7 +38,7 @@ public:
         auto fps = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsed { 0 };
 
-        while (true)
+        while (_graphics->windowIsOpen())
         {
             auto ticks = std::chrono::system_clock::now();
             std::chrono::duration<float> interval { ticks - lastTicks };
@@ -68,11 +69,11 @@ public:
 
             //_taskManager.UpdateTasks();
 
-            //_graphics->ClearScreen();
+            _graphics->clearScreen();
 
             //_spriteComponentManager->DrawSprites();
 
-            //_graphics->SwapBuffers();
+            _graphics->swapBuffers();
             //_input->PollForInput();
 
             ++frames;
@@ -83,7 +84,7 @@ public:
 
 private:
     //std::shared_ptr<Input> _input;
-    //std::shared_ptr<Graphics> _graphics;
+    std::shared_ptr<Graphics> _graphics;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
 
@@ -121,13 +122,16 @@ private:
     void initialize()
     {
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
+
+        _graphics->initialize();
+
         readEntities(*_entityManager, *_scheduleComponentManager);
     }
 
-        void shutdown()
-        {
-
-        }
-    };
+    void shutdown()
+    {
+        _graphics->shutdown();
+    }
+};
 
     #endif //PARTIALORDERPLANNER_GAME_H
