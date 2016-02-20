@@ -67,11 +67,7 @@ public:
                 time = fmod(time, 24);
             }
 
-            //_taskManager.UpdateTasks();
-
             _graphics->clearScreen();
-
-            //_spriteComponentManager->DrawSprites();
 
             _graphics->swapBuffers();
             //_input->PollForInput();

@@ -291,7 +291,6 @@ int main()
     Game game;
     game.run();
 
-
     /*parseJsonData();
     // TODO: Building new operators should be made much quicker/easier than this
     // TODO: check how long the algorithm takes
