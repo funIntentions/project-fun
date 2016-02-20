@@ -123,7 +123,14 @@ private:
         _graphics->initialize();
         _input->initialize(_graphics->window->window);
 
+        Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
+
         readEntities(*_entityManager, *_scheduleComponentManager);
+    }
+
+    void keyPressed(int key)
+    {
+        std::cout << "key pressed: " << key << std::endl;
     }
 
     void shutdown()
