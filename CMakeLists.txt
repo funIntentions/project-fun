@@ -8,7 +8,7 @@ set(SOURCE_FILES main.cpp)
 
 include_directories(
         src
-        include
+        "${CMAKE_CURRENT_SOURCE_DIR}/lib/"
         "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.1.2.win32/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-1.13.0/include"
 )
