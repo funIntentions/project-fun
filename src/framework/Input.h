@@ -12,12 +12,16 @@ class Input {
 private:
     Keyboard _keyboard;
 public:
-    Input(GLFWwindow* window)
+    Input()
     {
-        glfwSetKeyCallback(window, Keyboard::KeyCallback);
     }
 
     ~Input() {}
+
+    void initialize(GLFWwindow* window)
+    {
+        glfwSetKeyCallback(window, Keyboard::KeyCallback);
+    }
 
     void pollForInput()
     {

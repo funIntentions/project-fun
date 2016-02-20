@@ -3,3 +3,5 @@
 //
 
 #include "Keyboard.h"
+
+bool Keyboard::keyStates[GLFW_KEY_LAST];

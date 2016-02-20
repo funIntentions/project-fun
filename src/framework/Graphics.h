@@ -9,9 +9,9 @@
 #include "Window.h"
 
 class Graphics {
-private:
-    Window* window;
 public:
+    Window* window;
+
     Graphics() : window(new Window())
     {
 

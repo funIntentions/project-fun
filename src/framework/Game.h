@@ -14,12 +14,13 @@
 #include <rapidjson/document.h>
 #include <math.h>
 #include "Graphics.h"
+#include "Input.h"
 
 class Game
 {
 public:
     Game() : _graphics(new Graphics()),
-             //_input(new Input()),
+             _input(new Input()),
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager())
     { }
@@ -70,7 +71,7 @@ public:
             _graphics->clearScreen();
 
             _graphics->swapBuffers();
-            //_input->PollForInput();
+            _input->pollForInput();
 
             ++frames;
         }
@@ -79,7 +80,7 @@ public:
     }
 
 private:
-    //std::shared_ptr<Input> _input;
+    std::shared_ptr<Input> _input;
     std::shared_ptr<Graphics> _graphics;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
@@ -120,6 +121,7 @@ private:
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
 
         _graphics->initialize();
+        _input->initialize(_graphics->window->window);
 
         readEntities(*_entityManager, *_scheduleComponentManager);
     }
