@@ -142,7 +142,7 @@ public:
 static const char* kTypeNames[] =
         { "Null", "False", "True", "Object", "Array", "String", "Number" };
 
-std::unordered_map<Predicate, size_t> predicates;
+/*std::unordered_map<Predicate, size_t> predicates;
 
 size_t addPredicate(Predicate predicate)
 {
@@ -153,7 +153,7 @@ size_t addPredicate(Predicate predicate)
     else
         predicates.insert({predicate, id});
     return id;
-}
+}*/
 
 struct Task
 {
@@ -167,80 +167,13 @@ struct Task
     {
     }
 };
-
+/*
 std::unordered_map<std::string, Task> tasks;
 std::vector<std::string> entities;
 std::vector<Operator> operators;
 std::vector<Operator> briefcaseOperators;
 Operator briefcaseStart;
 Operator briefcaseEnd;
-
-Operator generateOperator(const Task& templateTask, const std::vector<std::string>& entities)
-{
-    Operator anOperator;
-    anOperator.name = templateTask.name;
-
-    assert(templateTask.parameters.size() == entities.size());
-
-    std::unordered_map<std::string, std::string> paramMapping;
-    for (int i = 0; i < templateTask.parameters.size(); ++i)
-    {
-        paramMapping.insert({templateTask.parameters[i], entities[i]});
-    }
-
-    for (Predicate precondition : templateTask.positivePreconditions)
-    {
-        Predicate newPrecondition;
-        newPrecondition.type = precondition.type;
-
-        for (std::string param : precondition.params)
-        {
-            auto itr = paramMapping.find(param);
-            if (itr != paramMapping.end())
-            {
-                newPrecondition.params.push_back(itr->second);
-            }
-        }
-
-        anOperator.preconditions.push_back(addPredicate(newPrecondition));
-    }
-
-    for (Predicate effect : templateTask.addedEffects)
-    {
-        Predicate newEffect;
-        newEffect.type = effect.type;
-
-        for (std::string param : effect.params)
-        {
-            auto itr = paramMapping.find(param);
-            if (itr != paramMapping.end())
-            {
-                newEffect.params.push_back(itr->second);
-            }
-        }
-
-        anOperator.addedEffects.push_back(addPredicate(newEffect));
-    }
-
-    for (Predicate effect : templateTask.subtractedEffects)
-    {
-        Predicate newEffect;
-        newEffect.type = effect.type;
-
-        for (std::string param : effect.params)
-        {
-            auto itr = paramMapping.find(param);
-            if (itr != paramMapping.end())
-            {
-                newEffect.params.push_back(itr->second);
-            }
-        }
-
-        anOperator.subtractedEffects.push_back(addPredicate(newEffect));
-    }
-
-    return anOperator;
-}
 
 void parseJsonData()
 {
@@ -351,15 +284,15 @@ void parseJsonData()
         }
 
         // Generate Params
-        /*std::vector<std::string> partialParams[entities.size()];
-
-        for (int param = 0; param < task.parameters.size(); ++param)
-        {
-            for (int entity = 0; entity < entities.size(); ++entity)
-            {
-                partialParams[entity].push_back(entities[entity]);
-            }
-        }*/
+//        std::vector<std::string> partialParams[entities.size()];
+//
+//        for (int param = 0; param < task.parameters.size(); ++param)
+//        {
+//            for (int entity = 0; entity < entities.size(); ++entity)
+//            {
+//                partialParams[entity].push_back(entities[entity]);
+//            }
+//        }
 
         tasks.insert({task.name, task});
     }
@@ -405,5 +338,5 @@ void parseJsonData()
     briefcaseEnd.name = "end";
     briefcaseEnd.preconditions = {ep, ep2};
 }
-
+*/
 #endif //PARTIALORDERPLANNER_BRIEFCASE_H

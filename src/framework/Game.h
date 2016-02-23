@@ -10,6 +10,7 @@
 #include <memory>
 #include <iostream>
 #include <ScheduleComponentManager.h>
+#include "CharacterComponentManagers.h"
 #include <fstream>
 #include <rapidjson/document.h>
 #include <math.h>
@@ -22,7 +23,8 @@ public:
     Game() : _graphics(new Graphics()),
              _input(new Input()),
              _entityManager(new EntityManager()),
-             _scheduleComponentManager(new ScheduleComponentManager())
+             _scheduleComponentManager(new ScheduleComponentManager()),
+             _placeComponentManager(new PlaceComponentManager())
     { }
 
     ~Game() {}
@@ -84,6 +86,7 @@ private:
     std::shared_ptr<Graphics> _graphics;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
+    std::shared_ptr<PlaceComponentManager> _placeComponentManager;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
     {
