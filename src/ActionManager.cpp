@@ -2,6 +2,7 @@
 // Created by Dan on 2/22/2016.
 //
 
+#include <assert.h>
 #include "ActionManager.h"
 
 size_t ActionManager::addPredicate(Predicate predicate)
@@ -15,20 +16,20 @@ size_t ActionManager::addPredicate(Predicate predicate)
     return id;
 }
 
-Operator ActionManager::buildOperator(const Action& templateTask, const std::vector<std::string>& entities)
+Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned>& entities)
 {
     Operator anOperator;
-    anOperator.name = templateTask.name;
+    anOperator.name = templateTask.getName();
 
     assert(templateTask.parameters.size() == entities.size());
 
-    std::unordered_map<std::string, std::string> paramMapping;
+    std::unordered_map<std::string, unsigned> paramMapping;
     for (int i = 0; i < templateTask.parameters.size(); ++i)
     {
         paramMapping.insert({templateTask.parameters[i], entities[i]});
     }
 
-    for (Predicate precondition : templateTask.positivePreconditions)
+    for (PredicateTemplate precondition : templateTask.preconditions)
     {
         Predicate newPrecondition;
         newPrecondition.type = precondition.type;
@@ -45,7 +46,7 @@ Operator ActionManager::buildOperator(const Action& templateTask, const std::vec
         anOperator.preconditions.push_back(addPredicate(newPrecondition));
     }
 
-    for (Predicate effect : templateTask.addedEffects)
+    for (PredicateTemplate effect : templateTask.addedEffects)
     {
         Predicate newEffect;
         newEffect.type = effect.type;
@@ -62,7 +63,7 @@ Operator ActionManager::buildOperator(const Action& templateTask, const std::vec
         anOperator.addedEffects.push_back(addPredicate(newEffect));
     }
 
-    for (Predicate effect : templateTask.subtractedEffects)
+    for (PredicateTemplate effect : templateTask.subtractedEffects)
     {
         Predicate newEffect;
         newEffect.type = effect.type;
@@ -81,4 +82,3 @@ Operator ActionManager::buildOperator(const Action& templateTask, const std::vec
 
     return anOperator;
 }
-

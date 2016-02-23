@@ -11,12 +11,18 @@
 struct Predicate
 {
     std::string type;
-    std::vector<std::string> params;
+    std::vector<unsigned> params;
 
     bool operator==(const Predicate& other) const {
         return (type == other.type
                 && params == other.params);
     }
+};
+
+struct PredicateTemplate
+{
+    std::string type;
+    std::vector<std::string> params;
 };
 
 namespace std {
@@ -27,7 +33,7 @@ namespace std {
         {
             std::size_t seed = 0;
             for(auto& param : predicate.params) {
-                seed ^= std::hash<std::string>()(param) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                seed ^= param + 0x9e3779b9 + (seed << 6) + (seed >> 2);
             }
 
             return (std::hash<std::string>()(predicate.type)) ^ seed;

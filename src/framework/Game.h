@@ -24,7 +24,8 @@ public:
              _input(new Input()),
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager()),
-             _placeComponentManager(new PlaceComponentManager())
+             _placeComponentManager(new PlaceComponentManager()),
+             _actionManager(new ActionManager)
     { }
 
     ~Game() {}
@@ -87,6 +88,7 @@ private:
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<PlaceComponentManager> _placeComponentManager;
+    std::shared_ptr<ActionManager> _actionManager;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
     {
@@ -128,7 +130,26 @@ private:
 
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
 
+        Entity village = _entityManager->create();
+        Entity forest = _entityManager->create();
+        Entity meadow = _entityManager->create();
+        Entity swamp = _entityManager->create();
+        Entity planes = _entityManager->create();
+        Entity caves = _entityManager->create();
+        Entity nowhere = _entityManager->create();
+
+        _placeComponentManager->spawnComponent(village, "Village", nowhere, forest, meadow, nowhere);
+        _placeComponentManager->spawnComponent(meadow, "Meadow", nowhere, swamp, planes, village);
+        _placeComponentManager->spawnComponent(forest, "Forest", village, nowhere, nowhere, swamp);
+        _placeComponentManager->spawnComponent(swamp, "Swamp", meadow, nowhere, forest, caves);
+        _placeComponentManager->spawnComponent(caves, "Caves", planes, nowhere, swamp, nowhere);
+
         readEntities(*_entityManager, *_scheduleComponentManager);
+
+        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
+
+        //Action action("test", 0, 0, 0);
+        //std::vector<Operator> operators = _placeComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);
     }
 
     void keyPressed(int key)

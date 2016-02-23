@@ -38,16 +38,20 @@ public:
         _data.size = 0;
     }
 
-    std::vector<Operator> determineActionsOfEntity(Action travelTemplate, Entity traveller)
+    std::vector<Operator> determineActionsOfEntity(Action travelTemplate, Entity traveller, std::shared_ptr<ActionManager> actionManager)
     {
         std::vector<Operator> ops;
 
         for (int i = 0; i < _data.size; ++i)
         {
-            /*ops.push_back(ActionManager::buildOperator(travelTemplate, {_data.entity[i], _data.northLocation, traveller})); //Params: Entity fromLocation, Entity toLocation, Entity traveller
-            ops.push_back(ActionManager::buildOperator(travelTemplate, {_data.entity[i], _data.southLocation, traveller}));
-            ops.push_back(ActionManager::buildOperator(travelTemplate, {_data.entity[i], _data.westLocation, traveller}));
-            ops.push_back(ActionManager::buildOperator(travelTemplate, {_data.entity[i], _data.eastLocation, traveller}));*/
+            std::vector<unsigned> params = {_data.entity[i].id, _data.northLocation[i].id, traveller.id};
+            ops.push_back(actionManager->buildOperator(travelTemplate, params)); //Params: Entity fromLocation, Entity toLocation, Entity traveller
+            params = {_data.entity[i].id, _data.southLocation[i].id, traveller.id};
+            ops.push_back(actionManager->buildOperator(travelTemplate, params));
+            params = {_data.entity[i].id, _data.westLocation[i].id, traveller.id};
+            ops.push_back(actionManager->buildOperator(travelTemplate, params));
+            params = {_data.entity[i].id, _data.eastLocation[i].id, traveller.id};
+            ops.push_back(actionManager->buildOperator(travelTemplate, params));
         }
 
         return ops;

@@ -28,9 +28,9 @@ public:
     ActionInstance* createActionInstance(int index = 0) const;
 
     std::vector<std::string> parameters;
-    std::vector<Predicate> preconditions;
-    std::vector<Predicate> addedEffects;
-    std::vector<Predicate> subtractedEffects;
+    std::vector<PredicateTemplate> preconditions;
+    std::vector<PredicateTemplate> addedEffects;
+    std::vector<PredicateTemplate> subtractedEffects;
 };
 
 

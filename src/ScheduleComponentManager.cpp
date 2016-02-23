@@ -70,7 +70,7 @@ void ScheduleComponentManager::readActions()
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                Predicate predicate;
+                PredicateTemplate predicate;
                 auto name_itr = itr->FindMember("name");
                 predicate.type = name_itr->value.GetString();
                 auto param_itr = itr->FindMember("params");
@@ -92,7 +92,7 @@ void ScheduleComponentManager::readActions()
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                Predicate predicate;
+                PredicateTemplate predicate;
                 auto name_itr = itr->FindMember("name");
                 predicate.type = name_itr->value.GetString();
                 auto param_itr = itr->FindMember("params");
@@ -114,7 +114,7 @@ void ScheduleComponentManager::readActions()
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                Predicate predicate;
+                PredicateTemplate predicate;
                 auto name_itr = itr->FindMember("name");
                 predicate.type = name_itr->value.GetString();
                 auto param_itr = itr->FindMember("params");
@@ -289,8 +289,15 @@ ScheduleComponentManager::~ScheduleComponentManager()
     actions.clear();
 }
 
+void ScheduleComponentManager::registerForAction(std::string action, OperatorCallbackFunction function)
+{
+    operatorCallbackFunctionMap.insert({action, function});
+}
+
 void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime)
 {
+    std::vector<Operator> operators; //TODO: Temp
+
     for (int i = 0; i < _data.size; ++i)
     {
         if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
@@ -299,6 +306,16 @@ void ScheduleComponentManager::runSchedules(double lastTime, double currentTime,
             _data.currentSchedule[i]->startNextScheduleEntry();
             _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
             std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
+
+            //TODO: Temp
+            auto opItr = operatorCallbackFunctionMap.find(_data.currentAction[i]->getActionName());
+            if (opItr != operatorCallbackFunctionMap.end())
+            {
+                auto idItr = actionNameToIdMap.find(_data.currentAction[i]->getActionName());
+                auto actionItr = actions.find(idItr->second);
+
+                operators = opItr->second(*actionItr->second, _data.entity[i]);
+            }
         }
 
         if (_data.currentAction[i]->perform(deltaTime))
