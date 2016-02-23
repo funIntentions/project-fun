@@ -1,0 +1,127 @@
+{
+  "actions" :
+  [
+    {
+      "name" : "sleep",
+      "minDuration" : 7,
+      "maxDuration" : 9,
+      "params" : [{"name" : "b"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["b", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "rested", "params" : ["c"]},
+        {"name" : "hungry", "params" : ["c"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "sleepy", "params" : ["c"]},
+        {"name" : "fed", "params" : ["c"]}
+      ]
+    },
+    {
+      "name" : "work",
+      "minDuration" : 6,
+      "maxDuration" : 8,
+      "params" : [{"name" : "l"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["l", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "sleepy", "params" : ["c"]},
+        {"name" : "hungry", "params" : ["c"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "rested", "params" : ["c"]},
+        {"name" : "fed", "params" : ["c"]}
+      ]
+    },
+    {
+      "name" : "eat",
+      "minDuration" : 0.5,
+      "maxDuration" : 1,
+      "params" : [{"name" : "l"}, {"name" : "c"}, {"name" : "f"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["l", "c"]},
+        {"name" : "at", "params" : ["l", "f"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "fed", "params" : ["c"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "hungry", "params" : ["c"]}
+      ]
+    },
+    {
+      "name" : "travel",
+      "minDuration" : 2,
+      "maxDuration" : 3,
+      "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["from", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "at", "params" : ["to"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "at", "params" : ["from"]}
+      ]
+    }
+  ],
+
+  "scheduleEntryTemplates" :
+  [
+    {
+      "name" : "dayTemplate",
+      "type" : "simple",
+      "actions" :
+      [
+        {
+          "name" : "work"
+        }
+      ]
+    },
+    {
+      "name" : "nightTemplate",
+      "type" : "simple",
+      "actions" :
+      [
+        {
+          "name" : "sleep"
+        }
+      ]
+    }
+  ],
+
+  "schedules" :
+  [
+    {
+      "name" : "person",
+      "entries" :
+      [
+        {
+          "name" : "night",
+          "template" : "nightTemplate",
+          "startTime" : 20
+        },
+        {
+          "name" : "day",
+          "template" : "dayTemplate",
+          "startTime" : 9
+        }
+      ]
+
+    }
+  ]
+}

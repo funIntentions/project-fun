@@ -20,7 +20,7 @@ ScheduleComponentManager::ScheduleComponentManager() : ComponentManager()
 
 void ScheduleComponentManager::readActions()
 {
-    std::ifstream in("data/Schedules.json");
+    std::ifstream in("data/SchedulesTest.json");
     std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     const char* json = contents.c_str();
 
@@ -50,6 +50,85 @@ void ScheduleComponentManager::readActions()
             maxDuration = member_itr->value.GetDouble();
 
         Action* action = new Action(name, actions.size(), minDuration, maxDuration);
+
+        member_itr = action_itr->FindMember("params");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto param_itr = member_itr->value.Begin(); param_itr != member_itr->value.End(); ++param_itr)
+            {
+                assert(param_itr->IsObject());
+                auto param_member = param_itr->FindMember("name");
+                action->parameters.push_back(param_member->value.GetString());
+            }
+        }
+
+        member_itr = action_itr->FindMember("positivePreconditions");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                action->preconditions.push_back(predicate);
+            }
+        }
+
+        member_itr = action_itr->FindMember("addedEffects");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                action->addedEffects.push_back(predicate);
+            }
+        }
+
+        member_itr = action_itr->FindMember("subtractedEffects");
+        if (member_itr != document.MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
+            {
+                assert(itr->IsObject());
+                Predicate predicate;
+                auto name_itr = itr->FindMember("name");
+                predicate.type = name_itr->value.GetString();
+                auto param_itr = itr->FindMember("params");
+
+                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                {
+                    assert(param->IsString());
+                    predicate.params.push_back(param->GetString());
+                }
+
+                action->subtractedEffects.push_back(predicate);
+            }
+        }
+
         actions.insert({action->getId(), action});
         actionNameToIdMap.insert({action->getName(), action->getId()});
     }
@@ -59,7 +138,7 @@ void ScheduleComponentManager::readActions()
 
 void ScheduleComponentManager::readSchedules()
 {
-    std::ifstream in("data/Schedules.json");
+    std::ifstream in("data/SchedulesTest.json");
     std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     const char* json = contents.c_str();
 

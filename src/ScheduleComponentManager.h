@@ -33,6 +33,7 @@ private:
     std::unordered_map<std::string, int> actionNameToIdMap;
     std::unordered_map<std::string, int> entryNameToIdMap;
     std::unordered_map<std::string, int> scheduleNameToIdMap;
+    std::vector<Predicate> tempWorldState;
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
 
 public:

@@ -9,6 +9,7 @@
 #include <tuple>
 #include <fstream>
 #include <algorithm>
+#include "../Schedules/Predicate.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/document.h"
@@ -140,33 +141,6 @@ public:
 
 static const char* kTypeNames[] =
         { "Null", "False", "True", "Object", "Array", "String", "Number" };
-
-struct Predicate
-{
-    std::string type;
-    std::vector<std::string> params;
-
-    bool operator==(const Predicate& other) const {
-        return (type == other.type
-                && params == other.params);
-    }
-};
-
-namespace std {
-    template <>
-    struct hash<Predicate>
-    {
-        std::size_t operator()(const Predicate& predicate) const
-        {
-            std::size_t seed = 0;
-            for(auto& param : predicate.params) {
-                seed ^= std::hash<std::string>()(param) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            }
-
-            return (std::hash<std::string>()(predicate.type)) ^ seed;
-        }
-    };
-}
 
 std::unordered_map<Predicate, size_t> predicates;
 

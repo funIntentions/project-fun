@@ -87,7 +87,7 @@ private:
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
     {
-        std::ifstream in("data/World.json");
+        std::ifstream in("data/WorldTest.json");
         std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         const char* json = contents.c_str();
 
