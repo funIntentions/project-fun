@@ -56,12 +56,12 @@ private:
     void chooseOperator(PartialOrderPlan& plan, Goal goal);
 
 public:
-    PartialOrderPlanner(std::vector<Operator> domainOperators) : operators(domainOperators)
+    PartialOrderPlanner()
     {
 
     }
 
-    std::vector<PartialOrderPlan> findPartialOrderPlan(Operator initialState, Operator endGoal);
+    std::vector<PartialOrderPlan> findPartialOrderPlan(Operator& initialState, Operator& endGoal, std::vector<Operator>& domainOperators);
 };
 
 

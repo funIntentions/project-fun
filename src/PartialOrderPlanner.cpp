@@ -4,8 +4,9 @@
 
 #include "PartialOrderPlanner.h"
 
-std::vector<PartialOrderPlan> PartialOrderPlanner::findPartialOrderPlan(Operator initialState, Operator endGoal)
+std::vector<PartialOrderPlan> PartialOrderPlanner::findPartialOrderPlan(Operator& initialState, Operator& endGoal, std::vector<Operator>& domainOperators)
 {
+        operators = domainOperators;
         PartialOrderPlan plan = makeInitialPlan(initialState, endGoal);
         partialPlans.push(plan);
         finishedPlans.clear();

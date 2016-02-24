@@ -1,0 +1,14 @@
+//
+// Created by Dan on 2/23/2016.
+//
+
+#ifndef PARTIALORDERPLANNER_WORLDSTATE_H
+#define PARTIALORDERPLANNER_WORLDSTATE_H
+
+
+class WorldState {
+
+};
+
+
+#endif //PARTIALORDERPLANNER_WORLDSTATE_H
