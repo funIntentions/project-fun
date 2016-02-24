@@ -3,3 +3,8 @@
 //
 
 #include "WorldState.h"
+
+void WorldState::registerForAction(std::string action, OperatorCallbackFunction function)
+{
+    operatorCallbackFunctionMap.insert({action, function});
+}

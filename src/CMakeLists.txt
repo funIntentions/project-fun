@@ -21,7 +21,8 @@ set(HEADER_FILES
         schedules/ActionInstance.h
         schedules/ScheduleInstance.cpp
         schedules/ScheduleInstance.h
-        ActionManager.h)
+        ActionManager.h
+        WorldState.h)
 
 set(SOURCE_FILES
         PartialOrderPlanner.cpp
@@ -47,6 +48,7 @@ set(SOURCE_FILES
         framework/Keyboard.cpp
         framework/Keyboard.h
         schedules/Predicate.h
-        ActionManager.cpp)
+        ActionManager.cpp
+        WorldState.cpp)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

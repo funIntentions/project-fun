@@ -16,6 +16,7 @@
 #include <math.h>
 #include "Graphics.h"
 #include "Input.h"
+#include "WorldState.h"
 
 class Game
 {
@@ -50,7 +51,7 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count());
+                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count(), _worldState);
 
                 elapsed -= period;
                 time += period.count();
@@ -89,6 +90,7 @@ private:
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<PlaceComponentManager> _placeComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
+    WorldState _worldState;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
     {
@@ -117,7 +119,7 @@ private:
             if (scheduleItr != entityData->MemberEnd())
                 scheduleName = scheduleItr->value.GetString();
 
-            scheduleComponentManager.spawnComponent(entity, scheduleName, 0);
+            scheduleComponentManager.spawnComponent(entity, scheduleName, 0, _worldState);
         }
     }
 
@@ -146,7 +148,7 @@ private:
 
         readEntities(*_entityManager, *_scheduleComponentManager);
 
-        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
+        _worldState.registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
         //Action action("test", 0, 0, 0);
         //std::vector<Operator> operators = _placeComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);

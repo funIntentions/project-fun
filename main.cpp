@@ -72,7 +72,7 @@ private:
 public:
     World()
     {
-        partialOrderPlanner = new PartialOrderPlanner(krulg.operators);
+        partialOrderPlanner = new PartialOrderPlanner();
         worldState = krulg.start;
         processPlan();
 
@@ -92,7 +92,7 @@ public:
 
     void processPlan()
     {
-        vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish);
+        vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish, krulg.operators);
 
         if (plans.size() > 0)
         {

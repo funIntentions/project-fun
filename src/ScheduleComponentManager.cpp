@@ -4,11 +4,14 @@
 #include "ScheduleComponentManager.h"
 #include "Schedules/Schedule.h"
 #include "Schedules/Action.h"
+#include "CharacterComponentManagers.h"
+#include "WorldState.h"
 #include <Schedules/ScheduleEntry.h>
 #include <Schedules/ScheduleInstance.h>
 #include <fstream>
 #include <rapidjson/document.h>
 #include <iostream>
+#include <bits/shared_ptr.h>
 
 ScheduleComponentManager::ScheduleComponentManager() : ComponentManager()
 {
@@ -289,14 +292,15 @@ ScheduleComponentManager::~ScheduleComponentManager()
     actions.clear();
 }
 
+/*
 void ScheduleComponentManager::registerForAction(std::string action, OperatorCallbackFunction function)
 {
     operatorCallbackFunctionMap.insert({action, function});
-}
+}*/
 
-void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime)
+void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime, WorldState& worldState)
 {
-    std::vector<Operator> operators; //TODO: Temp
+    //std::vector<Operator> operators; //TODO: Temp
 
     for (int i = 0; i < _data.size; ++i)
     {
@@ -304,30 +308,36 @@ void ScheduleComponentManager::runSchedules(double lastTime, double currentTime,
         {
             std::cout << "Entity: " << i << " New Entry" << std::endl;
             _data.currentSchedule[i]->startNextScheduleEntry();
-            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
             std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
 
             //TODO: Temp
-            auto opItr = operatorCallbackFunctionMap.find(_data.currentAction[i]->getActionName());
+            /*auto opItr = operatorCallbackFunctionMap.find(_data.currentAction[i]->getActionName());
             if (opItr != operatorCallbackFunctionMap.end())
             {
                 auto idItr = actionNameToIdMap.find(_data.currentAction[i]->getActionName());
                 auto actionItr = actions.find(idItr->second);
 
                 operators = opItr->second(*actionItr->second, _data.entity[i]);
-            }
+                std::vector<size_t> potentialGoals;
+
+                for (auto op : operators)
+                {
+                    potentialGoals.insert(potentialGoals.end(), op.addedEffects.begin(), op.addedEffects.end());
+                }
+            }*/
         }
 
         if (_data.currentAction[i]->perform(deltaTime))
         {
-            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction();
+            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
             std::cout << "Entity: " << i << " New Action 2: " << _data.currentAction[i]->getActionName() << std::endl;
         }
 
     }
 }
 
-void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime)
+void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime, WorldState& worldState)
 {
     assert(schedules.size() > 0);
 
@@ -345,7 +355,7 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
             ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
             scheduleInstance->chooseEntryForTime(currentTime);
             _data.currentSchedule.push_back(scheduleInstance);
-            _data.currentAction.push_back(scheduleInstance->chooseNewAction());
+            _data.currentAction.push_back(scheduleInstance->chooseNewAction(worldState));
         }
 
         ++_data.size;

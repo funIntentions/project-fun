@@ -6,8 +6,11 @@
 #define PARTIALORDERPLANNER_SCHEDULECOMPONENTMANAGER_H
 
 #include <functional>
+#include <memory>
 #include "ComponentManager.h"
 #include "PartialOrderPlan.h"
+#include "CharacterComponentManagers.h"
+#include "WorldState.h"
 
 class ActionInstance;
 class ScheduleInstance;
@@ -15,7 +18,7 @@ class Schedule;
 class ScheduleEntry;
 class Action;
 
-typedef std::function<std::vector<Operator>(Action, Entity)> OperatorCallbackFunction;
+//typedef std::function<std::vector<Operator>(Action, Entity)> OperatorCallbackFunction;
 
 class ScheduleComponentManager : public ComponentManager
 {
@@ -37,10 +40,11 @@ private:
     std::unordered_map<std::string, int> entryNameToIdMap;
     std::unordered_map<std::string, int> scheduleNameToIdMap;
 
-    std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
+    //std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
 
     //std::vector<Predicate> tempWorldState;
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
+    const std::string PLANNER_SCHEDULE_ENTRY = "planner";
 
 public:
 
@@ -54,11 +58,11 @@ public:
 
     ~ScheduleComponentManager();
 
-    void registerForAction(std::string action, OperatorCallbackFunction function);
+    //void registerForAction(std::string action, OperatorCallbackFunction function);
 
-    void runSchedules(double lastTime, double currentTime, double deltaTime);
+    void runSchedules(double lastTime, double currentTime, double deltaTime, WorldState& worldState);
 
-    void spawnComponent(Entity entity, std::string scheduleName, double currentTime);
+    void spawnComponent(Entity entity, std::string scheduleName, double currentTime, WorldState& worldState);
 
     void destroy(unsigned i);
 };
