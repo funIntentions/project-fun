@@ -6,6 +6,9 @@
 #define PARTIALORDERPLANNER_SCHEDULEENTRY_H
 
 #include <string>
+#include <vector>
+#include <PartialOrderPlanner.h>
+#include <WorldState.h>
 
 class Action;
 class ActionInstance;
@@ -21,7 +24,7 @@ public:
     virtual ~ScheduleEntry() {}
 
     virtual void addAction(Action* action) = 0;
-    virtual ActionInstance* chooseNewAction() = 0;
+    virtual ActionInstance* chooseNewAction(WorldState& worldState) = 0;
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime) = 0;
 
     const std::string& getName() const { return name; }
@@ -38,7 +41,22 @@ public:
             : ScheduleEntry(name, id, startTime), action(nullptr) {}
 
     virtual void addAction(Action* action);
-    virtual ActionInstance* chooseNewAction();
+    virtual ActionInstance* chooseNewAction(WorldState& worldState);
+    virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
+};
+
+
+class PlannerScheduleEntry : public ScheduleEntry
+{
+private:
+    std::unordered_map<std::string, Action*> actions;
+    PartialOrderPlanner planner;
+public:
+    PlannerScheduleEntry(const std::string& name, int id, double startTime)
+            : ScheduleEntry(name, id, startTime) {}
+
+    virtual void addAction(Action* action);
+    virtual ActionInstance* chooseNewAction(WorldState& worldState);
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 };
 

@@ -5,6 +5,8 @@
 #ifndef PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
 #define PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
 
+#include <WorldState.h>
+
 class Schedule;
 class ActionInstance;
 
@@ -19,7 +21,7 @@ public:
     void chooseEntryForTime(double currentTime);
     void startNextScheduleEntry();
     bool timeIsUp(double lastTime, double currentTime);
-    ActionInstance* chooseNewAction();
+    ActionInstance* chooseNewAction(WorldState& worldState);
 
     int getId() const;
 };

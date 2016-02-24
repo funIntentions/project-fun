@@ -48,7 +48,6 @@ set(SOURCE_FILES
         framework/Keyboard.cpp
         framework/Keyboard.h
         schedules/Predicate.h
-        ActionManager.cpp
-        WorldState.cpp)
+        ActionManager.cpp)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

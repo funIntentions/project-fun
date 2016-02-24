@@ -5,6 +5,7 @@
 #include "ScheduleInstance.h"
 #include "Schedule.h"
 #include <iostream>
+#include <WorldState.h>
 
 ScheduleInstance::ScheduleInstance(Schedule* s)
 {
@@ -28,9 +29,9 @@ bool ScheduleInstance::timeIsUp(double lastTime, double currentTime)
     return (entryEndTime > lastTime && entryEndTime <= currentTime); // TODO: when time wraps, 24 to 0, if the end time is 0 this wont trigger and the behaviour will never end.
 }
 
-ActionInstance* ScheduleInstance::chooseNewAction()
+ActionInstance* ScheduleInstance::chooseNewAction(WorldState& worldState)
 {
-    return schedule->chooseNewAction(entryIndex);
+    return schedule->chooseNewAction(entryIndex, worldState);
 }
 
 int ScheduleInstance::getId() const { return schedule->getId(); }

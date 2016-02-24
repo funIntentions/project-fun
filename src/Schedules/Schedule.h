@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <string>
+#include <PartialOrderPlanner.h>
+#include <WorldState.h>
 
 class ScheduleEntry;
 class ActionInstance;
@@ -24,7 +26,7 @@ public:
     int getEntryAtTime(double currentTime) const;
 
     int nextEntry(int entryIndex) const;
-    ActionInstance* chooseNewAction(int entryIndex);
+    ActionInstance* chooseNewAction(int entryIndex, WorldState& worldState);
     double getEndTime(int entryIndex) const;
 
     const std::string& getName() const { return name; }

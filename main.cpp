@@ -6,7 +6,7 @@
 #include "tests/Briefcase.h"
 #include "tests/FruitBowl.h"
 #include "tests/Table.h"
-#include "extras.h"
+//#include "extras.h"
 #include "EntityManager.h"
 #include "ComponentManagers.h"
 #include "tests/WorldLocation.h"
@@ -14,7 +14,7 @@
 #include <chrono>
 #include <ScheduleComponentManager.h>
 #include <framework/Game.h>
-
+/*
 std::vector<std::string>& split(const std::string &s, char delimiter, std::vector<std::string>& tokens) {
     std::stringstream ss(s);
     std::string item;
@@ -34,8 +34,8 @@ struct Command
 
     }
 
-    string verb;
-    string noun;
+    std::string verb;
+    std::string noun;
 };
 
 Command& parseInput(const std::string& input, Command& command)
@@ -92,17 +92,17 @@ public:
 
     void processPlan()
     {
-        vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish, krulg.operators);
+        std::vector<PartialOrderPlan> plans = partialOrderPlanner->findPartialOrderPlan(worldState, krulg.finish, krulg.operators);
 
         if (plans.size() > 0)
         {
             PartialOrderPlan plan = plans[0];
 
-            vector<long> totalOrderPlan = getTotalOrderPlan(plan);
+            std::vector<long> totalOrderPlan = getTotalOrderPlan(plan);
 
             if (totalOrderPlan.size() > 2)
             {
-                unordered_map<long, Operator>::iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
+                std::unordered_map<long, Operator>::iterator op = plan.steps.find(*(totalOrderPlan.end()-2));
                 if (op != plan.steps.end())
                 {
                     if ((op->second.name != "finish" && op->second.name != "start"))
@@ -199,10 +199,10 @@ public:
                 locationComponentManager.changeEntitiesLocation(player, (WorldLocation)location);
                 entitiesCloseBy = locationComponentManager.getEntitiesInLocation((WorldLocation)location);
 
-                /*for (Entity entity : entitiesCloseBy)
-                {
-                    descriptionComponentManager.examineEntity(entity);
-                }*/
+                //for (Entity entity : entitiesCloseBy)
+                //{
+                //    descriptionComponentManager.examineEntity(entity);
+                //}
                 Operator playerAction;
 
                 if (playerLocation == Marshland)
@@ -264,14 +264,14 @@ struct Adventure
 
     void beginAdventure()
     {
-        string input;
+        std::string input;
         Command command;
 
         while (!finished(command))
         {
             input.clear();
-            cout << "What will Krulg do now? ";
-            getline(cin, input);
+            std::cout << "What will Krulg do now? ";
+            getline(std::cin, input);
             command.verb.clear();
             command.noun.clear();
 
@@ -285,6 +285,7 @@ struct Adventure
         return (command.verb == "QUIT");
     }
 };
+*/
 
 int main()
 {

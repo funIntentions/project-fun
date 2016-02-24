@@ -186,9 +186,9 @@ public:
         _data.location[entity.id] = location;
     }
 
-    vector<Entity> getEntitiesInLocation(WorldLocation location)
+    std::vector<Entity> getEntitiesInLocation(WorldLocation location)
     {
-        vector<Entity> entities;
+        std::vector<Entity> entities;
 
         for (int index = 0; index < _data.size; ++index)
         {

@@ -51,7 +51,7 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count(), _worldState);
+                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count());
 
                 elapsed -= period;
                 time += period.count();
@@ -90,7 +90,6 @@ private:
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<PlaceComponentManager> _placeComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
-    WorldState _worldState;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
     {
@@ -119,7 +118,7 @@ private:
             if (scheduleItr != entityData->MemberEnd())
                 scheduleName = scheduleItr->value.GetString();
 
-            scheduleComponentManager.spawnComponent(entity, scheduleName, 0, _worldState);
+            scheduleComponentManager.spawnComponent(entity, scheduleName, 0);
         }
     }
 
@@ -131,6 +130,7 @@ private:
         _input->initialize(_graphics->window->window);
 
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
+        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
         Entity village = _entityManager->create();
         Entity forest = _entityManager->create();
@@ -148,7 +148,6 @@ private:
 
         readEntities(*_entityManager, *_scheduleComponentManager);
 
-        _worldState.registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
         //Action action("test", 0, 0, 0);
         //std::vector<Operator> operators = _placeComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);

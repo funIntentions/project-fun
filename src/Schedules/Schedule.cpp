@@ -34,9 +34,9 @@ int Schedule::getEntryAtTime(double currentTime) const
     return 0;
 }
 
-ActionInstance* Schedule::chooseNewAction(int entryIndex)
+ActionInstance* Schedule::chooseNewAction(int entryIndex, WorldState& worldState)
 {
-    return scheduleEntries[entryIndex]->chooseNewAction();
+    return scheduleEntries[entryIndex]->chooseNewAction(worldState);
 }
 
 double Schedule::getEndTime(int entryIndex) const
