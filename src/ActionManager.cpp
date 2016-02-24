@@ -82,3 +82,15 @@ Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned
 
     return anOperator;
 }
+
+size_t ActionManager::buildGoal(std::string type, std::vector<unsigned> params)
+{
+    Predicate goal;
+    goal.type = type;
+    goal.params = params;
+
+    auto itr = predicates.find(goal);
+    assert(itr != predicates.end()); // Otherwise goal is not obtainable (although there is other ways for it to be unattainable: no addedEffect predicate) TODO: bullet proof this if possible, or at least make it safe by handling edge cases
+
+    return itr->second;
+}

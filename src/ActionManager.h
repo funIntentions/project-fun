@@ -16,6 +16,8 @@ private:
 
 public:
     Operator buildOperator(Action& templateTask, std::vector<unsigned>& entities);
+
+    size_t buildGoal(std::string type, std::vector<unsigned> params);
 };
 
 

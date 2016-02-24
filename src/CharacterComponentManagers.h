@@ -57,6 +57,27 @@ public:
         return ops;
     }
 
+    std::vector<size_t> determinePotentialGoals(std::shared_ptr<ActionManager> actionManager)
+    {
+        std::vector<size_t> goals;
+
+        for (int i = 0; i < _data.size; ++i)
+        {
+            goals.push_back(actionManager->buildGoal("at", {_data.entity[i].id}));
+        }
+    }
+
+    std::string getNameOfPlace(Entity entity)
+    {
+        Instance inst = lookup(entity);
+        if (inst.i > 0)
+        {
+            return _data.location[inst.i];
+        }
+
+        return "not found";
+    }
+
     void spawnComponent(Entity entity, std::string location, Entity north, Entity south, Entity east, Entity west)
     {
 
