@@ -17,17 +17,17 @@ class Schedule {
 private:
     std::string name;
     int id;
-    std::vector<ScheduleEntry*> scheduleEntries;
 
 public:
+    std::vector<ScheduleEntry*> entryTemplates;
     Schedule(const std::string& name, int id) : name(name), id(id) {}
     ~Schedule() {}
-    void addEntry(ScheduleEntry* entry) { scheduleEntries.push_back(entry); }
-    int getEntryAtTime(double currentTime) const;
+    void addEntry(ScheduleEntry* entry) { entryTemplates.push_back(entry); }
+    /*int getEntryAtTime(double currentTime) const;
 
     int nextEntry(int entryIndex) const;
     ActionInstance* chooseNewAction(int entryIndex, WorldState& worldState);
-    double getEndTime(int entryIndex) const;
+    double getEndTime(int entryIndex) const;*/
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }

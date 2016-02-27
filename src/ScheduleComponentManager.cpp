@@ -302,22 +302,42 @@ void ScheduleComponentManager::registerForAction(std::string action, OperatorCal
     operatorCallbackFunctionMap.insert({action, function});
 }
 
-void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime)
+void ScheduleComponentManager::updateWorldState(std::vector<int> addedEffects, ActionManager& actionManager)
+{
+    worldState.state.clear();
+
+    for (int id : addedEffects)
+    {
+        worldState.state.push_back(id);
+
+        Predicate predicate = actionManager.getPredicate(id);
+
+        std::cout << "new state: " << "(" << id << ") " << predicate.type << ":";
+
+        for (unsigned int param : predicate.params)
+        {
+            std::cout << param << ", ";
+        }
+
+        std::cout << std::endl;
+    }
+}
+
+void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime, ActionManager& actionManager)
 {
     for (int i = 0; i < _data.size; ++i)
     {
         if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
         {
             std::cout << "Entity: " << i << " New Entry" << std::endl;
-            _data.currentSchedule[i]->startNextScheduleEntry();
-            worldState.entity = _data.entity[i]; // TODO: Temp
+            _data.currentSchedule[i]->startNextScheduleEntry(worldState);
             _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
             std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
         }
 
         if (_data.currentAction[i]->perform(deltaTime))
         {
-            worldState.entity = _data.entity[i]; // TODO: Temp
+            updateWorldState(_data.currentAction[i]->actionOperator->addedEffects, actionManager);
             _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
             std::cout << "Entity: " << i << " New Action 2: " << _data.currentAction[i]->getActionName() << std::endl;
         }
@@ -332,21 +352,6 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
     _map.emplace(entity.index(), _data.size);
     _data.entity.push_back(entity);
 
-    for (auto action = actions.begin(); action != actions.end(); ++action) // TODO: this is just for testing purposes and will burn and die for multiple entities.
-    {
-        auto opItr = operatorCallbackFunctionMap.find(action->second->getName());
-        if (opItr != operatorCallbackFunctionMap.end())
-        {
-            worldState.operators = opItr->second(*action->second, entity);
-
-            for (auto op : worldState.operators)
-            {
-                worldState.goals.resize(worldState.goals.size() + op.addedEffects.size());
-                worldState.goals.insert(worldState.goals.end(), op.addedEffects.begin(), op.addedEffects.end());
-            }
-        }
-    }
-
     auto Iditr = scheduleNameToIdMap.find(scheduleName);
     if (Iditr != scheduleNameToIdMap.end())
     {
@@ -356,9 +361,9 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
         {
             Schedule* schedule = scheduleItr->second;
             ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
-            scheduleInstance->chooseEntryForTime(currentTime);
+            scheduleInstance->setupEntries(operatorCallbackFunctionMap, entity);
+            scheduleInstance->chooseEntryForTime(currentTime, worldState);
             _data.currentSchedule.push_back(scheduleInstance);
-            worldState.entity = entity; // TODO: Temp
             _data.currentAction.push_back(scheduleInstance->chooseNewAction(worldState));
         }
 

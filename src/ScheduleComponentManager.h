@@ -42,7 +42,9 @@ private:
 
     std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
 
-    WorldState worldState; // TODO: TEMP
+    WorldState worldState; // TODO: Temp
+    std::vector<Predicate> actionEffects; // TODO: Temp
+
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
     const std::string PLANNER_SCHEDULE_ENTRY = "planner";
 
@@ -60,7 +62,9 @@ public:
 
     void registerForAction(std::string action, OperatorCallbackFunction function);
 
-    void runSchedules(double lastTime, double currentTime, double deltaTime);
+    void runSchedules(double lastTime, double currentTime, double deltaTime, ActionManager& actionManager); // TODO: decouple action manager
+
+    void updateWorldState(std::vector<int> addedEffects, ActionManager& actionManager);
 
     void spawnComponent(Entity entity, std::string scheduleName, double currentTime);
 

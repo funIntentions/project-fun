@@ -5,7 +5,7 @@
 #include "Schedule.h"
 #include "ScheduleEntry.h"
 
-
+/*
 int Schedule::nextEntry(int entryIndex) const
 {
     return (entryIndex + 1) % scheduleEntries.size(); //TODO: will break when size == 0?
@@ -33,7 +33,6 @@ int Schedule::getEntryAtTime(double currentTime) const
 
     return 0;
 }
-
 ActionInstance* Schedule::chooseNewAction(int entryIndex, WorldState& worldState)
 {
     return scheduleEntries[entryIndex]->chooseNewAction(worldState);
@@ -43,3 +42,4 @@ double Schedule::getEndTime(int entryIndex) const
 {
     return scheduleEntries[nextEntry(entryIndex)]->getStartTime();
 }
+ */

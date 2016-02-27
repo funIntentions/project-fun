@@ -10,9 +10,7 @@
 #include "PartialOrderPlan.h"
 
 struct WorldState {
-    Entity entity;
-    std::vector<int> goals;
-    std::vector<Operator> operators;
+    std::vector<int> state;
 };
 
 #endif //PARTIALORDERPLANNER_WORLDSTATE_H

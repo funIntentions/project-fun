@@ -51,7 +51,7 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count());
+                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count(), *_actionManager);
 
                 elapsed -= period;
                 time += period.count();

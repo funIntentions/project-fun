@@ -12,12 +12,15 @@
 class ActionManager {
 private:
     std::unordered_map<Predicate, size_t> predicates;
+    std::unordered_map<size_t, Predicate> idToPredicateMap;
     size_t addPredicate(Predicate predicate);
 
 public:
     Operator buildOperator(Action& templateTask, std::vector<unsigned>& entities);
 
-    size_t buildGoal(std::string type, std::vector<unsigned> params);
+    Predicate getPredicate(int id);
+
+    size_t buildState(std::string type, std::vector<unsigned> params);
 };
 
 

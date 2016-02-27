@@ -12,8 +12,17 @@ size_t ActionManager::addPredicate(Predicate predicate)
     if (itr != predicates.end())
         id = itr->second;
     else
+    {
         predicates.insert({predicate, id});
+        idToPredicateMap.insert({id, predicate});
+    }
     return id;
+}
+
+Predicate ActionManager::getPredicate(int id)
+{
+    auto itr = idToPredicateMap.find(id);
+    return itr->second;
 }
 
 Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned>& entities)
@@ -83,7 +92,7 @@ Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned
     return anOperator;
 }
 
-size_t ActionManager::buildGoal(std::string type, std::vector<unsigned> params)
+size_t ActionManager::buildState(std::string type, std::vector<unsigned> params)
 {
     Predicate goal;
     goal.type = type;

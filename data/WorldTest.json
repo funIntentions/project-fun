@@ -3,7 +3,20 @@
   [
     {
       "name" : "Timmy",
-      "schedule" : "person"
+      "schedule" : "person",
+      "components" :
+      [
+        {
+          "name" : "position",
+          "properties" :
+          [
+            {
+              "name" : "at",
+              "value" : "village"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
