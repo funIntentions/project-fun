@@ -304,22 +304,29 @@ void ScheduleComponentManager::registerForAction(std::string action, OperatorCal
 
 void ScheduleComponentManager::updateWorldState(std::vector<int> addedEffects, ActionManager& actionManager)
 {
-    worldState.state.clear();
-
     for (int id : addedEffects)
     {
-        worldState.state.push_back(id);
-
         Predicate predicate = actionManager.getPredicate(id);
 
-        std::cout << "new state: " << "(" << id << ") " << predicate.type << ":";
-
-        for (unsigned int param : predicate.params)
+        for (int i = 0; i < worldState.state.size(); ++i)
         {
-            std::cout << param << ", ";
-        }
+            int state = worldState.state[i];
+            Predicate statePredicate = actionManager.getPredicate(state);
 
-        std::cout << std::endl;
+            if (predicate.type == statePredicate.type)
+            {
+                std::cout << "new state: " << "(" << id << ") " << predicate.type << ":";
+
+                for (unsigned int param : predicate.params)
+                {
+                    std::cout << param << ", ";
+                }
+
+                std::cout << std::endl;
+
+                worldState.state[i] = id;
+            }
+        }
     }
 }
 

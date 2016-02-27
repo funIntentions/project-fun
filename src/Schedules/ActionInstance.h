@@ -6,8 +6,10 @@
 #define PARTIALORDERPLANNER_ACTIONINSTANCE_H
 
 #include <string>
+#include <vector>
 
 class Action;
+class Operator;
 
 class ActionInstance {
 private:
@@ -16,7 +18,7 @@ private:
     int index;
 public:
 
-    ActionInstance(const Action* action, double duration, int index);
+    ActionInstance(const Action* action, double duration, int index, Operator* op);
 
     bool perform(double deltaTime);
 
@@ -30,6 +32,8 @@ public:
     {
         return index;
     }
+
+    Operator* actionOperator;
 };
 
 

@@ -3,8 +3,8 @@
   [
     {
       "name" : "travel",
-      "minDuration" : 1,
-      "maxDuration" : 3,
+      "minDuration" : 10,
+      "maxDuration" : 20,
       "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
       "positivePreconditions" :
       [
@@ -18,6 +18,15 @@
       [
         {"name" : "at", "params" : ["from", "c"]}
       ]
+    },
+    {
+      "name" : "idle",
+      "minDuration" : 1,
+      "maxDuration" : 3,
+      "params" : [],
+      "positivePreconditions" : [],
+      "addedEffects" : [],
+      "subtractedEffects" : []
     }
   ],
 
@@ -29,6 +38,9 @@
       "actions" :
       [
         {
+          "name" : "idle"
+        },
+        {
           "name" : "travel"
         }
       ]
@@ -38,6 +50,9 @@
       "type" : "planner",
       "actions" :
       [
+        {
+          "name" : "idle"
+        },
         {
           "name" : "travel"
         }

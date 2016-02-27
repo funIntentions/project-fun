@@ -6,8 +6,8 @@
 #include "Action.h"
 
 
-ActionInstance::ActionInstance(const Action* action, double duration, int index)
-                                : action(action), duration(duration), index(index)
+ActionInstance::ActionInstance(const Action* action, double duration, int index, Operator* op)
+                                : action(action), duration(duration), index(index), actionOperator(op)
 {
 
 }

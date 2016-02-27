@@ -10,7 +10,7 @@ double Action::calculateDuration() const
     return minDuration;
 }
 
-ActionInstance* Action::createActionInstance(int index) const
+ActionInstance* Action::createActionInstance(Operator* op, int index) const
 {
-    return new ActionInstance(this, calculateDuration(), index);
+    return new ActionInstance(this, calculateDuration(), index, op);
 }

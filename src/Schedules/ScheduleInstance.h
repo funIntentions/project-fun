@@ -6,6 +6,7 @@
 #define PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
 
 #include <WorldState.h>
+#include <ScheduleComponentManager.h>
 
 class Schedule;
 class ActionInstance;
@@ -13,16 +14,22 @@ class ActionInstance;
 class ScheduleInstance {
 private:
     Schedule* schedule;
+    std::vector<ScheduleEntry*> entries;
     int entryIndex;
     double entryEndTime;
 public:
     ScheduleInstance(Schedule* schedule);
 
-    void chooseEntryForTime(double currentTime);
-    void startNextScheduleEntry();
+    void setupEntries(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity);
+
+    void chooseEntryForTime(double currentTime, WorldState& worldState);
+    void startNextScheduleEntry(WorldState& worldState);
     bool timeIsUp(double lastTime, double currentTime);
     ActionInstance* chooseNewAction(WorldState& worldState);
 
+    int getEntryAtTime(double currentTime) const;
+    double getEndTime(int entryIndex) const;
+    int nextEntry(int entryIndex) const;
     int getId() const;
 };
 
