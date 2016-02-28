@@ -138,13 +138,13 @@ private:
         Entity swamp = _entityManager->create();
         Entity planes = _entityManager->create();
         Entity caves = _entityManager->create();
-        Entity nowhere = _entityManager->create();
 
-        _placeComponentManager->spawnComponent(village, "Village", nowhere, forest, meadow, nowhere);
-        _placeComponentManager->spawnComponent(meadow, "Meadow", nowhere, swamp, planes, village);
-        _placeComponentManager->spawnComponent(forest, "Forest", village, nowhere, nowhere, swamp);
-        _placeComponentManager->spawnComponent(swamp, "Swamp", meadow, nowhere, forest, caves);
-        _placeComponentManager->spawnComponent(caves, "Caves", planes, nowhere, swamp, nowhere);
+        _placeComponentManager->spawnComponent(village, "Village", {forest, meadow});
+        _placeComponentManager->spawnComponent(meadow, "Meadow", {swamp, planes, village});
+        _placeComponentManager->spawnComponent(forest, "Forest", {village, swamp});
+        _placeComponentManager->spawnComponent(swamp, "Swamp", {meadow, forest, caves});
+        _placeComponentManager->spawnComponent(caves, "Caves", {planes, swamp});
+        _placeComponentManager->spawnComponent(planes, "Planes", {meadow, caves});
 
         readEntities(*_entityManager, *_scheduleComponentManager);
 

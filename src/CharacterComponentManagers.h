@@ -33,10 +33,10 @@ public:
         return _data.location[entity.id];
     }
 
-    std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
+    /*std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
     {
         return {actionManager.buildState("at", {_data.location[entity.id].id, entity.id})};
-    }
+    }*/
 
     void changeEntitiesLocation(Entity entity, Entity location)
     {
@@ -79,10 +79,7 @@ private:
         unsigned size;
         std::vector<Entity> entity;
         std::vector<std::string> location;
-        std::vector<Entity> northLocation;
-        std::vector<Entity> southLocation;
-        std::vector<Entity> eastLocation;
-        std::vector<Entity> westLocation;
+        std::vector<std::vector<Entity>> locations;
 
     };
 
@@ -101,14 +98,11 @@ public:
 
         for (int i = 0; i < _data.size; ++i)
         {
-            std::vector<unsigned> params = {_data.entity[i].id, _data.northLocation[i].id, traveller.id};
-            ops.push_back(actionManager->buildOperator(travelTemplate, params)); //Params: Entity fromLocation, Entity toLocation, Entity traveller
-            params = {_data.entity[i].id, _data.southLocation[i].id, traveller.id};
-            ops.push_back(actionManager->buildOperator(travelTemplate, params));
-            params = {_data.entity[i].id, _data.westLocation[i].id, traveller.id};
-            ops.push_back(actionManager->buildOperator(travelTemplate, params));
-            params = {_data.entity[i].id, _data.eastLocation[i].id, traveller.id};
-            ops.push_back(actionManager->buildOperator(travelTemplate, params));
+            for (Entity location : _data.locations[i])
+            {
+                std::vector<unsigned> params = {_data.entity[i].id, location.id, traveller.id};
+                ops.push_back(actionManager->buildOperator(travelTemplate, params)); //Params: Entity fromLocation, Entity toLocation, Entity traveller
+            }
         }
 
         return ops;
@@ -135,17 +129,14 @@ public:
         return "not found";
     }
 
-    void spawnComponent(Entity entity, std::string location, Entity north, Entity south, Entity east, Entity west)
+    void spawnComponent(Entity entity, std::string location, std::vector<Entity> locations)
     {
 
         _map.emplace(entity.index(), _data.size);
 
         _data.entity.push_back(entity);
         _data.location.push_back(location);
-        _data.northLocation.push_back(north);
-        _data.southLocation.push_back(south);
-        _data.eastLocation.push_back(east);
-        _data.westLocation.push_back(west);
+        _data.locations.push_back(locations);
 
         ++_data.size;
     }
@@ -158,20 +149,14 @@ public:
 
         _data.entity[i] = _data.entity[last];
         _data.location[i] = _data.location[last];
-        _data.northLocation[i] = _data.northLocation[last];
-        _data.southLocation[i] = _data.southLocation[last];
-        _data.westLocation[i] = _data.westLocation[last];
-        _data.eastLocation[i] = _data.eastLocation[last];
+        _data.locations[i] = _data.locations[last];
 
         _map[last_e.index()] =  i;
         _map.erase(e.index());
 
         _data.entity.pop_back();
         _data.location.pop_back();
-        _data.northLocation.pop_back();
-        _data.southLocation.pop_back();
-        _data.westLocation.pop_back();
-        _data.eastLocation.pop_back();
+        _data.locations.pop_back();
 
         --_data.size;
     }
