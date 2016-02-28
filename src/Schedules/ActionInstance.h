@@ -15,10 +15,9 @@ class ActionInstance {
 private:
     const Action* action;
     double duration;
-    int index;
 public:
 
-    ActionInstance(const Action* action, double duration, int index, Operator* op);
+    ActionInstance(const Action* action, double duration, Operator* op);
 
     bool perform(double deltaTime);
 
@@ -27,10 +26,6 @@ public:
     double getDuration() const
     {
         return duration;
-    }
-    int getIndex() const
-    {
-        return index;
     }
 
     Operator* actionOperator;

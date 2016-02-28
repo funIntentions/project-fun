@@ -16,6 +16,7 @@ size_t ActionManager::addPredicate(Predicate predicate)
         predicates.insert({predicate, id});
         idToPredicateMap.insert({id, predicate});
     }
+
     return id;
 }
 

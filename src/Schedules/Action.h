@@ -25,7 +25,7 @@ public:
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }
-    ActionInstance* createActionInstance(Operator* op, int index = 0) const;
+    ActionInstance* createActionInstance(Operator* op) const;
 
     std::vector<std::string> parameters;
     std::vector<PredicateTemplate> preconditions;

@@ -6,10 +6,13 @@
 
 std::vector<PartialOrderPlan> PartialOrderPlanner::findPartialOrderPlan(Operator& initialState, Operator& endGoal, std::vector<Operator>& domainOperators)
 {
+        finishedPlans.clear();
+        operators.clear();
+        partialPlans = std::priority_queue<PartialOrderPlan, std::vector<PartialOrderPlan>, ComparePlans>();
+
         operators = domainOperators;
         PartialOrderPlan plan = makeInitialPlan(initialState, endGoal);
         partialPlans.push(plan);
-        finishedPlans.clear();
 
         while (!partialPlans.empty())
         {

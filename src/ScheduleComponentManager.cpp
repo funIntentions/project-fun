@@ -336,17 +336,17 @@ void ScheduleComponentManager::runSchedules(double lastTime, double currentTime,
     {
         if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
         {
-            std::cout << "Entity: " << i << " New Entry" << std::endl;
+            //std::cout << "Entity: " << i << " New Entry" << std::endl;
             _data.currentSchedule[i]->startNextScheduleEntry(worldState);
             _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
-            std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
+            //std::cout << "Entity: " << i << " New Action 1: " << _data.currentAction[i]->getActionName() << std::endl;
         }
 
         if (_data.currentAction[i]->perform(deltaTime))
         {
             updateWorldState(_data.currentAction[i]->actionOperator->addedEffects, actionManager);
             _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(worldState);
-            std::cout << "Entity: " << i << " New Action 2: " << _data.currentAction[i]->getActionName() << std::endl;
+            //std::cout << "Entity: " << i << " New Action 2: " << _data.currentAction[i]->getActionName() << std::endl;
         }
 
     }
