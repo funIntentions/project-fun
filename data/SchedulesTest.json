@@ -3,8 +3,8 @@
   [
     {
       "name" : "travel",
-      "minDuration" : 10,
-      "maxDuration" : 20,
+      "minDuration" : 2,
+      "maxDuration" : 4,
       "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
       "positivePreconditions" :
       [
