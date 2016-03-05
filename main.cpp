@@ -6,7 +6,6 @@
 #include "tests/Briefcase.h"
 #include "tests/FruitBowl.h"
 #include "tests/Table.h"
-//#include "extras.h"
 #include "EntityManager.h"
 #include "ComponentManagers.h"
 #include "tests/WorldLocation.h"

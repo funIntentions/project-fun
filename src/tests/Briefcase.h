@@ -63,6 +63,7 @@ struct BriefcaseDomain
 public:
 
     std::vector<Operator> operators;
+    std::vector<Operator> correctPlan;
     Operator start, finish;
 
     BriefcaseDomain()
@@ -122,6 +123,25 @@ public:
         putDictionaryInAtOffice.preconditions = {dictionaryAtOffice, briefcaseAtOffice};
         putDictionaryInAtOffice.addedEffects = {dictionaryInBriefcase};
         putDictionaryInAtOffice.subtractedEffects = {dictionaryAtOffice};
+
+        //std::vector<Operator> correctPlan1;
+        correctPlan.push_back(finish);
+        correctPlan.push_back(takeOutDictionaryAtOffice);
+        correctPlan.push_back(homeToOffice);
+        correctPlan.push_back(takeOutPaycheckAtHome);
+        correctPlan.push_back(putDictionaryInAtHome);
+        correctPlan.push_back(start);
+
+        /*std::vector<Operator> correctPlan2;
+        correctPlan2.push_back(start);
+        correctPlan2.push_back(putDictionaryInAtHome);
+        correctPlan2.push_back(takeOutPaycheckAtHome);
+        correctPlan2.push_back(homeToOffice);
+        correctPlan2.push_back(takeOutDictionaryAtOffice);
+        correctPlan2.push_back(end);
+
+        correctPlans.push_back(correctPlan1);
+        correctPlans.push_back(correctPlan2);*/
 
         operators = {officeToHome,
                       homeToOffice,

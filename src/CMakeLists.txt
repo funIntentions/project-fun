@@ -15,7 +15,7 @@ set(HEADER_FILES
         tests/Table.h
         tests/WorldLocation.h
         tests/Krulg.h
-        extras.h
+        util/Extra.h
         schedules/Schedule.h
         schedules/ActionInstance.cpp
         schedules/ActionInstance.h

@@ -105,7 +105,7 @@ public:
         return _data.health[e.id];
     }
 
-    float setHealth(Entity e, float health)
+    void setHealth(Entity e, float health)
     {
         _data.health[e.id] = health;
     }

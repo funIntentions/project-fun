@@ -2,6 +2,7 @@
 // Created by Dan on 2/19/2016.
 //
 
+#include <glew-1.13.0/include/GL/glew.h>
 #include "Window.h"
 
 Window::Window()

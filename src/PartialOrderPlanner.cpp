@@ -339,15 +339,8 @@ bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, long s
         return false;
     }
 
-bool PartialOrderPlanner::alreadyUsed(const PartialOrderPlan& plan, const Operator& op) // TODO: find a way so that I don't have to limit the number of potencial ops (& the string compare)
+bool PartialOrderPlanner::alreadyUsed(const PartialOrderPlan& plan, const Operator& op) // TODO: find a way so that I don't have to limit the number of potential ops
 {
-        /*for (auto itr = plan.steps.begin(); itr != plan.steps.end(); ++itr)
-        {
-            if (itr->second.name.compare(op.name) == 0)
-            {
-                return true;
-            }
-        }*/
     auto itr = plan.stepsDone.find(op);
     return itr != plan.stepsDone.end();
 }
