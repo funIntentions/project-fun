@@ -18,7 +18,7 @@ ScheduleComponentManager::ScheduleComponentManager() : ComponentManager(), time(
 
 void ScheduleComponentManager::readActions()
 {
-    std::ifstream in("data/SchedulesTest.json");
+    std::ifstream in("data/Schedules.json");
     std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     const char* json = contents.c_str();
 
@@ -136,7 +136,7 @@ void ScheduleComponentManager::readActions()
 
 void ScheduleComponentManager::readSchedules()
 {
-    std::ifstream in("data/SchedulesTest.json");
+    std::ifstream in("data/Schedules.json");
     std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     const char* json = contents.c_str();
 

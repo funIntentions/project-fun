@@ -1,13 +1,22 @@
 {
   "entities" :
+  [
+    {
+      "name" : "Timmy",
+      "schedule" : "person",
+      "components" :
+      [
+        {
+          "name" : "position",
+          "properties" :
           [
             {
-              "name" : "Timmy",
-              "schedule" : "student"
-            },
-            {
-              "name" : "Joe Joe",
-              "schedule" : "student"
+              "name" : "at",
+              "value" : "village"
             }
           ]
+        }
+      ]
+    }
+  ]
 }

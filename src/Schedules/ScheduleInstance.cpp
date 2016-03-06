@@ -2,6 +2,7 @@
 // Created by Dan on 2/7/2016.
 //
 
+#include <assert.h>
 #include "ScheduleInstance.h"
 #include "Schedule.h"
 #include "ScheduleEntry.h"
@@ -32,7 +33,7 @@ void ScheduleInstance::chooseEntryForTime(double currentTime, WorldState& worldS
 
 bool ScheduleInstance::timeIsUp(double lastTime, double currentTime)
 {
-    return (entryEndTime > lastTime && entryEndTime <= currentTime); // TODO: when time wraps, 24 to 0, if the end time is 0 this wont trigger and the behaviour will never end.
+    return ((entryEndTime > lastTime || lastTime > currentTime) && entryEndTime <= currentTime); // TODO: if the start time of a entry is 24 what happens?
 }
 
 ActionInstance* ScheduleInstance::chooseNewAction(WorldState& worldState)
@@ -54,7 +55,8 @@ void ScheduleInstance::startNextScheduleEntry(WorldState& worldState)
 
 int ScheduleInstance::nextEntry(int entryIndex) const
 {
-    return (entryIndex + 1) % entries.size(); //TODO: will break when size == 0?
+    assert(entries.size() > 0); // Will break if there are no entries in a schedule.
+    return (entryIndex + 1) % entries.size();
 }
 
 int ScheduleInstance::getEntryAtTime(double currentTime) const

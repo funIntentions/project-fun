@@ -8,7 +8,6 @@ set(HEADER_FILES
         PartialOrderPlan.h
         PartialOrderPlanner.h
         ComponentManager.h
-        ComponentManagers.h
         EntityManager.h
         util/Extra.h
         schedules/Schedule.h

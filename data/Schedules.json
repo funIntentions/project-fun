@@ -2,57 +2,82 @@
   "actions" :
   [
     {
-      "name" : "dance",
-      "minDuration" : 0.5,
-      "maxDuration" : 3
+      "name" : "travel",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["from", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "at", "params" : ["to", "c"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "at", "params" : ["from", "c"]}
+      ]
     },
     {
-      "name" : "read",
+      "name" : "idle",
       "minDuration" : 1,
-      "maxDuration" : 4
+      "maxDuration" : 3,
+      "params" : [],
+      "positivePreconditions" : [],
+      "addedEffects" : [],
+      "subtractedEffects" : []
     }
   ],
+
   "scheduleEntryTemplates" :
   [
     {
-      "name" : "playTemplate",
-      "type" : "simple",
+      "name" : "dayTemplate",
+      "type" : "planner",
       "actions" :
       [
         {
-          "name" : "dance"
+          "name" : "idle"
+        },
+        {
+          "name" : "travel"
         }
       ]
     },
     {
-      "name" : "learnTemplate",
-      "type" : "simple",
+      "name" : "nightTemplate",
+      "type" : "planner",
       "actions" :
       [
         {
-          "name" : "read"
+          "name" : "idle"
+        },
+        {
+          "name" : "travel"
         }
       ]
     }
   ],
-  "schedules" :
-          [
-            {
-              "name" : "student",
-              "entries" :
-                      [
-                        {
-                          "name" : "play",
-                          "template" : "playTemplate",
-                          "startTime" : 16
-                        },
-                        {
-                          "name" : "learn",
-                          "template" : "learnTemplate",
-                          "startTime" : 8
-                        }
-                      ]
 
-            }
-          ]
+  "schedules" :
+  [
+    {
+      "name" : "person",
+      "entries" :
+      [
+        {
+          "name" : "night",
+          "template" : "nightTemplate",
+          "startTime" : 20
+        },
+        {
+          "name" : "day",
+          "template" : "dayTemplate",
+          "startTime" : 9
+        }
+      ]
+
+    }
+  ]
 }

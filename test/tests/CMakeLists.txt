@@ -5,10 +5,8 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 SET(HEADER_FILES
         domains/Briefcase.h
         domains/FruitBowl.h
-        domains/Krulg.h
         domains/Sussman.h
-        domains/Table.h
-        domains/WorldLocation.h)
+        domains/Table.h)
 
 SET(SOURCE_FILES
         PartialOrderPlannerFixture.cpp)
