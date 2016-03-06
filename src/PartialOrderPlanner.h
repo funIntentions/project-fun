@@ -17,10 +17,10 @@ private:
 
     void addOpenGoals(PartialOrderPlan& plan, const Operator& newOperator);
 
-    void addTemporalLink(PartialOrderPlan& plan, long op, long target, bool isBefore);
+    void addTemporalLink(PartialOrderPlan& plan, unsigned op, unsigned target, bool isBefore);
 
     // Checks to see if there are any operators existing that could threaten this link
-    void findThreatsToCausalLink(PartialOrderPlan& plan, long newOperator, Goal causalLink);
+    void findThreatsToCausalLink(PartialOrderPlan& plan, unsigned newOperator, Goal causalLink);
 
     // Checks if newOperator is a threat to any existing links (needed for SE) - not addition I guess? :P
     void findThreatsCausedByOperator(PartialOrderPlan& plan, const Operator& newOperator);
@@ -39,9 +39,9 @@ private:
 
     Goal selectOpenGoal(PartialOrderPlan& plan);
 
-    bool step1IsBeforeStep2(const PartialOrderPlan& plan, long step1, long step2);
+    bool step1IsBeforeStep2(const PartialOrderPlan& plan, unsigned step1, unsigned step2);
 
-    bool step1IsAfterStep2(const PartialOrderPlan& plan, long step1, long step2);
+    bool step1IsAfterStep2(const PartialOrderPlan& plan, unsigned step1, unsigned step2);
 
     bool alreadyUsed(const PartialOrderPlan& plan, const Operator& op); // TODO: find a way so that I don't have to limit the number of potencial ops
 

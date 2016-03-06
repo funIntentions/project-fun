@@ -24,8 +24,6 @@ public:
         fputs(description, stderr);
     }
 
-    void update() {}
-
     bool windowIsOpen()
     {
         return !glfwWindowShouldClose(window->window);

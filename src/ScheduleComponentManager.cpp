@@ -3,16 +3,10 @@
 //
 #include "ScheduleComponentManager.h"
 #include "Schedules/Schedule.h"
-#include "Schedules/Action.h"
-#include "CharacterComponentManagers.h"
-#include "WorldState.h"
 #include <Schedules/ScheduleEntry.h>
 #include <Schedules/ScheduleInstance.h>
 #include <fstream>
 #include <rapidjson/document.h>
-#include <iostream>
-#include <bits/shared_ptr.h>
-#include <assert.h>
 
 ScheduleComponentManager::ScheduleComponentManager() : ComponentManager()
 {
@@ -223,7 +217,6 @@ void ScheduleComponentManager::readSchedules()
             assert(entryData->value.IsArray());
             for (auto entryItr = entryData->value.Begin(); entryItr != entryData->value.End(); ++entryItr)
             {
-                std::string entryName;
                 std::string entryTemplate;
                 double startTime = 0;
 

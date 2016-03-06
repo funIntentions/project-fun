@@ -18,14 +18,14 @@
 struct Operator
 {
     std::string name;
-    long id;
+    unsigned id;
     std::vector<int> preconditions;
     std::vector<int> addedEffects;
     std::vector<int> subtractedEffects;
 
     Operator(std::string op = "") : name(op)
     {
-        id = -1;
+        id = 0;
     }
 
     bool operator==(const Operator& other) const
@@ -64,18 +64,18 @@ namespace std {
 struct Goal
 {
     int condition;
-    long step; // the step that the condition is for
+    unsigned step; // the step that the condition is for
 
-    Goal(long owner, int precondition) : condition(precondition), step(owner) {}
+    Goal(unsigned owner, int precondition) : condition(precondition), step(owner) {}
 };
 
 struct TemporalLink
 {
 
-    long targetOperator;
+    unsigned targetOperator;
     bool isBefore; // if step1 < step2 (if step1 must happen before step2)
 
-    TemporalLink(long target, bool beforeTarget) :
+    TemporalLink(unsigned target, bool beforeTarget) :
             targetOperator(target),
             isBefore(beforeTarget) {}
 
@@ -83,24 +83,24 @@ struct TemporalLink
 
 struct Threat
 {
-    long vulnerableOperator;
+    unsigned vulnerableOperator;
     Goal vulnerableLink;
-    long operatorsThreat;
+    unsigned operatorsThreat;
 
-    Threat (long vulnerableOp, Goal causalLink, long threat)
+    Threat (unsigned vulnerableOp, Goal causalLink, unsigned threat)
             : vulnerableOperator(vulnerableOp), vulnerableLink(causalLink), operatorsThreat(threat) {}
 };
 
 struct PartialOrderPlan
 {
-    std::unordered_map<long, Operator> steps; // TODO: check if unordered_map is the right map for the job.
-    std::unordered_map<Operator, int> stepsDone;
+    std::unordered_map<unsigned, Operator> steps; // TODO: check if unordered_map is the right map for the job.
+    std::unordered_map<Operator, unsigned> stepsDone;
     std::vector< std::vector<TemporalLink> > ordering;
     std::vector< std::vector<Goal> > links;
     std::vector<Threat> threats;
     std::queue<Goal> open;
-    long start;
-    long end;
+    unsigned start;
+    unsigned end;
 
     PartialOrderPlan()
     {

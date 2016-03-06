@@ -50,7 +50,7 @@ void PartialOrderPlanner::addOpenGoals(PartialOrderPlan& plan, const Operator& n
 }
 
 // Orders two steps in the plan by adding a temporal link between them
-void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, long op, long target, bool isBefore) // TODO: rename these parameters (step1, isBefore, step2)
+void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, unsigned op, unsigned target, bool isBefore) // TODO: rename these parameters (step1, isBefore, step2)
 {
         TemporalLink temporalLinkBefore(target, isBefore);
         plan.ordering[op].push_back(temporalLinkBefore);
@@ -60,7 +60,7 @@ void PartialOrderPlanner::addTemporalLink(PartialOrderPlan& plan, long op, long 
     }
 
 // Checks to see if there are any operators existing that could threaten this link
-void PartialOrderPlanner::findThreatsToCausalLink(PartialOrderPlan& plan, long newOperator, Goal causalLink)
+void PartialOrderPlanner::findThreatsToCausalLink(PartialOrderPlan& plan, unsigned newOperator, Goal causalLink)
 {
         std::vector<Operator> potentialThreats;
 
@@ -92,7 +92,7 @@ void PartialOrderPlanner::findThreatsCausedByOperator(PartialOrderPlan& plan, co
 
         for (auto subItr = newOperator.subtractedEffects.begin(); subItr != newOperator.subtractedEffects.end(); ++subItr)
         {
-            for (long step = 0; step < plan.links.size(); ++step)
+            for (unsigned step = 0; step < plan.links.size(); ++step)
             {
                 std::vector<Goal> stepsLinks = plan.links[step];
                 for (auto linkItr = stepsLinks.begin(); linkItr != stepsLinks.end(); ++linkItr)
@@ -171,15 +171,15 @@ void PartialOrderPlanner::demote(PartialOrderPlan& plan, const Threat& threat)
 
 bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
 {
-        long numVertices = plan.ordering.size();
-        long* parent = new long[numVertices];
+        unsigned numVertices = plan.ordering.size();
+        int* parent = new int[numVertices];
 
-        for (unsigned int i = 0; i < numVertices; ++i)
+        for (unsigned i = 0; i < numVertices; ++i)
         {
             parent[i] = -1;
         }
 
-        std::list<long> stack;
+        std::list<unsigned> stack;
 
         parent[plan.start] = -1;
         stack.push_back(plan.start);
@@ -188,7 +188,7 @@ bool PartialOrderPlanner::isCyclicPlan(const PartialOrderPlan& plan)
 
         while(!stack.empty())
         {
-            long step = stack.back();
+            unsigned step = stack.back();
 
             for (itr = plan.ordering[step].begin(); itr != plan.ordering[step].end(); ++itr)
             {
@@ -259,17 +259,17 @@ Goal PartialOrderPlanner::selectOpenGoal(PartialOrderPlan& plan)
         return goal;
     }
 
-bool PartialOrderPlanner::step1IsBeforeStep2(const PartialOrderPlan& plan, long step1, long step2)
+bool PartialOrderPlanner::step1IsBeforeStep2(const PartialOrderPlan& plan, unsigned step1, unsigned step2)
 {
-        long numVertices = plan.steps.size();
+        unsigned numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
 
-        for (unsigned int i = 0; i < numVertices; ++i)
+        for (unsigned i = 0; i < numVertices; ++i)
         {
             visited[i] = false;
         }
 
-        std::list<long> queue;
+        std::list<unsigned> queue;
 
         visited[step1] = true;
         queue.push_back(step1);
@@ -278,7 +278,7 @@ bool PartialOrderPlanner::step1IsBeforeStep2(const PartialOrderPlan& plan, long 
 
         while(!queue.empty())
         {
-            long step = queue.front();
+            unsigned step = queue.front();
             queue.pop_front();
 
             if (step == step2) return true;
@@ -299,17 +299,17 @@ bool PartialOrderPlanner::step1IsBeforeStep2(const PartialOrderPlan& plan, long 
         return false;
 }
 
-bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, long step1, long step2)
+bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, unsigned step1, unsigned step2)
 {
-        long numVertices = plan.steps.size();
+        unsigned numVertices = plan.steps.size();
         bool* visited = new bool[numVertices];
 
-        for (unsigned int i = 0; i < numVertices; ++i)
+        for (unsigned i = 0; i < numVertices; ++i)
         {
             visited[i] = false;
         }
 
-        std::list<long> queue;
+        std::list<unsigned> queue;
 
         visited[step1] = true;
         queue.push_back(step1);
@@ -318,7 +318,7 @@ bool PartialOrderPlanner::step1IsAfterStep2(const PartialOrderPlan& plan, long s
 
         while(!queue.empty())
         {
-            long step = queue.front();
+            unsigned step = queue.front();
             queue.pop_front();
 
             if (step == step2) return true;

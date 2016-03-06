@@ -7,18 +7,18 @@
 
 #include <PartialOrderPlan.h>
 
-inline std::vector<long> topologicalSort(PartialOrderPlan plan, long vert)
+inline std::vector<unsigned> topologicalSort(PartialOrderPlan plan, unsigned vert)
 {
-    std::vector<long> totalOrderPlan;
-    long numVertices = plan.ordering.size();
-    long* parent = new long[numVertices];
+    std::vector<unsigned> totalOrderPlan;
+    unsigned numVertices = plan.ordering.size();
+    int* parent = new int[numVertices];
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (unsigned i = 0; i < numVertices; ++i)
     {
         parent[i] = -1;
     }
 
-    std::list<long> stack;
+    std::list<unsigned> stack;
 
     parent[vert] = -1;
     stack.push_back(vert);
@@ -53,16 +53,16 @@ inline std::vector<long> topologicalSort(PartialOrderPlan plan, long vert)
     return totalOrderPlan;
 }
 
-inline void BFS(PartialOrderPlan plan, long vert)
+inline void BFS(PartialOrderPlan plan, unsigned vert)
 {
-    long numVertices = plan.steps.size();
+    unsigned numVertices = plan.steps.size();
     bool* visited = new bool[numVertices];
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (unsigned i = 0; i < numVertices; ++i)
     {
         visited[i] = false;
     }
 
-    std::list<long> queue;
+    std::list<unsigned> queue;
 
     visited[vert] = true;
     queue.push_back(vert);
@@ -72,14 +72,12 @@ inline void BFS(PartialOrderPlan plan, long vert)
     while(!queue.empty())
     {
         vert = queue.front();
-        std::cout << vert << ": ";
         queue.pop_front();
 
         for (itr = plan.ordering[vert].begin(); itr != plan.ordering[vert].end(); ++itr)
         {
             if (!visited[itr->targetOperator])
             {
-                std::cout << "isBefore (" << itr->isBefore << ") -> " << itr->targetOperator << "| ";
                 visited[itr->targetOperator] = true;
                 queue.push_back(itr->targetOperator);
             }
@@ -89,17 +87,17 @@ inline void BFS(PartialOrderPlan plan, long vert)
     }
 }
 
-inline void DFSVisit(PartialOrderPlan plan, long vert)
+inline void DFSVisit(PartialOrderPlan plan, unsigned vert)
 {
-    long numVertices = plan.ordering.size();
-    long* parent = new long[numVertices];
+    unsigned numVertices = plan.ordering.size();
+    int* parent = new int[numVertices];
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (unsigned i = 0; i < numVertices; ++i)
     {
         parent[i] = -1;
     }
 
-    std::list<long> stack;
+    std::list<unsigned> stack;
 
     parent[vert] = -1;
     stack.push_back(vert);
@@ -131,17 +129,17 @@ inline void DFSVisit(PartialOrderPlan plan, long vert)
     }
 }
 
-inline bool hasCycle(PartialOrderPlan plan, long vert)
+inline bool hasCycle(PartialOrderPlan plan, unsigned vert)
 {
-    long numVertices = plan.ordering.size();
-    long* parent = new long[numVertices];
+    unsigned numVertices = plan.ordering.size();
+    int* parent = new int[numVertices];
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (unsigned i = 0; i < numVertices; ++i)
     {
         parent[i] = -1;
     }
 
-    std::list<long> stack;
+    std::list<unsigned> stack;
 
     parent[vert] = -1;
     stack.push_back(vert);
@@ -225,7 +223,7 @@ inline void printPlanInformation(PartialOrderPlan plan)
     }
 
     std::cout << std::endl << "Building total order plan" << std::endl;
-    std::vector<long> totalOrderPlan = topologicalSort(plan, plan.start);//getTotalOrderPlan(plans[0]);
+    std::vector<unsigned> totalOrderPlan = topologicalSort(plan, plan.start);//getTotalOrderPlan(plans[0]);
 
     std::cout << std::endl;
     std::cout << "Total Order Plan (One of them)" << std::endl;
@@ -233,7 +231,7 @@ inline void printPlanInformation(PartialOrderPlan plan)
 
     for (auto step = totalOrderPlan.begin(); step != totalOrderPlan.end(); ++step)
     {
-        std::unordered_map<long, Operator>::iterator op = plan.steps.find(*step);
+        std::unordered_map<unsigned, Operator>::iterator op = plan.steps.find(*step);
         if (op != plan.steps.end())
             std::cout << op->second.name << std::endl;
         else
@@ -241,10 +239,10 @@ inline void printPlanInformation(PartialOrderPlan plan)
     }
 }
 
-inline std::vector<long> getTotalOrderPlan(PartialOrderPlan plan)
+inline std::vector<unsigned> getTotalOrderPlan(PartialOrderPlan plan)
 {
     std::cout << std::endl << "Building total order plan" << std::endl;
-    std::vector<long> totalOrderPlan = topologicalSort(plan, plan.start);
+    std::vector<unsigned> totalOrderPlan = topologicalSort(plan, plan.start);
 
     std::cout << std::endl;
     std::cout << "Total Order Plan (One of them)" << std::endl;
@@ -252,7 +250,7 @@ inline std::vector<long> getTotalOrderPlan(PartialOrderPlan plan)
 
     for (auto step = totalOrderPlan.begin(); step != totalOrderPlan.end(); ++step)
     {
-        std::unordered_map<long, Operator>::iterator op = plan.steps.find(*step);
+        std::unordered_map<unsigned, Operator>::iterator op = plan.steps.find(*step);
         if (op != plan.steps.end())
             std::cout << op->second.name << std::endl;
         else

@@ -5,8 +5,6 @@
 #include "ScheduleInstance.h"
 #include "Schedule.h"
 #include "ScheduleEntry.h"
-#include <iostream>
-#include <WorldState.h>
 
 ScheduleInstance::ScheduleInstance(Schedule* s) : entryIndex(-1), entryEndTime(0)
 {

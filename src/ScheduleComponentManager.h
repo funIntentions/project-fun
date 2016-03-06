@@ -43,7 +43,6 @@ private:
     std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
 
     WorldState worldState; // TODO: Temp
-    std::vector<Predicate> actionEffects; // TODO: Temp
 
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
     const std::string PLANNER_SCHEDULE_ENTRY = "planner";

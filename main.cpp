@@ -286,8 +286,6 @@ int main()
     game.run();
 
     /*parseJsonData();
-    // TODO: Building new operators should be made much quicker/easier than this
-    // TODO: check how long the algorithm takes
     PartialOrderPlanner partialOrderPlanner(briefcaseOperators);
     vector<PartialOrderPlan> plans = partialOrderPlanner.findPartialOrderPlan(briefcaseStart, briefcaseEnd);
     if (plans.size() > 0)

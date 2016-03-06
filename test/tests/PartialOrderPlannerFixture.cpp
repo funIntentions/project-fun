@@ -48,12 +48,12 @@ public:
 
         ASSERT_GE(plans.size(), 0) << "No plans found."<< std::endl;
 
-        std::vector<long> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
+        std::vector<unsigned> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
         std::vector<Operator> plan;
 
         for (int step = 0; step != totalOrderPlan.size(); ++step)
         {
-            std::unordered_map<long, Operator>::iterator op = plans[0].steps.find(totalOrderPlan[step]);
+            std::unordered_map<unsigned, Operator>::iterator op = plans[0].steps.find(totalOrderPlan[step]);
             ASSERT_NE(op, plans[0].steps.end());
             plan.push_back(op->second);
         }
