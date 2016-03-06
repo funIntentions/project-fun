@@ -23,4 +23,4 @@ add_subdirectory(test)
 
 add_executable(run_planner ${SOURCE_FILES} )
 
-target_link_libraries(run_planner ${OPENGL_LIBRARIES} planner glfw3 glew32s glu32 opengl32)
+target_link_libraries(run_planner planner ${OPENGL_LIBRARIES} glfw3 glew32s glu32 opengl32)

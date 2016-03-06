@@ -2,9 +2,11 @@
 // Created by Dan on 2/19/2016.
 //
 
+#define GLEW_STATIC
+#include <GL/glew.h>
+
 #include <stdlib.h>
 #include <iostream>
-#include <GL/glew.h>
 #include "Graphics.h"
 
 bool Graphics::initialize()
@@ -29,7 +31,15 @@ bool Graphics::initialize()
         exit(EXIT_FAILURE);
     }
 
-    // TODO: initialize GLEW
+    // initialize GLEW
+    glewExperimental = GL_TRUE;
+    glewInit();
+    if (glewIsSupported("GL_VERSION_3_3"))
+        printf("Ready for OpenGL 3.3\n");
+    else {
+        printf("OpenGL 3.3 not supported\n");
+        exit(1);
+    }
 
     // Set GL settings
     glEnable(GL_BLEND);
