@@ -18,7 +18,7 @@ bool Window::create()
 
     if (!window)
     {
-        glfwTerminate(); // TODO: do I need to call this in destructor
+        glfwTerminate();
         return false;
     }
 

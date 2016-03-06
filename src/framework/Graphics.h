@@ -42,11 +42,10 @@ public:
 
     void shutdown()
     {
-        // TODO: should I call window shutdown here?
+        window->destroy();
+        delete window;
         glfwTerminate();
     }
-
-    //void handle()
 };
 
 
