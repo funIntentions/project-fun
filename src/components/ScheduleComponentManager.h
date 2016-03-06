@@ -9,7 +9,7 @@
 #include <memory>
 #include "ComponentManager.h"
 #include "PartialOrderPlan.h"
-#include "CharacterComponentManagers.h"
+#include "LocationComponentManager.h"
 #include "WorldState.h"
 
 class ActionInstance;

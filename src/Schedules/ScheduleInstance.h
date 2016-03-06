@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
 
 #include <WorldState.h>
-#include <ScheduleComponentManager.h>
+#include <components/ScheduleComponentManager.h>
 
 class Schedule;
 class ActionInstance;

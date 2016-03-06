@@ -9,8 +9,8 @@
 #include <chrono>
 #include <memory>
 #include <iostream>
-#include <ScheduleComponentManager.h>
-#include "CharacterComponentManagers.h"
+#include "components/ScheduleComponentManager.h"
+#include "components/LocationComponentManager.h"
 #include <fstream>
 #include <rapidjson/document.h>
 #include <math.h>
@@ -25,7 +25,7 @@ public:
              _input(new Input()),
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager()),
-             _placeComponentManager(new PlaceComponentManager()),
+             _locationComponentManager(new LocationComponentManager()),
              _actionManager(new ActionManager)
     { }
 
@@ -83,7 +83,7 @@ private:
     std::shared_ptr<Graphics> _graphics;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
-    std::shared_ptr<PlaceComponentManager> _placeComponentManager;
+    std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
@@ -125,7 +125,7 @@ private:
         _input->initialize(_graphics->window->window);
 
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
-        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_placeComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
+        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_locationComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
         Entity village = _entityManager->create();
         Entity forest = _entityManager->create();
@@ -134,18 +134,18 @@ private:
         Entity planes = _entityManager->create();
         Entity caves = _entityManager->create();
 
-        _placeComponentManager->spawnComponent(village, "Village", {forest, meadow});
-        _placeComponentManager->spawnComponent(meadow, "Meadow", {swamp, planes, village});
-        _placeComponentManager->spawnComponent(forest, "Forest", {village, swamp});
-        _placeComponentManager->spawnComponent(swamp, "Swamp", {meadow, forest, caves});
-        _placeComponentManager->spawnComponent(caves, "Caves", {planes, swamp});
-        _placeComponentManager->spawnComponent(planes, "Planes", {meadow, caves});
+        _locationComponentManager->spawnComponent(village, "Village", {forest, meadow});
+        _locationComponentManager->spawnComponent(meadow, "Meadow", {swamp, planes, village});
+        _locationComponentManager->spawnComponent(forest, "Forest", {village, swamp});
+        _locationComponentManager->spawnComponent(swamp, "Swamp", {meadow, forest, caves});
+        _locationComponentManager->spawnComponent(caves, "Caves", {planes, swamp});
+        _locationComponentManager->spawnComponent(planes, "Planes", {meadow, caves});
 
         readEntities(*_entityManager, *_scheduleComponentManager);
 
 
         //Action action("test", 0, 0, 0);
-        //std::vector<Operator> operators = _placeComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);
+        //std::vector<Operator> operators = _locationComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);
     }
 
     void keyPressed(int key)

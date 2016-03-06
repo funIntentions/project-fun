@@ -10,7 +10,7 @@
 #include <set>
 #include <PartialOrderPlanner.h>
 #include <WorldState.h>
-#include <ScheduleComponentManager.h>
+#include <components/ScheduleComponentManager.h>
 
 class Action;
 class ActionInstance;

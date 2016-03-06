@@ -30,8 +30,12 @@ set(SOURCE_FILES
         schedules/ActionInstance.h
         schedules/ScheduleInstance.cpp
         schedules/ScheduleInstance.h
-        ScheduleComponentManager.cpp
-        ScheduleComponentManager.h
+        components/ScheduleComponentManager.h
+        components/ScheduleComponentManager.cpp
+        components/LocationComponentManager.h
+        components/LocationComponentManager.cpp
+        components/PositionComponentManager.h
+        components/PositionComponentManager.cpp
         framework/Game.h
         framework/Window.cpp
         framework/Window.h
