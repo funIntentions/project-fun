@@ -43,6 +43,7 @@ private:
     std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
 
     WorldState worldState; // TODO: Temp
+    double time;
 
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
     const std::string PLANNER_SCHEDULE_ENTRY = "planner";
@@ -61,7 +62,7 @@ public:
 
     void registerForAction(std::string action, OperatorCallbackFunction function);
 
-    void runSchedules(double lastTime, double currentTime, double deltaTime, ActionManager& actionManager); // TODO: decouple action manager
+    void runSchedules(double deltaTime, ActionManager& actionManager); // TODO: decouple action manager
 
     void updateWorldState(std::vector<int> addedEffects, ActionManager& actionManager);
 

@@ -8,7 +8,7 @@
 #include <fstream>
 #include <rapidjson/document.h>
 
-ScheduleComponentManager::ScheduleComponentManager() : ComponentManager()
+ScheduleComponentManager::ScheduleComponentManager() : ComponentManager(), time(0.0)
 {
     _data.size = 0;
 
@@ -323,11 +323,18 @@ void ScheduleComponentManager::updateWorldState(std::vector<int> addedEffects, A
     }
 }
 
-void ScheduleComponentManager::runSchedules(double lastTime, double currentTime, double deltaTime, ActionManager& actionManager)
+void ScheduleComponentManager::runSchedules(double deltaTime, ActionManager& actionManager)
 {
+    double lastTime = time;
+    time += deltaTime;
+
+    if (time >= 24) {
+        time = fmod(time, 24);
+    }
+
     for (int i = 0; i < _data.size; ++i)
     {
-        if (_data.currentSchedule[i]->timeIsUp(lastTime, currentTime))
+        if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
         {
             //std::cout << "Entity: " << i << " New Entry" << std::endl;
             _data.currentSchedule[i]->startNextScheduleEntry(worldState);

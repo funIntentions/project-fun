@@ -85,11 +85,11 @@ void PlannerScheduleEntry::startEntry(WorldState &worldState)
 
     if (plans.size() > 0)
     {
-        std::vector<long> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
+        std::vector<unsigned> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
 
         for (auto step = totalOrderPlan.begin() + 1; step != totalOrderPlan.end() - 1; ++step)
         {
-            std::unordered_map<long, Operator>::iterator op = plans[0].steps.find(*step);
+            std::unordered_map<unsigned, Operator>::iterator op = plans[0].steps.find(*step);
             if (op != plans[0].steps.end())
                 plan.insert(plan.begin(), op->second);
         }

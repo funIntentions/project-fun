@@ -51,7 +51,7 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->runSchedules(time, time + period.count(), period.count(), *_actionManager);
+                _scheduleComponentManager->runSchedules(period.count(), *_actionManager);
 
                 elapsed -= period;
                 time += period.count();
@@ -65,11 +65,6 @@ public:
                 std::cout << "fps: " << (((float) frames) / std::chrono::duration<float>(ticks - fps).count()) << std::endl;
                 fps = std::chrono::system_clock::now();
                 frames = 0;
-            }
-
-            // TODO: handle hours in day within schedule system
-            if (time >= 24) {
-                time = fmod(time, 24);
             }
 
             _graphics->clearScreen();

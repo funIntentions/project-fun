@@ -93,7 +93,7 @@ struct Threat
 
 struct PartialOrderPlan
 {
-    std::unordered_map<unsigned, Operator> steps; // TODO: check if unordered_map is the right map for the job.
+    std::unordered_map<unsigned, Operator> steps;
     std::unordered_map<Operator, unsigned> stepsDone;
     std::vector< std::vector<TemporalLink> > ordering;
     std::vector< std::vector<Goal> > links;
