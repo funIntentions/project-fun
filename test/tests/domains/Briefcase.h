@@ -5,11 +5,11 @@
 #ifndef PARTIALORDERPLANNER_BRIEFCASE_H
 #define PARTIALORDERPLANNER_BRIEFCASE_H
 
-#include "../PartialOrderPlan.h"
+#include "PartialOrderPlan.h"
 #include <tuple>
 #include <fstream>
 #include <algorithm>
-#include "../Schedules/Predicate.h"
+//#include "../Schedules/Predicate.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/document.h"
@@ -175,7 +175,7 @@ size_t addPredicate(Predicate predicate)
     return id;
 }*/
 
-struct Task
+/*struct Task
 {
     std::string name;
     std::vector<std::string> parameters;
@@ -186,7 +186,7 @@ struct Task
     Task(std::string op = "") : name(op)
     {
     }
-};
+};*/
 /*
 std::unordered_map<std::string, Task> tasks;
 std::vector<std::string> entities;

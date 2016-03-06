@@ -2,7 +2,18 @@ cmake_minimum_required(VERSION 3.2)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(runBasicTests PartialOrderPlannerFixture.cpp)
+SET(HEADER_FILES
+        domains/Briefcase.h
+        domains/FruitBowl.h
+        domains/Krulg.h
+        domains/Sussman.h
+        domains/Table.h
+        domains/WorldLocation.h)
 
-target_link_libraries(runBasicTests gtest gtest_main)
-target_link_libraries(runBasicTests planner)
+SET(SOURCE_FILES
+        PartialOrderPlannerFixture.cpp)
+
+add_executable(run_tests ${SOURCE_FILES} ${HEADER_FILES})
+
+target_link_libraries(run_tests gtest gtest_main)
+target_link_libraries(run_tests planner)

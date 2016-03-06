@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_SETTINGTABLE_H
 #define PARTIALORDERPLANNER_SETTINGTABLE_H
 
-#include "../PartialOrderPlan.h"
+#include "PartialOrderPlan.h"
 
 enum TableStates
 {

@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_COMPONENTMANAGERS_H
 #define PARTIALORDERPLANNER_COMPONENTMANAGERS_H
 
-#include <tests/Krulg.h>
+/*#include <tests/Krulg.h>
 #include "ComponentManager.h"
 #include "tests/WorldLocation.h"
 
@@ -227,6 +227,6 @@ public:
 
         --_data.size;
     }
-};
+};*/
 
 #endif //PARTIALORDERPLANNER_COMPONENTMANAGERS_H

@@ -4,10 +4,10 @@
 
 #include "util/Extra.h"
 #include "gtest/gtest.h"
-#include "tests/Briefcase.h"
-#include "tests/FruitBowl.h"
-#include "tests/Sussman.h"
-#include "tests/Table.h"
+#include "domains/Briefcase.h"
+#include "domains/FruitBowl.h"
+#include "domains/Sussman.h"
+#include "domains/Table.h"
 
 #include "PartialOrderPlanner.h"
 

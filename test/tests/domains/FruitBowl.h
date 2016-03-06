@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_FRUITBOWL_H
 #define PARTIALORDERPLANNER_FRUITBOWL_H
 
-#include "../PartialOrderPlan.h"
+#include "PartialOrderPlan.h"
 
 enum FruitBowlStates
 {

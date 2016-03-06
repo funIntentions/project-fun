@@ -10,11 +10,6 @@ set(HEADER_FILES
         ComponentManager.h
         ComponentManagers.h
         EntityManager.h
-        tests/Sussman.h
-        tests/FruitBowl.h
-        tests/Table.h
-        tests/WorldLocation.h
-        tests/Krulg.h
         util/Extra.h
         schedules/Schedule.h
         schedules/ActionInstance.cpp

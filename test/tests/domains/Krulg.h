@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_KRULG_H
 
 #include <vector>
-#include "../PartialOrderPlan.h"
+#include "PartialOrderPlan.h"
 
 enum AdventureStates
 {

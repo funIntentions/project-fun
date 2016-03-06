@@ -2,14 +2,8 @@
 #include <vector>
 #include <sstream>
 #include "PartialOrderPlanner.h"
-#include "tests/Sussman.h"
-#include "tests/Briefcase.h"
-#include "tests/FruitBowl.h"
-#include "tests/Table.h"
 #include "EntityManager.h"
 #include "ComponentManagers.h"
-#include "tests/WorldLocation.h"
-#include "tests/Krulg.h"
 #include <chrono>
 #include <ScheduleComponentManager.h>
 #include <framework/Game.h>
