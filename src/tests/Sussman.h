@@ -32,6 +32,7 @@ struct SussmanDomain
 {
 public:
     std::vector<Operator> operators;
+    std::vector<Operator> correctPlan;
     Operator start, finish;
 
     SussmanDomain()
@@ -39,11 +40,11 @@ public:
         start.name = "start";
         finish.name = "finish";
 
-        //start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
-        //finish.preconditions = {AonB, BonC};
+        start.addedEffects = {ConA, handEmpty, AOnTable, BOnTable, clearB, clearC};
+        finish.preconditions = {AonB, BonC};
 
-        start.addedEffects = {AonB, BonC, COnTable, clearA, handEmpty};
-        finish.preconditions = {AonC};
+        //start.addedEffects = {AonB, BonC, COnTable, clearA, handEmpty};
+        //finish.preconditions = {AonC};
 
         Operator unstackCA("Unstack(C,A)");
         unstackCA.preconditions = {clearC, ConA, handEmpty};
@@ -114,6 +115,15 @@ public:
         putdownB.preconditions = {holdingB};
         putdownB.addedEffects = {BOnTable, clearB, handEmpty};
         putdownB.subtractedEffects = {holdingB};
+
+        correctPlan.push_back(finish);
+        correctPlan.push_back(stackAB);
+        correctPlan.push_back(pickupA);
+        correctPlan.push_back(stackBC);
+        correctPlan.push_back(pickupB);
+        correctPlan.push_back(putdownC);
+        correctPlan.push_back(unstackCA);
+        correctPlan.push_back(start);
 
         operators = {unstackCA, unstackAB, unstackBC, pickupA, pickupB, pickupC, stackAB, stackBC, stackCA, stackCB, stackAC, putdownC, putdownA, putdownB};
     }

@@ -32,6 +32,7 @@ enum FruitBowlStates
 struct FruitBowlDomain
 {
     std::vector<Operator> operators;
+    std::vector<Operator> correctPlan;
     Operator start, finish;
 
     FruitBowlDomain()
@@ -86,6 +87,12 @@ struct FruitBowlDomain
         eatPear.preconditions = {hungry, holdingPear, pearNotEaten};
         eatPear.addedEffects = {notHungry, pearEaten, handsEmpty};
         eatPear.subtractedEffects = {pearNotEaten, holdingPear, hungry};
+
+        correctPlan.push_back(finish);
+        correctPlan.push_back(putOrangeInBowl);
+        correctPlan.push_back(pickupOrangeFromTable);
+        correctPlan.push_back(eatBanana);
+        correctPlan.push_back(start);
 
         operators = {pickupOrangeFromTable, putOrangeInBowl, putBananaInBowl, eatBanana};
     }

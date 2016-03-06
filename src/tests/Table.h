@@ -19,6 +19,7 @@ enum TableStates
 struct TableDomain
 {
     std::vector<Operator> operators;
+    std::vector<Operator> correctPlan;
     Operator start, finish;
 
     TableDomain()
@@ -42,6 +43,13 @@ struct TableDomain
         Operator putOutSilverware("putOutSilverware");
         putOutSilverware.addedEffects = {outSilverware};
         putOutSilverware.subtractedEffects = {tableCleared};
+
+        correctPlan.push_back(finish);
+        correctPlan.push_back(putOutGlasses);
+        correctPlan.push_back(putOutPlates);
+        correctPlan.push_back(putOutSilverware);
+        correctPlan.push_back(layTableCloth);
+        correctPlan.push_back(start);
 
         operators = {layTableCloth, putOutGlasses, putOutPlates, putOutSilverware};
     }
