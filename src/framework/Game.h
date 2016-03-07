@@ -14,10 +14,12 @@
 #include <fstream>
 #include <rapidjson/document.h>
 #include <math.h>
+#include <components/PositionComponentManager.h>
 #include "Graphics.h"
 #include "Input.h"
 #include "WorldState.h"
 
+// TODO: pull all the game logic in to an game object that extends from this.
 class Game
 {
 public:
@@ -26,6 +28,7 @@ public:
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager()),
              _locationComponentManager(new LocationComponentManager()),
+             _positionComponentManager(new PositionComponentManager()),
              _actionManager(new ActionManager)
     { }
 
@@ -84,6 +87,7 @@ private:
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
+    std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
 
     void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
@@ -95,25 +99,74 @@ private:
         rapidjson::Document document;
         document.Parse(json);
 
+        std::vector<Entity> entities;
         const rapidjson::Value& a = document["entities"];
         assert(a.IsArray());
 
+        // First create all entities
         for (auto entityData = a.Begin(); entityData != a.End(); ++entityData)
         {
-            Entity entity = entityManager.create();
 
             std::string entityName;
-            std::string scheduleName;
+            //std::string scheduleName;
 
             auto nameItr = entityData->FindMember("name");
             if (nameItr != entityData->MemberEnd())
                 entityName = nameItr->value.GetString();
 
-            auto scheduleItr = entityData->FindMember("schedule");
-            if (scheduleItr != entityData->MemberEnd())
-                scheduleName = scheduleItr->value.GetString();
+            Entity entity = entityManager.create(entityName);
+            entities.push_back(entity);
+        }
 
-            scheduleComponentManager.spawnComponent(entity, scheduleName, 0);
+        // Next setup their components
+        auto entity = entities.begin();
+        for (auto entityData = a.Begin(); entityData != a.End() && entity != entities.end(); ++entityData)
+        {
+            std::string entityName;
+            auto nameItr = entityData->FindMember("name");
+            if (nameItr != entityData->MemberEnd())
+                entityName = nameItr->value.GetString();
+
+            auto components = entityData->FindMember("components");
+
+            if (components != document.MemberEnd())
+            {
+                assert(components->value.IsArray());
+                for (auto component = components->value.Begin(); component != components->value.End(); ++component)
+                {
+                    assert(component->IsObject());
+                    auto componentName = component->FindMember("name");
+
+                    std::string name = componentName->value.GetString();
+                    auto componentValue = component->FindMember("value");
+                    if (name == "schedule")
+                    {
+                        assert(componentValue->value.IsString());
+                        std::string scheduleName = componentValue->value.GetString();
+                        _scheduleComponentManager->spawnComponent(*entity, scheduleName, 0.0);
+                    }
+                    else if (name == "position")
+                    {
+                        assert(componentValue->value.IsString());
+                        std::string positionName = componentValue->value.GetString();
+                        _positionComponentManager->spawnComponent(*entity, _entityManager->getEntity(positionName));
+                    }
+                    else if (name == "location")
+                    {
+                        assert(componentValue->value.IsArray());
+                        std::vector<Entity> locations;
+                        for (auto connection = componentValue->value.Begin(); connection != componentValue->value.End(); ++connection)
+                        {
+                            std::string locationName = connection->GetString();
+                            Entity locationEntity = _entityManager->getEntity(locationName);
+                            locations.push_back(locationEntity);
+                        }
+
+                        _locationComponentManager->spawnComponent(*entity, entityName, locations);
+                    }
+                }
+            }
+            ++entity;
         }
     }
 
@@ -127,25 +180,7 @@ private:
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
         _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_locationComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
-        Entity village = _entityManager->create();
-        Entity forest = _entityManager->create();
-        Entity meadow = _entityManager->create();
-        Entity swamp = _entityManager->create();
-        Entity planes = _entityManager->create();
-        Entity caves = _entityManager->create();
-
-        _locationComponentManager->spawnComponent(village, "Village", {forest, meadow});
-        _locationComponentManager->spawnComponent(meadow, "Meadow", {swamp, planes, village});
-        _locationComponentManager->spawnComponent(forest, "Forest", {village, swamp});
-        _locationComponentManager->spawnComponent(swamp, "Swamp", {meadow, forest, caves});
-        _locationComponentManager->spawnComponent(caves, "Caves", {planes, swamp});
-        _locationComponentManager->spawnComponent(planes, "Planes", {meadow, caves});
-
         readEntities(*_entityManager, *_scheduleComponentManager);
-
-
-        //Action action("test", 0, 0, 0);
-        //std::vector<Operator> operators = _locationComponentManager->determineActionsOfEntity(action, nowhere, _actionManager);
     }
 
     void keyPressed(int key)

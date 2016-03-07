@@ -5,6 +5,7 @@
 #ifndef PARTIALORDERPLANNER_POSITIONCOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_POSITIONCOMPONENTMANAGER_H
 
+#include <ActionManager.h>
 #include "ComponentManager.h"
 
 class PositionComponentManager : public ComponentManager
@@ -31,10 +32,13 @@ public:
         return _data.location[entity.id];
     }
 
-    /*std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
+    std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
     {
-        return {actionManager.buildState("at", {_data.location[entity.id].id, entity.id})};
-    }*/
+        std::vector<unsigned> atParams = {_data.location[entity.id].id, entity.id};
+        int atState = actionManager.buildState("int", atParams);
+        std::vector<int> state = {atState};
+        return state;
+    }
 
     void changeEntitiesLocation(Entity entity, Entity location)
     {

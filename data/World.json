@@ -2,19 +2,102 @@
   "entities" :
   [
     {
-      "name" : "Timmy",
-      "schedule" : "person",
+      "name" : "Meadow",
       "components" :
       [
         {
-          "name" : "position",
-          "properties" :
+          "name" : "location",
+          "value" :
           [
-            {
-              "name" : "at",
-              "value" : "village"
-            }
+            "Swamp",
+            "Planes",
+            "Village"
           ]
+        }
+      ]
+    },
+    {
+      "name" : "Planes",
+      "components" :
+      [
+        {
+          "name" : "location",
+          "value" :
+          [
+            "Meadow",
+            "Caves"
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Caves",
+      "components" :
+      [
+        {
+          "name" : "location",
+          "value" :
+          [
+            "Swamp",
+            "Planes"
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Swamp",
+      "components" :
+      [
+        {
+          "name" : "location",
+          "value" :
+          [
+            "Meadow",
+            "Forest",
+            "Caves"
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Forest",
+      "components" :
+      [
+        {
+          "name" : "location",
+          "value" :
+          [
+            "Swamp",
+            "Village"
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Village",
+      "components" :
+      [
+        {
+          "name" : "location",
+          "value" :
+          [
+            "Forest",
+            "Meadow"
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Timmy",
+      "components" :
+      [
+        {
+          "name" : "schedule",
+          "value" : "person"
+        },
+        {
+          "name" : "position",
+          "value" : "Village"
         }
       ]
     }

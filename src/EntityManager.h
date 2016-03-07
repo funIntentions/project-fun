@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <deque>
+#include <string>
+#include <unordered_map>
 
 const unsigned MINIMUM_FREE_INDICES = 1024;
 
@@ -27,6 +29,7 @@ struct Entity
 class EntityManager
 {
 private:
+    std::unordered_map<std::string, unsigned> _names;
     std::vector<unsigned char> _generation;
     std::deque<unsigned> _freeIndices;
 
@@ -34,9 +37,10 @@ private:
 
 public:
 
-    Entity create();
+    Entity create(std::string name);
     bool alive(Entity e) const;
     void destroy(Entity e);
+    Entity getEntity(std::string name);
 
 };
 

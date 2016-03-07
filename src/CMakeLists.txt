@@ -9,13 +9,22 @@ set(HEADER_FILES
         PartialOrderPlanner.h
         ComponentManager.h
         EntityManager.h
-        util/Extra.h
         schedules/Schedule.h
-        schedules/ActionInstance.cpp
+        schedules/ScheduleEntry.h
+        schedules/Action.h
         schedules/ActionInstance.h
-        schedules/ScheduleInstance.cpp
         schedules/ScheduleInstance.h
+        components/ScheduleComponentManager.h
+        components/LocationComponentManager.h
+        components/PositionComponentManager.h
         ActionManager.h
+        framework/Game.h
+        framework/Window.h
+        framework/Graphics.h
+        framework/Input.h
+        framework/Keyboard.h
+        util/Extra.h
+        schedules/Predicate.h
         WorldState.h)
 
 set(SOURCE_FILES
@@ -23,29 +32,17 @@ set(SOURCE_FILES
         EntityManager.cpp
         schedules/Schedule.cpp
         schedules/ScheduleEntry.cpp
-        schedules/ScheduleEntry.h
         schedules/Action.cpp
-        schedules/Action.h
         schedules/ActionInstance.cpp
-        schedules/ActionInstance.h
         schedules/ScheduleInstance.cpp
-        schedules/ScheduleInstance.h
-        components/ScheduleComponentManager.h
         components/ScheduleComponentManager.cpp
-        components/LocationComponentManager.h
         components/LocationComponentManager.cpp
-        components/PositionComponentManager.h
         components/PositionComponentManager.cpp
-        framework/Game.h
+        ActionManager.cpp
         framework/Window.cpp
-        framework/Window.h
         framework/Graphics.cpp
-        framework/Graphics.h
         framework/Input.cpp
-        framework/Input.h
         framework/Keyboard.cpp
-        framework/Keyboard.h
-        schedules/Predicate.h
-        ActionManager.cpp)
+        )
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})
