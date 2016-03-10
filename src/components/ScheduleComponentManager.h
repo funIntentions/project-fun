@@ -11,6 +11,7 @@
 #include "PartialOrderPlan.h"
 #include "LocationComponentManager.h"
 #include "WorldState.h"
+#include "PositionComponentManager.h"
 
 class ActionInstance;
 class ScheduleInstance;
@@ -27,6 +28,7 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
+        std::vector<WorldState> state;
         std::vector<ActionInstance*> currentAction;
         std::vector<ScheduleInstance*> currentSchedule;
     };
@@ -42,7 +44,6 @@ private:
 
     std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
 
-    WorldState worldState; // TODO: Temp
     double time;
 
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
@@ -62,9 +63,9 @@ public:
 
     void registerForAction(std::string action, OperatorCallbackFunction function);
 
-    void runSchedules(double deltaTime, ActionManager& actionManager); // TODO: decouple action manager
+    void updateStates(std::shared_ptr<PositionComponentManager> positionComponentManager, std::shared_ptr<ActionManager> actionManager);
 
-    void updateWorldState(std::vector<int> addedEffects, ActionManager& actionManager);
+    std::vector<int> runSchedules(double deltaTime);
 
     void spawnComponent(Entity entity, std::string scheduleName, double currentTime);
 

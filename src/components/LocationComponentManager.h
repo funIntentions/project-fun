@@ -47,20 +47,10 @@ public:
         return ops;
     }
 
-    std::vector<size_t> determinePotentialGoals(std::shared_ptr<ActionManager> actionManager)
-    {
-        std::vector<size_t> goals;
-
-        for (int i = 0; i < _data.size; ++i)
-        {
-            goals.push_back(actionManager->buildState("at", {_data.entity[i].id}));
-        }
-    }
-
     std::string getNameOfPlace(Entity entity)
     {
         Instance inst = lookup(entity);
-        if (inst.i > 0)
+        if (inst.i >= 0)
         {
             return _data.location[inst.i];
         }

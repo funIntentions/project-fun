@@ -6,7 +6,9 @@
 #define PARTIALORDERPLANNER_POSITIONCOMPONENTMANAGER_H
 
 #include <ActionManager.h>
+#include <memory>
 #include "ComponentManager.h"
+#include "LocationComponentManager.h"
 
 class PositionComponentManager : public ComponentManager
 {
@@ -19,10 +21,11 @@ private:
     };
 
     InstanceData _data;
+    std::shared_ptr<LocationComponentManager> _locationComponentManger;
 
 public:
 
-    PositionComponentManager() : ComponentManager()
+    PositionComponentManager(std::shared_ptr<LocationComponentManager> locationComponentManager) : ComponentManager(), _locationComponentManger(locationComponentManager)
     {
         _data.size = 0;
     }
@@ -34,15 +37,19 @@ public:
 
     std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
     {
-        std::vector<unsigned> atParams = {_data.location[entity.id].id, entity.id};
-        int atState = actionManager.buildState("int", atParams);
+        Instance instance = lookup(entity);
+        std::vector<unsigned> atParams = {_data.location[instance.i].id, entity.id};
+        int atState = actionManager.buildState("at", atParams);
         std::vector<int> state = {atState};
         return state;
     }
 
     void changeEntitiesLocation(Entity entity, Entity location)
     {
-        _data.location[entity.id] = location;
+        Instance inst = lookup(entity);
+        std::cout << "old location: " << _locationComponentManger->getNameOfPlace(_data.location[inst.i]) << std::endl;
+        std::cout << "new location: " << _locationComponentManger->getNameOfPlace(location) << std::endl << std::endl;
+        _data.location[inst.i] = location;
     }
 
     void spawnComponent(Entity entity, Entity location)

@@ -28,7 +28,7 @@ public:
              _entityManager(new EntityManager()),
              _scheduleComponentManager(new ScheduleComponentManager()),
              _locationComponentManager(new LocationComponentManager()),
-             _positionComponentManager(new PositionComponentManager()),
+             _positionComponentManager(new PositionComponentManager(_locationComponentManager)),
              _actionManager(new ActionManager)
     { }
 
@@ -54,7 +54,9 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->runSchedules(period.count(), *_actionManager);
+                _scheduleComponentManager->updateStates(_positionComponentManager, _actionManager);
+                std::vector<int> addedEffects = _scheduleComponentManager->runSchedules(period.count());
+                handleEffects(addedEffects);
 
                 elapsed -= period;
                 time += period.count();
@@ -89,8 +91,9 @@ private:
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
+    std::vector<Entity> _entities;
 
-    void readEntities(EntityManager& entityManager, ScheduleComponentManager& scheduleComponentManager)
+    void readEntities(EntityManager& entityManager)
     {
         std::ifstream in("data/World.json");
         std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
@@ -99,7 +102,6 @@ private:
         rapidjson::Document document;
         document.Parse(json);
 
-        std::vector<Entity> entities;
         const rapidjson::Value& a = document["entities"];
         assert(a.IsArray());
 
@@ -115,12 +117,12 @@ private:
                 entityName = nameItr->value.GetString();
 
             Entity entity = entityManager.create(entityName);
-            entities.push_back(entity);
+            _entities.push_back(entity);
         }
 
         // Next setup their components
-        auto entity = entities.begin();
-        for (auto entityData = a.Begin(); entityData != a.End() && entity != entities.end(); ++entityData)
+        auto entity = _entities.begin();
+        for (auto entityData = a.Begin(); entityData != a.End() && entity != _entities.end(); ++entityData)
         {
             std::string entityName;
             auto nameItr = entityData->FindMember("name");
@@ -170,6 +172,20 @@ private:
         }
     }
 
+    void handleEffects(std::vector<int> addedEffects)
+    {
+        for (int id : addedEffects)
+        {
+            Predicate predicate = _actionManager->getPredicate(id);
+
+            if (predicate.type == "at")
+            {
+                std::cout << "Added effect: " << id << std::endl;
+                _positionComponentManager->changeEntitiesLocation({predicate.params[1]}, {predicate.params[0]});
+            }
+        }
+    }
+
     void initialize()
     {
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
@@ -180,7 +196,7 @@ private:
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
         _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_locationComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
-        readEntities(*_entityManager, *_scheduleComponentManager);
+        readEntities(*_entityManager);
     }
 
     void keyPressed(int key)
