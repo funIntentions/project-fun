@@ -20,6 +20,57 @@
       ]
     },
     {
+      "name" : "travelToLake",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["from", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "at", "params" : ["to", "c"]}
+      ],
+      "subtractedEffects" :
+      [
+        {"name" : "at", "params" : ["from", "c"]}
+      ]
+    },
+    {
+      "name" : "fish",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "body_of_water"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["body_of_water", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "fishing", "params" : ["c"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "eat",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "food_source"},  {"name" : "location"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "at", "params" : ["location", "c"]},
+        {"name" : "at", "params" : ["location", "food_source"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "gone", "params" : ["food_source"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
       "name" : "idle",
       "minDuration" : 1,
       "maxDuration" : 3,
@@ -33,7 +84,7 @@
   "scheduleEntryTemplates" :
   [
     {
-      "name" : "dayTemplate",
+      "name" : "fishingTemplate",
       "type" : "planner",
       "actions" :
       [
@@ -48,6 +99,19 @@
     {
       "name" : "nightTemplate",
       "type" : "planner",
+      "actions" :
+      [
+        {
+          "name" : "idle"
+        },
+        {
+          "name" : "travel"
+        }
+      ]
+    },
+    {
+      "name" : "nightTemplate",
+      "type" : "simple",
       "actions" :
       [
         {
@@ -77,7 +141,22 @@
           "startTime" : 9
         }
       ]
-
+    },
+    {
+      "name" : "merfolk",
+      "entries" :
+      [
+        {
+          "name" : "night",
+          "template" : "nightTemplate",
+          "startTime" : 20
+        },
+        {
+          "name" : "day",
+          "template" : "dayTemplate",
+          "startTime" : 9
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,97 @@
+
+TODO:
+
+Add Knowledge Map For Characters, Entities can relieve certain tags like "geometric_shape", or "body_of_water", or "food_source" that can mean different things to different NPCs
+
+
+{
+    "types" :
+    [
+        {
+            "type" : "Human"
+            "associations" :
+            [
+                {
+                    "type" : "Food"
+                    "association" :
+                    [
+                        "Fish",
+                        "Pastries",
+                        "Rabbit",
+                        "Worms"
+                    ]
+
+                },
+                {
+                    "type" : "Enemies"
+                    "association" :
+                    [
+                        "Merfolk"
+                    ]
+
+                },
+                {
+                    "type" : "Bed"
+                    "association" :
+                    [
+                        "Wooden_Bed"
+                    ]
+
+                }
+            ]
+        },
+        {
+            "type" : "Fisher"
+            "associations" :
+            [
+                {
+                    "type" : "Fishing_Spot"
+                    "association" :
+                    [
+                        "Lake",
+                        "Ocean",
+                        "Pond"
+                    ]
+                },
+                {
+                    "type" : "Bait"
+                    "association" :
+                    [
+                        "Worm",
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+{
+  "name" : "Murky Lake",
+  "type" : [ "Lake" ]
+  "components" :
+  [
+    {
+      "name" : "location",
+      "value" :
+      [
+        "Forest",
+        "Meadow"
+      ]
+    }
+  ]
+},
+{
+  "name" : "Timmy",
+  "type" : [ "Fisher", "Human" ]
+  "components" :
+  [
+    {
+      "name" : "schedule",
+      "value" : "person"
+    },
+    {
+      "name" : "position",
+      "value" : "Village"
+    }
+  ]
+}

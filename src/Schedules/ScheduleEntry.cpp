@@ -65,14 +65,6 @@ ScheduleEntry* PlannerScheduleEntry::setupEntry(std::unordered_map<std::string, 
 
 void PlannerScheduleEntry::startEntry(WorldState &worldState)
 {
-    if (worldState.state.size() == 0)
-    {
-        int randStart = rand() % goals.size();
-        int selectedStart = *std::next(goals.begin(), randStart);
-        std::cout << "Selected Start: " << selectedStart << std::endl;
-        worldState.state.push_back(selectedStart); // 0 == starting location
-    }
-
     int randGoal = rand() % goals.size();
     int selectedGoal = *std::next(goals.begin(), randGoal);
     std::cout << "Selected Goal: " << selectedGoal << std::endl;
@@ -111,7 +103,7 @@ ActionInstance* PlannerScheduleEntry::chooseNewAction(WorldState& worldState)
     int planSize = plan.size();
 
     if (actionIndex >= planSize)
-        actionIndex = planSize - 1; // TODO: make new plan to start. + deal with half finished plans
+        actionIndex = planSize - 1; // TODO: start new entry once this one is finished.
 
     Operator* op = &plan[actionIndex];
 

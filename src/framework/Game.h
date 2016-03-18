@@ -15,6 +15,7 @@
 #include <rapidjson/document.h>
 #include <math.h>
 #include <components/PositionComponentManager.h>
+#include <components/CharacterComponentManager.h>
 #include "Graphics.h"
 #include "Input.h"
 #include "WorldState.h"
@@ -29,6 +30,7 @@ public:
              _scheduleComponentManager(new ScheduleComponentManager()),
              _locationComponentManager(new LocationComponentManager()),
              _positionComponentManager(new PositionComponentManager(_locationComponentManager)),
+             _characterComponentManager(new CharacterComponentManager()),
              _actionManager(new ActionManager)
     { }
 
@@ -90,6 +92,7 @@ private:
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
+    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::vector<Entity> _entities;
 
@@ -166,6 +169,29 @@ private:
 
                         _locationComponentManager->spawnComponent(*entity, entityName, locations);
                     }
+                    else if (name == "character")
+                    {
+                        assert(componentValue->value.IsArray());
+                        std::vector<Type> groups;
+                        for (auto type = componentValue->value.Begin(); type != componentValue->value.End(); ++type)
+                        {
+                            std::string typeName = type->GetString();
+                            groups.push_back(typeName);
+                        }
+
+                        auto knowledge = component->FindMember("knowledge");
+                        assert(knowledge->value.IsArray());
+                        std::vector<Entity> knownEntities;
+                        for (auto known = knowledge->value.Begin(); known != knowledge->value.End(); ++known)
+                        {
+                            std::string entityName = known->GetString();
+                            Entity knownEntity = _entityManager->getEntity(entityName);
+                            knownEntities.push_back(knownEntity);
+                        }
+
+                        _characterComponentManager->spawnComponent(*entity, groups);
+                        _characterComponentManager->addKnowledge(*entity, knownEntities);
+                    }
                 }
             }
             ++entity;
@@ -180,7 +206,7 @@ private:
 
             if (predicate.type == "at")
             {
-                std::cout << "Added effect: " << id << std::endl;
+                std::cout << "Entity Travelling: " << _entityManager->getName({predicate.params[1]}) << std::endl;
                 _positionComponentManager->changeEntitiesLocation({predicate.params[1]}, {predicate.params[0]});
             }
         }

@@ -30,6 +30,7 @@ class EntityManager
 {
 private:
     std::unordered_map<std::string, unsigned> _names;
+    std::unordered_map<unsigned, std::string> _idToName; // TODO: Temp
     std::vector<unsigned char> _generation;
     std::deque<unsigned> _freeIndices;
 
@@ -41,6 +42,7 @@ public:
     bool alive(Entity e) const;
     void destroy(Entity e);
     Entity getEntity(std::string name);
+    std::string getName(Entity entity);
 
 };
 

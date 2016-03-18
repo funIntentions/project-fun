@@ -43,6 +43,6 @@ set(SOURCE_FILES
         framework/Graphics.cpp
         framework/Input.cpp
         framework/Keyboard.cpp
-        )
+        components/CharacterComponentManager.h)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

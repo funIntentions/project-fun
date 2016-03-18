@@ -54,7 +54,6 @@ public:
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 };
 
-
 class PlannerScheduleEntry : public ScheduleEntry
 {
 private:

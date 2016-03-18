@@ -1,4 +1,61 @@
 {
+  "groups" :
+  [
+    {
+      "group" : "Human",
+      "associations" :
+      [
+        {
+          "category" : "Food",
+          "type" :
+          [
+            "Fish",
+            "Pastries",
+            "Rabbit",
+            "Worms"
+          ]
+        },
+        {
+          "category" : "Enemies",
+          "type" :
+          [
+            "Merfolk"
+          ]
+
+        },
+        {
+          "category" : "Bed",
+          "type" :
+          [
+            "Wooden_Bed"
+          ]
+
+        }
+      ]
+    },
+    {
+      "group" : "Fisher",
+      "associations" :
+      [
+        {
+          "category" : "Fishing_Spot",
+          "type" :
+          [
+            "Lake",
+            "Ocean",
+            "Pond"
+          ]
+        },
+        {
+          "category" : "Bait",
+          "type" :
+          [
+            "Worm"
+          ]
+        }
+      ]
+    }
+  ],
   "entities" :
   [
     {
@@ -49,6 +106,14 @@
       "components" :
       [
         {
+          "name" : "character",
+          "value" :
+          [
+            "Pond"
+          ],
+          "knowledge" : []
+        },
+        {
           "name" : "location",
           "value" :
           [
@@ -91,6 +156,11 @@
       "name" : "Timmy",
       "components" :
       [
+        {
+          "name" : "character",
+          "value" : ["Human", "Fisher"],
+          "knowledge" : ["Swamp"]
+        },
         {
           "name" : "schedule",
           "value" : "person"

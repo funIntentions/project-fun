@@ -22,6 +22,7 @@ Entity EntityManager::create(std::string name)
         idx = _freeIndices.front();
         _freeIndices.pop_front();
         _names[name] = idx;
+        _idToName[idx] = name;
     }
     else
     {
@@ -29,6 +30,7 @@ Entity EntityManager::create(std::string name)
         idx = _generation.size() - 1;
         assert(idx < (1 << ENTITY_INDEX_BITS));
         _names[name] = idx;
+        _idToName[idx] = name;
     }
 
     return makeEntity(idx, _generation[idx]);
@@ -50,4 +52,10 @@ Entity EntityManager::getEntity(std::string name)
 {
     auto entity = _names.find(name);
     return makeEntity(entity->second, _generation[entity->second]);
+}
+
+std::string EntityManager::getName(Entity entity)
+{
+    auto name = _idToName.find(entity.index());
+    return name->second;
 }
