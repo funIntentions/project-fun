@@ -1,8 +1,7 @@
 
 TODO:
 
-Add Knowledge Map For Characters, Entities can relieve certain tags like "geometric_shape", or "body_of_water", or "food_source" that can mean different things to different NPCs
-
+Merge Operator with Action
 
 {
     "types" :

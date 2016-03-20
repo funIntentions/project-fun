@@ -20,35 +20,61 @@
       ]
     },
     {
-      "name" : "travelToLake",
-      "minDuration" : 2,
-      "maxDuration" : 4,
-      "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
+      "name" : "travelToFishingSpot",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "params" : [{"name" : "Fishing_Spot"}, {"name" : "c"}],
       "positivePreconditions" :
-      [
-        {"name" : "at", "params" : ["from", "c"]}
-      ],
+      [],
       "addedEffects" :
       [
-        {"name" : "at", "params" : ["to", "c"]}
+        {"name" : "Location", "params" : ["Fishing_Spot", "c"]}
       ],
       "subtractedEffects" :
-      [
-        {"name" : "at", "params" : ["from", "c"]}
-      ]
+      []
     },
     {
       "name" : "fish",
-      "minDuration" : 2,
-      "maxDuration" : 4,
-      "params" : [{"name" : "body_of_water"}, {"name" : "c"}],
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "params" : [{"name" : "Fishing_Spot"}, {"name" : "c"}],
       "positivePreconditions" :
       [
-        {"name" : "at", "params" : ["body_of_water", "c"]}
+        {"name" : "Location", "params" : ["Fishing_Spot", "c"]}
       ],
       "addedEffects" :
       [
-        {"name" : "fishing", "params" : ["c"]}
+        {"name" : "Fishing", "params" : ["c"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "travelToMarket",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "params" : [{"name" : "Market"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"name" : "Location", "params" : ["Market", "c"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "sellGoods",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "params" : [{"name" : "Market"}, {"name" : "Goods"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "Location", "params" : ["Market", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "Selling", "params" : ["Goods"]}
       ],
       "subtractedEffects" :
       []
@@ -84,41 +110,28 @@
   "scheduleEntryTemplates" :
   [
     {
+      "name" : "sellGoodsTemplate",
+      "type" : "sequence",
+      "actions" :
+      [
+        {
+          "name" : "travelToMarket"
+        },
+        {
+          "name" : "sellGoods"
+        }
+      ]
+    },
+    {
       "name" : "fishingTemplate",
-      "type" : "planner",
+      "type" : "sequence",
       "actions" :
       [
         {
-          "name" : "idle"
+          "name" : "travelToFishingSpot"
         },
         {
-          "name" : "travel"
-        }
-      ]
-    },
-    {
-      "name" : "nightTemplate",
-      "type" : "planner",
-      "actions" :
-      [
-        {
-          "name" : "idle"
-        },
-        {
-          "name" : "travel"
-        }
-      ]
-    },
-    {
-      "name" : "nightTemplate",
-      "type" : "simple",
-      "actions" :
-      [
-        {
-          "name" : "idle"
-        },
-        {
-          "name" : "travel"
+          "name" : "fish"
         }
       ]
     }
@@ -127,18 +140,18 @@
   "schedules" :
   [
     {
-      "name" : "person",
+      "name" : "fisherman",
       "entries" :
       [
         {
-          "name" : "night",
-          "template" : "nightTemplate",
-          "startTime" : 20
+          "name" : "day",
+          "template" : "fishingTemplate",
+          "startTime" : 6
         },
         {
-          "name" : "day",
-          "template" : "dayTemplate",
-          "startTime" : 9
+          "name" : "evening",
+          "template" : "sellGoodsTemplate",
+          "startTime" : 20
         }
       ]
     },

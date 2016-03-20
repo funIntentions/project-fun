@@ -4,20 +4,27 @@
 #include "ScheduleComponentManager.h"
 #include "Schedules/Schedule.h"
 #include "PositionComponentManager.h"
+#include "CharacterComponentManager.h"
 #include <Schedules/ScheduleEntry.h>
 #include <Schedules/ScheduleInstance.h>
 #include <fstream>
 #include <rapidjson/document.h>
+#include <util/Extra.h>
 
-ScheduleComponentManager::ScheduleComponentManager() : ComponentManager(), time(0.0)
+ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<CharacterComponentManager> characterComponentManager, std::shared_ptr<PositionComponentManager> positionComponentManager) :
+        ComponentManager(),
+        _actionManager(actionManager),
+        _characterComponentManager(characterComponentManager),
+        _positionComponentManager(positionComponentManager),
+        time(0.0)
 {
     _data.size = 0;
 
-    readActions();
+    readActions(actionManager);
     readSchedules();
 }
 
-void ScheduleComponentManager::readActions()
+void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> actionManager)
 {
     std::ifstream in("data/Schedules.json");
     std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
@@ -47,6 +54,9 @@ void ScheduleComponentManager::readActions()
         member_itr = action_itr->FindMember("maxDuration");
         if (member_itr != action_itr->MemberEnd())
             maxDuration = member_itr->value.GetDouble();
+
+        std::shared_ptr<Operator> newOperator(new Operator());
+        newOperator->name = name;
 
         Action* action = new Action(name, actions.size(), minDuration, maxDuration);
 
@@ -80,7 +90,7 @@ void ScheduleComponentManager::readActions()
                     predicate.params.push_back(param->GetString());
                 }
 
-                action->preconditions.push_back(predicate);
+                newOperator->preconditions.push_back(actionManager->addPredicateTemplate(predicate));
             }
         }
 
@@ -102,7 +112,7 @@ void ScheduleComponentManager::readActions()
                     predicate.params.push_back(param->GetString());
                 }
 
-                action->addedEffects.push_back(predicate);
+                newOperator->addedEffects.push_back(actionManager->addPredicateTemplate(predicate));
             }
         }
 
@@ -124,10 +134,12 @@ void ScheduleComponentManager::readActions()
                     predicate.params.push_back(param->GetString());
                 }
 
-                action->subtractedEffects.push_back(predicate);
+                newOperator->subtractedEffects.push_back(actionManager->addPredicateTemplate(predicate));
             }
         }
 
+        operators.push_back(newOperator);
+        action->actionOperator = newOperator;
         actions.insert({action->getId(), action});
         actionNameToIdMap.insert({action->getName(), action->getId()});
     }
@@ -259,9 +271,9 @@ ScheduleEntry* ScheduleComponentManager::scheduleEntryFactory(const std::string&
     {
         return new SimpleScheduleEntry(name, scheduleEntryTemplates.size(), startTime);
     }
-    else if (type == PLANNER_SCHEDULE_ENTRY)
+    else if (type == SEQUENCE_SCHEDULE_ENTRY)
     {
-        return new PlannerScheduleEntry(name, scheduleEntryTemplates.size(), startTime);
+        return new SequenceScheduleEntry(name, scheduleEntryTemplates.size(), startTime);
     }
     else
     {
@@ -307,24 +319,155 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
 
     std::vector<int> effects;
 
-    for (int i = 0; i < _data.size; ++i)
+    for (unsigned i = 0; i < _data.size; ++i)
     {
         if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
         {
+            _data.queuedActions[i].clear();
             _data.currentSchedule[i]->startNextScheduleEntry(_data.state[i]);
-            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(_data.state[i]);
+            _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
         }
 
-        if (_data.currentAction[i]->perform(deltaTime))
+        if (_data.queuedActions[i].empty())
+            _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
+
+        std::vector<int> preconditions = _data.queuedActions[i].back()->getPreconditions();
+        if (!preconditionsMet(_data.entity[i], preconditions))
         {
-            effects.insert(effects.end(), _data.currentAction[i]->actionOperator->addedEffects.begin(), _data.currentAction[i]->actionOperator->addedEffects.end());
-            _data.currentAction[i] = _data.currentSchedule[i]->chooseNewAction(_data.state[i]);
+            std::cout << "Preconditions Not Met" << std::endl;
+            usePlanner(_data.entity[i], preconditions);
+        }
+        else if (_data.queuedActions[i].back()->perform(deltaTime))
+        {
+            std::vector<int> newEffects = _data.queuedActions[i].back()->getActionEffects();
+            updateState(_data.entity[i], newEffects);
+            //effects.insert(effects.end(), newEffects.begin(), newEffects.end());
+            _data.queuedActions[i].pop_back();
         }
     }
 
     return effects;
 }
 
+void ScheduleComponentManager::usePlanner(Entity entity, std::vector<int> preconditions)
+{
+    Instance instance = lookup(entity);
+
+    std::vector<Operator> ops;
+
+    for (auto op : operators)
+    {
+        ops.push_back(*(op.get()));
+    }
+
+    Operator start;
+    start.addedEffects = getState(entity);
+    Operator end;
+    end.preconditions = preconditions;
+    std::vector<PartialOrderPlan> plans = planner.findPartialOrderPlan(start, end, ops);
+
+    if (plans.size() > 0)
+    {
+        std::vector<unsigned> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
+
+        for (auto step = totalOrderPlan.begin() + 1; step != totalOrderPlan.end() - 1; ++step)
+        {
+            std::unordered_map<unsigned, Operator>::iterator op = plans[0].steps.find(*step);
+            if (op != plans[0].steps.end())
+            {
+                auto actionId = actionNameToIdMap.find(op->second.name);
+                if (actionId != actionNameToIdMap.end())
+                {
+                    auto action = actions.find(actionId->second);
+                    if (action != actions.end())
+                    {
+                        _data.queuedActions[instance.i].push_back(action->second->createActionInstance());
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+std::vector<int> ScheduleComponentManager::getState(Entity entity)
+{
+    std::vector<int> state;
+
+    if ((_positionComponentManager->lookup(entity)).i != -1)
+    {
+        Entity location = _positionComponentManager->getLocation(entity);
+        std::vector<std::string> categories = _characterComponentManager->getCategories(entity, location);
+
+        for (auto category : categories)
+        {
+            PredicateTemplate predicateTemplate;
+            predicateTemplate.type = "Location";
+            predicateTemplate.params.push_back(category);
+            predicateTemplate.params.push_back("c");
+
+            int id = _actionManager->getPredicateId(predicateTemplate);
+            if (id != -1)
+                state.push_back(id);
+            else
+                std::cout << "Predicate Unknown" << std::endl;
+        }
+    }
+
+    return state;
+}
+
+
+bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> preconditions) {
+
+    for (int id : preconditions)
+    {
+        PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
+
+        if (predicateTemplate.type == "Location")
+        {
+            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
+            Entity location = _positionComponentManager->getLocation(entity);
+
+            for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
+            {
+                if (opinion->entity.id == location.id)
+                    break;
+                else if (opinion + 1 == opinions.end())
+                    return false;
+            }
+        }
+        else
+        {
+            std::cout << "Unhandled predicate: " << predicateTemplate.type << std::endl;
+        }
+    }
+    return true;
+}
+
+void ScheduleComponentManager::updateState(Entity entity, std::vector<int> effects)
+{
+    for (int id : effects)
+    {
+        PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
+
+        if (predicateTemplate.type == "Location")
+        {
+            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
+
+            if (!opinions.empty())
+                _positionComponentManager->changeLocation(entity, opinions.front().entity);
+            else
+                std::cout << "I have no opinions of: " << predicateTemplate.params[0] << std::endl;
+        }
+        else
+        {
+            std::cout << "Unhandled predicate: " << predicateTemplate.type << std::endl;
+        }
+    }
+}
+
+/*
 void ScheduleComponentManager::updateStates(std::shared_ptr<PositionComponentManager> positionComponentManager, std::shared_ptr<ActionManager> actionManager)
 {
     for (int i = 0; i < _data.size; ++i)
@@ -333,7 +476,7 @@ void ScheduleComponentManager::updateStates(std::shared_ptr<PositionComponentMan
         std::vector<int> states = positionComponentManager->getEntityState(_data.entity[i], *(actionManager.get()));
         _data.state[i].state.insert(_data.state[i].state.begin(), states.begin(), states.end());
     }
-}
+}*/
 
 void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime)
 {
@@ -357,7 +500,7 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
             scheduleInstance->setupEntries(operatorCallbackFunctionMap, entity);
             scheduleInstance->chooseEntryForTime(currentTime, state);
             _data.currentSchedule.push_back(scheduleInstance);
-            _data.currentAction.push_back(scheduleInstance->chooseNewAction(state));
+            _data.queuedActions.push_back({scheduleInstance->chooseNewAction()});
         }
 
         ++_data.size;
@@ -372,7 +515,7 @@ void ScheduleComponentManager::destroy(unsigned i)
 
     _data.entity[i] = _data.entity[last];
     _data.state[i] = _data.state[last];
-    _data.currentAction[i] = _data.currentAction[last];
+    _data.queuedActions[i] = _data.queuedActions[last];
     _data.currentSchedule[i] = _data.currentSchedule[last];
 
     _map[last_e.index()] =  i;
@@ -380,7 +523,7 @@ void ScheduleComponentManager::destroy(unsigned i)
 
     _data.entity.pop_back();
     _data.state.pop_back();
-    _data.currentAction.pop_back();
+    _data.queuedActions.pop_back();
     _data.currentSchedule.pop_back();
 
     --_data.size;

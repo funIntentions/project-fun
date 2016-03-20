@@ -30,21 +30,22 @@ public:
         _data.size = 0;
     }
 
-    Entity getLocationForEntity(Entity entity)
+    Entity getLocation(Entity entity)
     {
-        return _data.location[entity.id];
+        Instance instance = lookup(entity);
+        return _data.location[instance.i];
     }
 
     std::vector<int> getEntityState(Entity entity, ActionManager& actionManager)
     {
         Instance instance = lookup(entity);
         std::vector<unsigned> atParams = {_data.location[instance.i].id, entity.id};
-        int atState = actionManager.buildState("at", atParams);
+        int atState = actionManager.buildState("at", atParams); // This will crash it, assert fails
         std::vector<int> state = {atState};
         return state;
     }
 
-    void changeEntitiesLocation(Entity entity, Entity location)
+    void changeLocation(Entity entity, Entity location)
     {
         Instance inst = lookup(entity);
         std::cout << "old location: " << _locationComponentManger->getNameOfPlace(_data.location[inst.i]) << std::endl;

@@ -27,11 +27,11 @@ public:
     Game() : _graphics(new Graphics()),
              _input(new Input()),
              _entityManager(new EntityManager()),
-             _scheduleComponentManager(new ScheduleComponentManager()),
              _locationComponentManager(new LocationComponentManager()),
              _positionComponentManager(new PositionComponentManager(_locationComponentManager)),
              _characterComponentManager(new CharacterComponentManager()),
-             _actionManager(new ActionManager)
+             _actionManager(new ActionManager),
+             _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager))
     { }
 
     ~Game() {}
@@ -56,7 +56,7 @@ public:
             elapsed += interval;
             while (elapsed > period)
             {
-                _scheduleComponentManager->updateStates(_positionComponentManager, _actionManager);
+                //_scheduleComponentManager->updateStates(_positionComponentManager, _actionManager); // TODO: only relevant states should be checked out
                 std::vector<int> addedEffects = _scheduleComponentManager->runSchedules(period.count());
                 handleEffects(addedEffects);
 
@@ -86,14 +86,14 @@ public:
     }
 
 private:
-    std::shared_ptr<Input> _input;
     std::shared_ptr<Graphics> _graphics;
+    std::shared_ptr<Input> _input;
     std::shared_ptr<EntityManager> _entityManager;
-    std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
+    std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
 
     void readEntities(EntityManager& entityManager)
@@ -202,13 +202,22 @@ private:
     {
         for (int id : addedEffects)
         {
-            Predicate predicate = _actionManager->getPredicate(id);
+            PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
 
-            if (predicate.type == "at")
+            std::cout << predicateTemplate.type << std::endl;
+            for (std::string param : predicateTemplate.params)
+            {
+                std::cout << param << std::endl;
+            }
+
+
+            //Predicate predicate = _actionManager->getPredicate(id);
+
+            /*if (predicate.type == "Location")
             {
                 std::cout << "Entity Travelling: " << _entityManager->getName({predicate.params[1]}) << std::endl;
                 _positionComponentManager->changeEntitiesLocation({predicate.params[1]}, {predicate.params[0]});
-            }
+            }*/
         }
     }
 
@@ -220,7 +229,7 @@ private:
         _input->initialize(_graphics->window->window);
 
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
-        _scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_locationComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
+        //_scheduleComponentManager->registerForAction("travel", [this](Action travelActionTemplate, Entity traveller) {return this->_locationComponentManager->determineActionsOfEntity(travelActionTemplate, traveller, _actionManager);});
 
         readEntities(*_entityManager);
     }

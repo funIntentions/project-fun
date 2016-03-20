@@ -19,10 +19,10 @@ private:
     int id;
 
 public:
-    std::vector<ScheduleEntry*> entryTemplates;
+    std::vector<ScheduleEntry*> entries;
     Schedule(const std::string& name, int id) : name(name), id(id) {}
     ~Schedule() {}
-    void addEntry(ScheduleEntry* entry) { entryTemplates.push_back(entry); }
+    void addEntry(ScheduleEntry* entry) { entries.push_back(entry); }
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }

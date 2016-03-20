@@ -116,6 +116,20 @@ public:
         ++_data.size;
     }
 
+    std::vector<Opinion> getOpinions(Entity entity, Category category)
+    {
+        Instance instance = lookup(entity);
+        auto opinions = _data.character[instance.i].associations.find(category);
+
+        if (opinions == _data.character[instance.i].associations.end())
+        {
+            std::cout << "I have no knowledge of the concept: " << category << std::endl;
+            return {};
+        }
+
+        return opinions->second;
+    }
+
     void addKnowledge(Entity entity, std::vector<Entity> knowledge)
     {
         for (Entity known : knowledge)
@@ -125,6 +139,25 @@ public:
 
             assignToCategory(entity, otherEntity);
         }
+    }
+
+    std::vector<Category> getCategories(Entity entity, Entity otherEntity) {
+        std::vector<Category> categories;
+
+        Instance instance = lookup(entity);
+        Character character = _data.character[instance.i];
+
+        for (auto association : character.associations)
+        {
+            std::vector<Opinion> opinions = association.second;
+            for (Opinion opinion : opinions)
+            {
+                if (opinion.entity.id == otherEntity.id)
+                    categories.push_back(association.first);
+            }
+        }
+
+        return categories;
     }
 
     void assignToCategory(Entity entity, Entity otherEntity)

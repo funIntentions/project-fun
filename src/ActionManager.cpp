@@ -20,16 +20,47 @@ size_t ActionManager::addPredicate(Predicate predicate)
     return id;
 }
 
+int ActionManager::getPredicateId(PredicateTemplate predicateTemplate)
+{
+    auto itr = predicateTemplates.find(predicateTemplate);
+    if (itr != predicateTemplates.end())
+        return itr->second;
+
+    return -1;
+}
+
+size_t ActionManager::addPredicateTemplate(PredicateTemplate predicate)
+{
+    size_t id = predicateTemplates.size();
+    auto itr = predicateTemplates.find(predicate);
+    if (itr != predicateTemplates.end())
+        id = itr->second;
+    else
+    {
+        predicateTemplates.insert({predicate, id});
+        idToPredicateTemplateMap.insert({id, predicate});
+    }
+
+    return id;
+}
+
 Predicate ActionManager::getPredicate(int id)
 {
     auto itr = idToPredicateMap.find(id);
     return itr->second;
 }
 
+
+PredicateTemplate ActionManager::getPredicateTemplate(int id)
+{
+    auto itr = idToPredicateTemplateMap.find(id);
+    return itr->second;
+}
+
 Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned>& entities)
 {
     Operator anOperator;
-    anOperator.name = templateTask.getName();
+    /*anOperator.name = templateTask.getName();
 
     assert(templateTask.parameters.size() == entities.size());
 
@@ -89,7 +120,7 @@ Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned
 
         anOperator.subtractedEffects.push_back(addPredicate(newEffect));
     }
-
+*/
     return anOperator;
 }
 

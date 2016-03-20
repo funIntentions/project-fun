@@ -47,6 +47,13 @@
           ]
         },
         {
+          "category" : "Market",
+          "type" :
+          [
+            "Village"
+          ]
+        },
+        {
           "category" : "Bait",
           "type" :
           [
@@ -143,6 +150,14 @@
       "components" :
       [
         {
+          "name" : "character",
+          "value" :
+          [
+            "Village"
+          ],
+          "knowledge" : []
+        },
+        {
           "name" : "location",
           "value" :
           [
@@ -159,11 +174,11 @@
         {
           "name" : "character",
           "value" : ["Human", "Fisher"],
-          "knowledge" : ["Swamp"]
+          "knowledge" : ["Swamp", "Village"]
         },
         {
           "name" : "schedule",
-          "value" : "person"
+          "value" : "fisherman"
         },
         {
           "name" : "position",
