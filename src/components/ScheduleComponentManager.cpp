@@ -3,12 +3,8 @@
 //
 #include "ScheduleComponentManager.h"
 #include "Schedules/Schedule.h"
-#include "PositionComponentManager.h"
-#include "CharacterComponentManager.h"
 #include <Schedules/ScheduleEntry.h>
 #include <Schedules/ScheduleInstance.h>
-#include <fstream>
-#include <rapidjson/document.h>
 #include <util/Extra.h>
 
 ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<CharacterComponentManager> characterComponentManager, std::shared_ptr<PositionComponentManager> positionComponentManager) :

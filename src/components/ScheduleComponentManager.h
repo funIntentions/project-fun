@@ -54,7 +54,6 @@ private:
     double time;
 
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
-    const std::string PLANNER_SCHEDULE_ENTRY = "planner";
     const std::string SEQUENCE_SCHEDULE_ENTRY = "sequence";
 
 public:

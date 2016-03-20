@@ -184,8 +184,8 @@ private:
                         std::vector<Entity> knownEntities;
                         for (auto known = knowledge->value.Begin(); known != knowledge->value.End(); ++known)
                         {
-                            std::string entityName = known->GetString();
-                            Entity knownEntity = _entityManager->getEntity(entityName);
+                            std::string knownEntityName = known->GetString();
+                            Entity knownEntity = _entityManager->getEntity(knownEntityName);
                             knownEntities.push_back(knownEntity);
                         }
 

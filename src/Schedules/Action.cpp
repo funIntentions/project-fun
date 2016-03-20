@@ -11,7 +11,7 @@ double Action::calculateDuration() const
     return (minDuration + random * (maxDuration - minDuration));
 }
 
-ActionInstance* Action::createActionInstance(Operator* op) const
+ActionInstance* Action::createActionInstance() const
 {
-    return new ActionInstance(this, calculateDuration(), op);
+    return new ActionInstance(this, calculateDuration());
 }

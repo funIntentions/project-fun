@@ -14,9 +14,9 @@ class ActionInstance;
 class ScheduleInstance {
 private:
     Schedule* schedule;
-    std::vector<ScheduleEntry*> entries;
     int entryIndex;
     double entryEndTime;
+    unsigned actionIndex;
 public:
     ScheduleInstance(Schedule* schedule);
 
@@ -25,12 +25,20 @@ public:
     void chooseEntryForTime(double currentTime, WorldState& worldState);
     void startNextScheduleEntry(WorldState& worldState);
     bool timeIsUp(double lastTime, double currentTime);
-    ActionInstance* chooseNewAction(WorldState& worldState);
+    ActionInstance* chooseNewAction();
 
     int getEntryAtTime(double currentTime) const;
     double getEndTime(int entryIndex) const;
     int nextEntry(int entryIndex) const;
     int getId() const;
+    unsigned getActionIndex()
+    {
+        return actionIndex;
+    }
+    void setActionIndex(unsigned index)
+    {
+        actionIndex = index;
+    }
 };
 
 

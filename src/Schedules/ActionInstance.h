@@ -17,18 +17,18 @@ private:
     double duration;
 public:
 
-    ActionInstance(const Action* action, double duration, Operator* op);
+    ActionInstance(const Action* action, double duration);
 
     bool perform(double deltaTime);
 
+    std::vector<int> getPreconditions();
+    std::vector<int> getActionEffects();
     const std::string& getActionName() const;
     int getActionId() const;
     double getDuration() const
     {
         return duration;
     }
-
-    Operator* actionOperator;
 };
 
 
