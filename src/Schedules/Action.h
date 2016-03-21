@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "ActionInstance.h"
 #include "Predicate.h"
 
@@ -25,13 +26,12 @@ public:
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }
-    ActionInstance* createActionInstance(Operator* op) const;
+    ActionInstance* createActionInstance() const;
 
     std::vector<std::string> parameters;
-    std::vector<PredicateTemplate> preconditions;
-    std::vector<PredicateTemplate> addedEffects;
-    std::vector<PredicateTemplate> subtractedEffects;
+    std::shared_ptr<Operator> actionOperator;
 };
+
 
 
 #endif //PARTIALORDERPLANNER_ACTION_H

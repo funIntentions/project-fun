@@ -20,27 +20,27 @@
       ]
     },
     {
-      "name" : "travelToFishingSpot",
+      "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Fishing_Spot"}, {"name" : "c"}],
+      "params" : [{"name" : "Water"}, {"name" : "c"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Fishing_Spot", "c"]}
+        {"name" : "Location", "params" : ["Water", "c"]}
       ],
       "subtractedEffects" :
       []
     },
     {
-      "name" : "fish",
+      "name" : "Fish",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Fishing_Spot"}, {"name" : "c"}],
+      "params" : [{"name" : "Water"}, {"name" : "c"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Fishing_Spot", "c"]}
+        {"name" : "Location", "params" : ["Water", "c"]}
       ],
       "addedEffects" :
       [
@@ -50,7 +50,7 @@
       []
     },
     {
-      "name" : "travelToMarket",
+      "name" : "TravelToMarket",
       "minDuration" : 1,
       "maxDuration" : 1,
       "params" : [{"name" : "Market"}, {"name" : "c"}],
@@ -64,7 +64,7 @@
       []
     },
     {
-      "name" : "sellGoods",
+      "name" : "SellGoods",
       "minDuration" : 1,
       "maxDuration" : 1,
       "params" : [{"name" : "Market"}, {"name" : "Goods"}, {"name" : "c"}],
@@ -80,58 +80,136 @@
       []
     },
     {
-      "name" : "eat",
-      "minDuration" : 2,
-      "maxDuration" : 4,
-      "params" : [{"name" : "food_source"},  {"name" : "location"}, {"name" : "c"}],
+      "name" : "TravelHome",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "params" : [{"name" : "Home"}, {"name" : "c"}],
       "positivePreconditions" :
-      [
-        {"name" : "at", "params" : ["location", "c"]},
-        {"name" : "at", "params" : ["location", "food_source"]}
-      ],
+      [],
       "addedEffects" :
       [
-        {"name" : "gone", "params" : ["food_source"]}
+        {"name" : "Location", "params" : ["Home", "c"]}
       ],
       "subtractedEffects" :
       []
     },
     {
-      "name" : "idle",
+      "name" : "TravelToHuntingGround",
       "minDuration" : 1,
-      "maxDuration" : 3,
-      "params" : [],
-      "positivePreconditions" : [],
-      "addedEffects" : [],
-      "subtractedEffects" : []
+      "maxDuration" : 1,
+      "params" : [{"name" : "HuntingGround"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"name" : "Location", "params" : ["HuntingGround", "c"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "TurnIntoMerfolk",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "Location", "params" : ["HuntingGround", "c"]},
+        {"name" : "Location", "params" : ["HuntingGround", "Food"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "Schedule", "params" : ["Food", "Merfolk"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "Hunt",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "Location", "params" : ["HuntingGround", "c"]},
+        {"name" : "Location", "params" : ["HuntingGround", "Food"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "Kill", "params" : ["Food"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "Sleep",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "params" : [{"name" : "Home"}, {"name" : "c"}],
+      "positivePreconditions" :
+      [
+        {"name" : "Location", "params" : ["Home", "c"]}
+      ],
+      "addedEffects" :
+      [
+        {"name" : "Sleeping", "params" : ["Home"]}
+      ],
+      "subtractedEffects" :
+      []
     }
   ],
 
   "scheduleEntryTemplates" :
   [
     {
-      "name" : "sellGoodsTemplate",
+      "name" : "SellGoodsTemplate",
       "type" : "sequence",
       "actions" :
       [
         {
-          "name" : "travelToMarket"
+          "name" : "TravelToMarket"
         },
         {
-          "name" : "sellGoods"
+          "name" : "SellGoods"
         }
       ]
     },
     {
-      "name" : "fishingTemplate",
+      "name" : "FishingTemplate",
       "type" : "sequence",
       "actions" :
       [
         {
-          "name" : "travelToFishingSpot"
+          "name" : "TravelToFishingSpot"
         },
         {
-          "name" : "fish"
+          "name" : "Fish"
+        }
+      ]
+    },
+    {
+      "name" : "SleepTemplate",
+      "type" : "sequence",
+      "actions" :
+      [
+        {
+          "name" : "TravelHome"
+        },
+        {
+          "name" : "Sleep"
+        }
+      ]
+    },
+    {
+      "name" : "HuntTemplate",
+      "type" : "sequence",
+      "actions" :
+      [
+        {
+          "name" : "TravelToHuntingGround"
+        },
+        {
+          "name" : "Hunt"
         }
       ]
     }
@@ -140,33 +218,33 @@
   "schedules" :
   [
     {
-      "name" : "fisherman",
+      "name" : "Fisherman",
       "entries" :
       [
         {
           "name" : "day",
-          "template" : "fishingTemplate",
+          "template" : "FishingTemplate",
           "startTime" : 6
         },
         {
           "name" : "evening",
-          "template" : "sellGoodsTemplate",
+          "template" : "SellGoodsTemplate",
           "startTime" : 20
         }
       ]
     },
     {
-      "name" : "merfolk",
+      "name" : "Merfolk",
       "entries" :
       [
         {
-          "name" : "night",
-          "template" : "nightTemplate",
-          "startTime" : 20
+          "name" : "nap",
+          "template" : "SleepTemplate",
+          "startTime" : 13
         },
         {
-          "name" : "day",
-          "template" : "dayTemplate",
+          "name" : "hunt",
+          "template" : "HuntTemplate",
           "startTime" : 9
         }
       ]

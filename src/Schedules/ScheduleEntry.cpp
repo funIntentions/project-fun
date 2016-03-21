@@ -4,6 +4,7 @@
 
 #include "util/Extra.h"
 #include "ScheduleEntry.h"
+#include "ScheduleInstance.h"
 
 // Simple Schedule Entry
 
@@ -12,17 +13,9 @@ void SimpleScheduleEntry::addAction(Action* a)
     action = a;
 }
 
-ActionInstance* SimpleScheduleEntry::chooseNewAction(WorldState& worldState)
+ActionInstance* SimpleScheduleEntry::chooseNewAction(ScheduleInstance*)
 {
-    return action->createActionInstance(&op);
-}
-
-ScheduleEntry* SimpleScheduleEntry::setupEntry(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity)
-{
-    SimpleScheduleEntry* entry = new SimpleScheduleEntry(name, id, startTime);
-    entry->op.name = action->getName(); // TODO: Figure out how non-planner schedules will work
-
-    return entry;
+    return action->createActionInstance();
 }
 
 ScheduleEntry* SimpleScheduleEntry::clone(const std::string& name, const int& id, double startTime)
@@ -32,96 +25,35 @@ ScheduleEntry* SimpleScheduleEntry::clone(const std::string& name, const int& id
     return simpleScheduleEntry;
 }
 
-// Planner Schedule Entry
+// Sequence Schedule Entry
 
-void PlannerScheduleEntry::addAction(Action* action)
+void SequenceScheduleEntry::addAction(Action* action)
 {
-    actions.insert({action->getName(), action});
+    actions.push_back(action);
 }
 
-ScheduleEntry* PlannerScheduleEntry::setupEntry(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity)
+ActionInstance* SequenceScheduleEntry::chooseNewAction(ScheduleInstance* scheduleInstance)
 {
-    PlannerScheduleEntry* entry = (PlannerScheduleEntry*) this->clone(name, id, startTime);
+    unsigned actionIndex = scheduleInstance->getActionIndex();
+    if (actionIndex >= actions.size())
+        actionIndex = actions.size() - 1;
 
-    for (auto actionItr : actions)
-    {
-        auto opItr = operatorCallbacks.find(actionItr.second->getName());
-        if (opItr != operatorCallbacks.end())
-        {
-            std::vector<Operator> newOperators = opItr->second(*actionItr.second, entity);
+    scheduleInstance->setActionIndex(actionIndex + 1);
 
-            for (auto op : newOperators)
-            {
-                for (int effect : op.addedEffects)
-                    entry->goals.insert(effect);
+    Action* action = actions[actionIndex];
 
-                entry->operators.push_back(op);
-            }
-        }
-    }
-
-    return entry;
+    return action->createActionInstance();
 }
 
-void PlannerScheduleEntry::startEntry(WorldState &worldState)
+ScheduleEntry* SequenceScheduleEntry::clone(const std::string& name, const int& id, double startTime)
 {
-    int randGoal = rand() % goals.size();
-    int selectedGoal = *std::next(goals.begin(), randGoal);
-    std::cout << "Selected Goal: " << selectedGoal << std::endl;
-
-    Operator start;
-    start.addedEffects = worldState.state;
-    Operator end;
-    end.preconditions.push_back(selectedGoal); // 6 == final location
-    std::vector<PartialOrderPlan> plans = planner.findPartialOrderPlan(start, end, operators);
-
-    if (plans.size() > 0)
-    {
-        std::vector<unsigned> totalOrderPlan = topologicalSort(plans[0], plans[0].start);
-
-        for (auto step = totalOrderPlan.begin() + 1; step != totalOrderPlan.end() - 1; ++step)
-        {
-            std::unordered_map<unsigned, Operator>::iterator op = plans[0].steps.find(*step);
-            if (op != plans[0].steps.end())
-                plan.insert(plan.begin(), op->second);
-        }
-    }
-
-    // add an idle action for cases when a plan cannot be made or when the plan is completed early
-    plan.push_back(idle);
-}
-
-void PlannerScheduleEntry::endEntry()
-{
-    actionIndex = -1;
-    plan.clear();
-}
-
-ActionInstance* PlannerScheduleEntry::chooseNewAction(WorldState& worldState)
-{
-    ++actionIndex;
-    int planSize = plan.size();
-
-    if (actionIndex >= planSize)
-        actionIndex = planSize - 1; // TODO: start new entry once this one is finished.
-
-    Operator* op = &plan[actionIndex];
-
-    auto actionItr = actions.find(op->name);
-    Action* action = actionItr->second; // TODO: handle cases when the matching action is not found.. should never happen?
-
-    return action->createActionInstance(op);
-}
-
-ScheduleEntry* PlannerScheduleEntry::clone(const std::string& name, const int& id, double startTime)
-{
-    PlannerScheduleEntry* entry = new PlannerScheduleEntry(name, id, startTime);
+    SequenceScheduleEntry* entry = new SequenceScheduleEntry(name, id, startTime);
 
     entry->actions.reserve(actions.size());
 
     for (auto action : actions)
     {
-        entry->actions.insert(action);
+        entry->actions.push_back(action);
     }
 
     return entry;

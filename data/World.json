@@ -38,7 +38,7 @@
       "associations" :
       [
         {
-          "category" : "Fishing_Spot",
+          "category" : "Water",
           "type" :
           [
             "Lake",
@@ -58,6 +58,26 @@
           "type" :
           [
             "Worm"
+          ]
+        }
+      ]
+    },
+    {
+      "group" : "Merfolk",
+      "associations" :
+      [
+        {
+          "category" : "Home",
+          "type" :
+          [
+            "Underground"
+          ]
+        },
+        {
+          "category" : "HuntingGround",
+          "type" :
+          [
+            "Pond"
           ]
         }
       ]
@@ -98,6 +118,14 @@
       "name" : "Caves",
       "components" :
       [
+        {
+          "name" : "character",
+          "value" :
+          [
+            "Underground"
+          ],
+          "knowledge" : []
+        },
         {
           "name" : "location",
           "value" :
@@ -168,7 +196,7 @@
       ]
     },
     {
-      "name" : "Timmy",
+      "name" : "Jimbo",
       "components" :
       [
         {
@@ -178,11 +206,30 @@
         },
         {
           "name" : "schedule",
-          "value" : "fisherman"
+          "value" : "Fisherman"
         },
         {
           "name" : "position",
           "value" : "Village"
+        }
+      ]
+    },
+    {
+      "name" : "Mury",
+      "components" :
+      [
+        {
+          "name" : "character",
+          "value" : ["Merfolk"],
+          "knowledge" : ["Swamp", "Caves", "Jimbo"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Merfolk"
+        },
+        {
+          "name" : "position",
+          "value" : "Caves"
         }
       ]
     }

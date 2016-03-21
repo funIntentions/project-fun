@@ -26,10 +26,7 @@ public:
     virtual ~ScheduleEntry() {}
 
     virtual void addAction(Action* action) = 0;
-    virtual ScheduleEntry* setupEntry(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity) = 0;
-    virtual void startEntry(WorldState& worldState) = 0;
-    virtual void endEntry() = 0;
-    virtual ActionInstance* chooseNewAction(WorldState& worldState) = 0;
+    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance) = 0;
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime) = 0;
 
     const std::string& getName() const { return name; }
@@ -47,36 +44,23 @@ public:
             : ScheduleEntry(name, id, startTime), action(nullptr) {}
 
     virtual void addAction(Action* action);
-    virtual ScheduleEntry* setupEntry(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity);
-    virtual void startEntry(WorldState& worldState) {};
-    virtual void endEntry() {};
-    virtual ActionInstance* chooseNewAction(WorldState& worldState);
+    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance);
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 };
 
-class PlannerScheduleEntry : public ScheduleEntry
+class SequenceScheduleEntry : public ScheduleEntry
 {
 private:
-    std::unordered_map<std::string, Action*> actions;
-    std::vector<Operator> operators;
-    std::vector<Operator> plan;
-    std::set<int> goals;
-    PartialOrderPlanner planner;
-    int actionIndex;
-    Operator idle;
+    std::vector<Action*> actions;
 public:
-    PlannerScheduleEntry(const std::string& name, int id, double startTime)
-            : ScheduleEntry(name, id, startTime), actionIndex(-1)
-    {
-        idle.name = "idle";
-    }
+    SequenceScheduleEntry(const std::string& name, int id, double startTime)
+            : ScheduleEntry(name, id, startTime)
+    {}
 
     virtual void addAction(Action* action);
-    virtual ScheduleEntry* setupEntry(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity);
-    virtual void startEntry(WorldState& worldState);
-    virtual void endEntry();
-    virtual ActionInstance* chooseNewAction(WorldState& worldState);
+    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance);
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
+
 };
 
 #endif //PARTIALORDERPLANNER_SCHEDULEENTRY_H
