@@ -5,6 +5,8 @@
 #ifndef PARTIALORDERPLANNER_WINDOW_H
 #define PARTIALORDERPLANNER_WINDOW_H
 
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 class Window {
@@ -19,6 +21,16 @@ public:
     virtual ~Window() {}
     bool create();
     void destroy();
+
+    unsigned getWidth()
+    {
+        return _width;
+    }
+
+    unsigned getHeight()
+    {
+        return _height;
+    }
 };
 
 

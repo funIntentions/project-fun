@@ -75,7 +75,7 @@ public:
             }
 
             _graphics->clearScreen();
-
+            _graphics->textRenderer->renderText("Bleep Bloop", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
             _graphics->swapBuffers();
             _input->pollForInput();
 

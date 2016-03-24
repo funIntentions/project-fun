@@ -5,12 +5,16 @@
 #ifndef PARTIALORDERPLANNER_GRAPHICS_H
 #define PARTIALORDERPLANNER_GRAPHICS_H
 
-#include <stdio.h>
 #include "Window.h"
+#include "glm/glm.hpp"
+#include "TextRenderer.h"
+#include <stdio.h>
+#include <unordered_map>
 
 class Graphics {
 public:
     Window* window;
+    TextRenderer* textRenderer;
 
     Graphics() : window(new Window())
     {
@@ -31,7 +35,7 @@ public:
 
     void clearScreen()
     {
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -44,6 +48,7 @@ public:
     {
         window->destroy();
         delete window;
+        delete textRenderer;
         glfwTerminate();
     }
 };

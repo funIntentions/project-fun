@@ -2,9 +2,6 @@
 // Created by Dan on 2/19/2016.
 //
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-
 #include <stdlib.h>
 #include <iostream>
 #include "Graphics.h"
@@ -43,8 +40,11 @@ bool Graphics::initialize()
 
     // Set GL settings
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
+
+    textRenderer = new TextRenderer(window->getWidth(), window->getHeight());
+    textRenderer->loadFont("fonts/SourceCodePro-Regular.ttf", 48);
 
     return true;
 }
