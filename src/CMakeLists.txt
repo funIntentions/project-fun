@@ -43,6 +43,6 @@ set(SOURCE_FILES
         framework/Graphics.cpp
         framework/Input.cpp
         framework/Keyboard.cpp
-        components/CharacterComponentManager.h framework/Shader.cpp framework/Shader.h framework/TextRenderer.cpp framework/TextRenderer.h)
+        components/CharacterComponentManager.h framework/Shader.cpp framework/Shader.h framework/TextRenderer.cpp framework/TextRenderer.h components/AttributeComponentManager.cpp components/AttributeComponentManager.h)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

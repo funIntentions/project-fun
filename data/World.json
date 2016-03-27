@@ -9,10 +9,7 @@
           "category" : "Food",
           "type" :
           [
-            "Fish",
-            "Pastries",
-            "Rabbit",
-            "Worms"
+            "Fish"
           ]
         },
         {
@@ -84,7 +81,7 @@
           ]
         },
         {
-          "category" : "Prey",
+          "category" : "Food",
           "type" :
           [
             "Fish",
@@ -252,6 +249,10 @@
                   "name" : "character",
                   "value" : ["Fish"],
                   "knowledge" : []
+                },
+                {
+                  "name" : "attribute",
+                  "value" : 100.0
                 },
                 {
                   "name" : "position",

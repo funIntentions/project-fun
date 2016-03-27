@@ -14,6 +14,7 @@
 #include "WorldState.h"
 #include "PositionComponentManager.h"
 #include "CharacterComponentManager.h"
+#include "AttributeComponentManager.h"
 
 class ActionInstance;
 class ScheduleInstance;
@@ -49,6 +50,7 @@ private:
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
+    std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     PartialOrderPlanner planner;
 
     double time;
@@ -57,7 +59,7 @@ private:
     const std::string SEQUENCE_SCHEDULE_ENTRY = "sequence";
 
 public:
-    ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<CharacterComponentManager> characterComponentManager, std::shared_ptr<PositionComponentManager> positionComponentManager);
+    ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<CharacterComponentManager> characterComponentManager, std::shared_ptr<PositionComponentManager> positionComponentManager, std::shared_ptr<AttributeComponentManager> attributeComponentManager);
 
     void readActions(std::shared_ptr<ActionManager> actionManager);
 

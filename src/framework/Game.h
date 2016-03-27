@@ -30,8 +30,9 @@ public:
              _locationComponentManager(new LocationComponentManager()),
              _characterComponentManager(new CharacterComponentManager()),
              _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
+             _attributeComponentManager(new AttributeComponentManager()),
              _actionManager(new ActionManager),
-             _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager))
+             _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager, _attributeComponentManager))
     { }
 
     ~Game() {}
@@ -92,6 +93,7 @@ private:
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
+    std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
@@ -169,6 +171,12 @@ private:
                         }*/
 
                         _locationComponentManager->spawnComponent(*entity, entityName, locals);
+                    }
+                    else if (name == "attribute")
+                    {
+                        assert(componentValue->value.IsFloat());
+                        float health = componentValue->value.GetFloat();
+                        _attributeComponentManager->spawnComponent(*entity, health);
                     }
                     else if (name == "character")
                     {

@@ -22,6 +22,7 @@
       "params" : [{"name" : "Water"}, {"name" : "Food"}],
       "positivePreconditions" :
       [
+        {"name" : "Health", "params" : ["Alive", "Food"]},
         {"name" : "Location", "params" : ["Water", "Entity"]},
         {"name" : "Location", "params" : ["Water", "Food"]}
       ],
@@ -114,6 +115,7 @@
       "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Entity"}],
       "positivePreconditions" :
       [
+        {"name" : "Health", "params" : ["Alive", "Food"]},
         {"name" : "Location", "params" : ["HuntingGround", "Entity"]},
         {"name" : "Location", "params" : ["HuntingGround", "Food"]}
       ],

@@ -7,11 +7,15 @@
 #include <Schedules/ScheduleInstance.h>
 #include <util/Extra.h>
 
-ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<CharacterComponentManager> characterComponentManager, std::shared_ptr<PositionComponentManager> positionComponentManager) :
+ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager,
+                                                   std::shared_ptr<CharacterComponentManager> characterComponentManager,
+                                                   std::shared_ptr<PositionComponentManager> positionComponentManager,
+                                                   std::shared_ptr<AttributeComponentManager> attributeComponentManager) :
         ComponentManager(),
         _actionManager(actionManager),
         _characterComponentManager(characterComponentManager),
         _positionComponentManager(positionComponentManager),
+        _attributeComponentManager(attributeComponentManager),
         time(0.0)
 {
     _data.size = 0;
@@ -423,7 +427,7 @@ bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> 
         if (predicateTemplate.type == "Location")
         {
             std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
-            Entity location = _positionComponentManager->getLocation(entity);
+            Entity location = _positionComponentManager->getLocation(entity); // TODO: check more than just self
 
             for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
             {
@@ -435,12 +439,12 @@ bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> 
         }
         else if (predicateTemplate.type == "Health")
         {
-            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
-            Entity location = _positionComponentManager->getLocation(entity);
+            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[1]); // 0 == Health to be 1 == Entity with health
 
             for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
             {
-                if (opinion->entity.id == location.id)
+                std::string health = _attributeComponentManager->getHealthState(opinion->entity);
+                if (predicateTemplate.params[0] == health)
                     break;
                 else if (opinion + 1 == opinions.end())
                     return false;
@@ -466,6 +470,15 @@ void ScheduleComponentManager::updateState(Entity entity, std::vector<int> effec
 
             if (!opinions.empty())
                 _positionComponentManager->changeLocation(entity, opinions.front().entity);
+            else
+                std::cout << "I have no opinions of: " << predicateTemplate.params[0] << std::endl;
+        }
+        else if (predicateTemplate.type == "Health")
+        {
+            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[1]); // 0 == Health to have // 1 == Entity
+
+            if (!opinions.empty())
+                _attributeComponentManager->setHealthState(opinions.front().entity, predicateTemplate.params[0]);
             else
                 std::cout << "I have no opinions of: " << predicateTemplate.params[0] << std::endl;
         }
