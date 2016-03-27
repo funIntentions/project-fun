@@ -19,6 +19,11 @@ bool ActionInstance::perform(double deltaTime)
     return (duration <= 0);
 }
 
+std::vector<std::string> ActionInstance::getParameters() const
+{
+    return action->parameters;
+}
+
 std::vector<int> ActionInstance::getPreconditions()
 {
     return action->actionOperator->preconditions;

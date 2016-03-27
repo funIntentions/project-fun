@@ -118,6 +118,9 @@ public:
 
     std::vector<Opinion> getOpinions(Entity entity, Category category)
     {
+        if (category == "Self")
+            return {{1.0, entity}};
+
         Instance instance = lookup(entity);
         auto opinions = _data.character[instance.i].associations.find(category);
 

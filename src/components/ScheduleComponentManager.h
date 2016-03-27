@@ -73,11 +73,13 @@ public:
 
     void usePlanner(Entity entity, std::vector<int> preconditions);
 
-    void updateState(Entity entity, std::vector<int> effects);
+    void updateState(ActionInstance* action);
 
     std::vector<int> getState(Entity entity);
 
-    bool preconditionsMet(Entity entity, std::vector<int> preconditions);
+    void mapParameters(Entity entity, ActionInstance* action);
+
+    bool preconditionsMet(ActionInstance* action);
 
     std::vector<int> runSchedules(double deltaTime);
 

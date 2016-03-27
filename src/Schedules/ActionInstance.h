@@ -7,6 +7,8 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <EntityManager.h>
 
 class Action;
 class Operator;
@@ -16,11 +18,13 @@ private:
     const Action* action;
     double duration;
 public:
+    std::unordered_map<std::string, Entity> mappedParameters;
 
     ActionInstance(const Action* action, double duration);
 
     bool perform(double deltaTime);
 
+    std::vector<std::string> getParameters() const;
     std::vector<int> getPreconditions();
     std::vector<int> getActionEffects();
     const std::string& getActionName() const;

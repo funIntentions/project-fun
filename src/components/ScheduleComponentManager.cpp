@@ -331,16 +331,16 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
         if (_data.queuedActions[i].empty())
             _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
 
-        std::vector<int> preconditions = _data.queuedActions[i].back()->getPreconditions();
-        if (!preconditionsMet(_data.entity[i], preconditions))
+        mapParameters(_data.entity[i], _data.queuedActions[i].back());
+        if (!preconditionsMet(_data.queuedActions[i].back()))
         {
             std::cout << "Preconditions Not Met" << std::endl;
+            std::vector<int> preconditions = _data.queuedActions[i].back()->getPreconditions();
             usePlanner(_data.entity[i], preconditions);
         }
         else if (_data.queuedActions[i].back()->perform(deltaTime))
         {
-            std::vector<int> newEffects = _data.queuedActions[i].back()->getActionEffects();
-            updateState(_data.entity[i], newEffects);
+            updateState(_data.queuedActions[i].back());
             //effects.insert(effects.end(), newEffects.begin(), newEffects.end());
             _data.queuedActions[i].pop_back();
         }
@@ -417,36 +417,47 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
     return state;
 }
 
+void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* action)
+{
+    for (std::string param : action->getParameters())
+    {
+        std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, param);
+        if (!opinions.empty())
+            action->mappedParameters[param] = opinions.front().entity; // The first opinion is always prioritized
+    }
+}
 
-bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> preconditions) {
+bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
 
+    std::vector<int> preconditions = action->getPreconditions();
     for (int id : preconditions)
     {
         PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
 
         if (predicateTemplate.type == "Location")
         {
-            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
-            Entity location = _positionComponentManager->getLocation(entity); // TODO: check more than just self
-
-            for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
+            auto locationItr = action->mappedParameters.find(predicateTemplate.params[0]);
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (locationItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
             {
-                if (opinion->entity.id == location.id)
-                    break;
-                else if (opinion + 1 == opinions.end())
+                Entity desiredLocation = locationItr->second;
+                Entity entity = entityItr->second;
+                Entity location = _positionComponentManager->getLocation(entity);
+
+                if (location.id != desiredLocation.id)
                     return false;
             }
         }
         else if (predicateTemplate.type == "Health")
         {
-            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[1]); // 0 == Health to be 1 == Entity with health
-
-            for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (entityItr != action->mappedParameters.end())
             {
-                std::string health = _attributeComponentManager->getHealthState(opinion->entity);
-                if (predicateTemplate.params[0] == health)
-                    break;
-                else if (opinion + 1 == opinions.end())
+                std::string desiredHealth = predicateTemplate.params[0];
+                Entity entity = entityItr->second;
+                std::string health = _attributeComponentManager->getHealthState(entity);
+
+                if (health != desiredHealth)
                     return false;
             }
         }
@@ -458,29 +469,40 @@ bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> 
     return true;
 }
 
-void ScheduleComponentManager::updateState(Entity entity, std::vector<int> effects)
+void ScheduleComponentManager::updateState(ActionInstance* action)
 {
+    std::vector<int> effects = action->getActionEffects();
     for (int id : effects)
     {
         PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
 
         if (predicateTemplate.type == "Location")
         {
-            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
+            auto locationItr = action->mappedParameters.find(predicateTemplate.params[0]);
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (locationItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
+            {
+                Entity desiredLocation = locationItr->second;
+                Entity entity = entityItr->second;
 
-            if (!opinions.empty())
-                _positionComponentManager->changeLocation(entity, opinions.front().entity);
+                _positionComponentManager->changeLocation(entity, desiredLocation);
+            }
             else
-                std::cout << "I have no opinions of: " << predicateTemplate.params[0] << std::endl;
+                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
         }
         else if (predicateTemplate.type == "Health")
         {
-            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[1]); // 0 == Health to have // 1 == Entity
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (entityItr != action->mappedParameters.end())
+            {
+                std::string desiredHealth = predicateTemplate.params[0];
+                Entity entity = entityItr->second;
+                std::string health = _attributeComponentManager->getHealthState(entity);
 
-            if (!opinions.empty())
-                _attributeComponentManager->setHealthState(opinions.front().entity, predicateTemplate.params[0]);
+                _attributeComponentManager->setHealthState(entity, desiredHealth);
+            }
             else
-                std::cout << "I have no opinions of: " << predicateTemplate.params[0] << std::endl;
+                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
         }
         else
         {
@@ -488,17 +510,6 @@ void ScheduleComponentManager::updateState(Entity entity, std::vector<int> effec
         }
     }
 }
-
-/*
-void ScheduleComponentManager::updateStates(std::shared_ptr<PositionComponentManager> positionComponentManager, std::shared_ptr<ActionManager> actionManager)
-{
-    for (int i = 0; i < _data.size; ++i)
-    {
-        _data.state[i].state.clear();
-        std::vector<int> states = positionComponentManager->getEntityState(_data.entity[i], *(actionManager.get()));
-        _data.state[i].state.insert(_data.state[i].state.begin(), states.begin(), states.end());
-    }
-}*/
 
 void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime)
 {

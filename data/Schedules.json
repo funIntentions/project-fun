@@ -5,12 +5,12 @@
       "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Water"}, {"name" : "Entity"}],
+      "params" : [{"name" : "Water"}, {"name" : "Self"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Water", "Entity"]}
+        {"name" : "Location", "params" : ["Water", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -19,11 +19,11 @@
       "name" : "Fish",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Water"}, {"name" : "Food"}],
+      "params" : [{"name" : "Water"}, {"name" : "Food"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
         {"name" : "Health", "params" : ["Alive", "Food"]},
-        {"name" : "Location", "params" : ["Water", "Entity"]},
+        {"name" : "Location", "params" : ["Water", "Self"]},
         {"name" : "Location", "params" : ["Water", "Food"]}
       ],
       "addedEffects" :
@@ -37,12 +37,12 @@
       "name" : "TravelToMarket",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "Entity"}],
+      "params" : [{"name" : "Market"}, {"name" : "Self"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Market", "Entity"]}
+        {"name" : "Location", "params" : ["Market", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -51,10 +51,10 @@
       "name" : "SellGoods",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "Goods"}, {"name" : "c"}],
+      "params" : [{"name" : "Market"}, {"name" : "Goods"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Market", "c"]}
+        {"name" : "Location", "params" : ["Market", "Self"]}
       ],
       "addedEffects" :
       [
@@ -67,12 +67,12 @@
       "name" : "TravelHome",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Home"}, {"name" : "c"}],
+      "params" : [{"name" : "Home"}, {"name" : "Self"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Home", "c"]}
+        {"name" : "Location", "params" : ["Home", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -81,12 +81,12 @@
       "name" : "TravelToHuntingGround",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "HuntingGround"}, {"name" : "c"}],
+      "params" : [{"name" : "HuntingGround"}, {"name" : "Self"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["HuntingGround", "c"]}
+        {"name" : "Location", "params" : ["HuntingGround", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -95,10 +95,10 @@
       "name" : "TurnIntoMerfolk",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "c"}],
+      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["HuntingGround", "c"]},
+        {"name" : "Location", "params" : ["HuntingGround", "Self"]},
         {"name" : "Location", "params" : ["HuntingGround", "Food"]}
       ],
       "addedEffects" :
@@ -112,11 +112,11 @@
       "name" : "Hunt",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Entity"}],
+      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
         {"name" : "Health", "params" : ["Alive", "Food"]},
-        {"name" : "Location", "params" : ["HuntingGround", "Entity"]},
+        {"name" : "Location", "params" : ["HuntingGround", "Self"]},
         {"name" : "Location", "params" : ["HuntingGround", "Food"]}
       ],
       "addedEffects" :
@@ -130,10 +130,10 @@
       "name" : "Sleep",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Home"}, {"name" : "c"}],
+      "params" : [{"name" : "Home"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Home", "c"]}
+        {"name" : "Location", "params" : ["Home", "Self"]}
       ],
       "addedEffects" :
       [
