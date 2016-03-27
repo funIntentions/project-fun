@@ -17,8 +17,8 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
-        std::vector<std::string> location;
-        std::vector<std::vector<Entity>> locations;
+        std::vector<std::string> name;
+        std::vector<std::vector<Entity>> localEntities;
 
     };
 
@@ -31,43 +31,53 @@ public:
         _data.size = 0;
     }
 
-    std::vector<Operator> determineActionsOfEntity(Action travelTemplate, Entity traveller, std::shared_ptr<ActionManager> actionManager)
-    {
-        std::vector<Operator> ops;
-
-        for (int i = 0; i < _data.size; ++i)
-        {
-            for (Entity location : _data.locations[i])
-            {
-                std::vector<unsigned> params = {_data.entity[i].id, location.id, traveller.id};
-                ops.push_back(actionManager->buildOperator(travelTemplate, params)); //Params: Entity fromLocation, Entity toLocation, Entity traveller
-            }
-        }
-
-        return ops;
-    }
-
-    std::string getNameOfPlace(Entity entity)
-    {
-        Instance inst = lookup(entity);
-        if (inst.i >= 0)
-        {
-            return _data.location[inst.i];
-        }
-
-        return "not found";
-    }
-
-    void spawnComponent(Entity entity, std::string location, std::vector<Entity> locations)
+    void spawnComponent(Entity entity, std::string name, std::vector<Entity> locals)
     {
 
         _map.emplace(entity.index(), _data.size);
 
         _data.entity.push_back(entity);
-        _data.location.push_back(location);
-        _data.locations.push_back(locations);
+        _data.name.push_back(name);
+        _data.localEntities.push_back(locals);
 
         ++_data.size;
+    }
+
+    void addLocalEntity(Entity location, Entity local)
+    {
+        Instance instance = lookup(location);
+        if (instance.i >= 0)
+        {
+            _data.localEntities[instance.i].push_back(local);
+        }
+    }
+
+    void removeLocalEntity(Entity location, Entity local)
+    {
+        Instance instance = lookup(location);
+        if (instance.i >= 0)
+        {
+            for (auto itr = _data.localEntities[instance.i].begin(); itr != _data.localEntities[instance.i].end(); ++itr)
+            {
+                if (itr->id == local.id)
+                {
+                    _data.localEntities[instance.i].erase(itr);
+                    return;
+                }
+            }
+        }
+    }
+
+    std::vector<Entity> getLocalEntities(Entity location)
+    {
+        Instance instance = lookup(location);
+        return _data.localEntities[instance.i];
+    }
+
+    std::string getLocationName(Entity location)
+    {
+        Instance instance = lookup(location);
+        return _data.name[instance.i];
     }
 
     void destroy(unsigned i)
@@ -77,15 +87,15 @@ public:
         Entity last_e = _data.entity[last];
 
         _data.entity[i] = _data.entity[last];
-        _data.location[i] = _data.location[last];
-        _data.locations[i] = _data.locations[last];
+        _data.name[i] = _data.name[last];
+        _data.localEntities[i] = _data.localEntities[last];
 
         _map[last_e.index()] =  i;
         _map.erase(e.index());
 
         _data.entity.pop_back();
-        _data.location.pop_back();
-        _data.locations.pop_back();
+        _data.name.pop_back();
+        _data.localEntities.pop_back();
 
         --_data.size;
     }

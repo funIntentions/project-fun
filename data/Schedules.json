@@ -2,33 +2,15 @@
   "actions" :
   [
     {
-      "name" : "travel",
-      "minDuration" : 2,
-      "maxDuration" : 4,
-      "params" : [{"name" : "from"}, {"name" : "to"}, {"name" : "c"}],
-      "positivePreconditions" :
-      [
-        {"name" : "at", "params" : ["from", "c"]}
-      ],
-      "addedEffects" :
-      [
-        {"name" : "at", "params" : ["to", "c"]}
-      ],
-      "subtractedEffects" :
-      [
-        {"name" : "at", "params" : ["from", "c"]}
-      ]
-    },
-    {
       "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Water"}, {"name" : "c"}],
+      "params" : [{"name" : "Water"}, {"name" : "Entity"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Water", "c"]}
+        {"name" : "Location", "params" : ["Water", "Entity"]}
       ],
       "subtractedEffects" :
       []
@@ -37,14 +19,15 @@
       "name" : "Fish",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Water"}, {"name" : "c"}],
+      "params" : [{"name" : "Water"}, {"name" : "Food"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Water", "c"]}
+        {"name" : "Location", "params" : ["Water", "Entity"]},
+        {"name" : "Location", "params" : ["Water", "Food"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Fishing", "params" : ["c"]}
+        {"name" : "Health", "params" : ["Dead", "Food"]}
       ],
       "subtractedEffects" :
       []
@@ -53,12 +36,12 @@
       "name" : "TravelToMarket",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "c"}],
+      "params" : [{"name" : "Market"}, {"name" : "Entity"}],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Market", "c"]}
+        {"name" : "Location", "params" : ["Market", "Entity"]}
       ],
       "subtractedEffects" :
       []
@@ -128,15 +111,15 @@
       "name" : "Hunt",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "c"}],
+      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Entity"}],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["HuntingGround", "c"]},
+        {"name" : "Location", "params" : ["HuntingGround", "Entity"]},
         {"name" : "Location", "params" : ["HuntingGround", "Food"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Kill", "params" : ["Food"]}
+        {"name" : "Health", "params" : ["Dead", "Food"]}
       ],
       "subtractedEffects" :
       []

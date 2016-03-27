@@ -433,6 +433,19 @@ bool ScheduleComponentManager::preconditionsMet(Entity entity, std::vector<int> 
                     return false;
             }
         }
+        else if (predicateTemplate.type == "Health")
+        {
+            std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, predicateTemplate.params[0]); // 0 == Type of Location 1 == entity/c
+            Entity location = _positionComponentManager->getLocation(entity);
+
+            for (auto opinion = opinions.begin(); opinion < opinions.end(); ++opinion)
+            {
+                if (opinion->entity.id == location.id)
+                    break;
+                else if (opinion + 1 == opinions.end())
+                    return false;
+            }
+        }
         else
         {
             std::cout << "Unhandled predicate: " << predicateTemplate.type << std::endl;

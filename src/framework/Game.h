@@ -28,8 +28,8 @@ public:
              _input(new Input()),
              _entityManager(new EntityManager()),
              _locationComponentManager(new LocationComponentManager()),
-             _positionComponentManager(new PositionComponentManager(_locationComponentManager)),
              _characterComponentManager(new CharacterComponentManager()),
+             _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
              _actionManager(new ActionManager),
              _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager))
     { }
@@ -90,8 +90,8 @@ private:
     std::shared_ptr<Input> _input;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
-    std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
+    std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
@@ -159,15 +159,16 @@ private:
                     else if (name == "location")
                     {
                         assert(componentValue->value.IsArray());
-                        std::vector<Entity> locations;
-                        for (auto connection = componentValue->value.Begin(); connection != componentValue->value.End(); ++connection)
+                        std::vector<Entity> locals;
+
+                        /*for (auto connection = componentValue->value.Begin(); connection != componentValue->value.End(); ++connection)
                         {
                             std::string locationName = connection->GetString();
                             Entity locationEntity = _entityManager->getEntity(locationName);
                             locations.push_back(locationEntity);
-                        }
+                        }*/
 
-                        _locationComponentManager->spawnComponent(*entity, entityName, locations);
+                        _locationComponentManager->spawnComponent(*entity, entityName, locals);
                     }
                     else if (name == "character")
                     {

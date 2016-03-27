@@ -9,6 +9,7 @@
 #include <memory>
 #include "ComponentManager.h"
 #include "LocationComponentManager.h"
+#include "CharacterComponentManager.h"
 
 class PositionComponentManager : public ComponentManager
 {
@@ -22,10 +23,11 @@ private:
 
     InstanceData _data;
     std::shared_ptr<LocationComponentManager> _locationComponentManger;
+    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
 
 public:
 
-    PositionComponentManager(std::shared_ptr<LocationComponentManager> locationComponentManager) : ComponentManager(), _locationComponentManger(locationComponentManager)
+    PositionComponentManager(std::shared_ptr<LocationComponentManager> locationComponentManager, std::shared_ptr<CharacterComponentManager> characterComponentManager) : ComponentManager(), _locationComponentManger(locationComponentManager), _characterComponentManager(characterComponentManager)
     {
         _data.size = 0;
     }
@@ -48,9 +50,24 @@ public:
     void changeLocation(Entity entity, Entity location)
     {
         Instance inst = lookup(entity);
-        std::cout << "old location: " << _locationComponentManger->getNameOfPlace(_data.location[inst.i]) << std::endl;
-        std::cout << "new location: " << _locationComponentManger->getNameOfPlace(location) << std::endl << std::endl;
+        _locationComponentManger->removeLocalEntity(_data.location[inst.i], entity);
+        std::cout << "old location: " << _locationComponentManger->getLocationName(_data.location[inst.i]) << std::endl;
+        _locationComponentManger->addLocalEntity(location, entity);
+        std::cout << "new location: " << _locationComponentManger->getLocationName(location) << std::endl << std::endl;
         _data.location[inst.i] = location;
+
+        updateKnowledge(entity, location);
+    }
+
+    void updateKnowledge(Entity entity, Entity location)
+    {
+        std::vector<Entity> localEntities = _locationComponentManger->getLocalEntities(location);
+        for (Entity local : localEntities)
+        {
+            _characterComponentManager->addKnowledge(local, {entity});
+        }
+
+        _characterComponentManager->addKnowledge(entity, localEntities);
     }
 
     void spawnComponent(Entity entity, Entity location)
@@ -58,6 +75,9 @@ public:
         _map.emplace(entity.index(), _data.size);
         _data.entity.push_back(entity);
         _data.location.push_back(location);
+
+        _locationComponentManger->addLocalEntity(location, entity);
+        updateKnowledge(entity, location);
 
         ++_data.size;
     }

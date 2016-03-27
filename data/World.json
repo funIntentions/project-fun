@@ -62,6 +62,9 @@
         }
       ]
     },
+    {"group" : "Fish",
+      "associations" : []
+    },
     {
       "group" : "Merfolk",
       "associations" :
@@ -78,6 +81,14 @@
           "type" :
           [
             "Pond"
+          ]
+        },
+        {
+          "category" : "Prey",
+          "type" :
+          [
+            "Fish",
+            "Human"
           ]
         }
       ]
@@ -221,7 +232,7 @@
         {
           "name" : "character",
           "value" : ["Merfolk"],
-          "knowledge" : ["Swamp", "Caves", "Jimbo"]
+          "knowledge" : ["Swamp", "Caves"]
         },
         {
           "name" : "schedule",
@@ -232,6 +243,21 @@
           "value" : "Caves"
         }
       ]
+    },
+    {
+      "name": "Fish_1",
+      "components" :
+              [
+                {
+                  "name" : "character",
+                  "value" : ["Fish"],
+                  "knowledge" : []
+                },
+                {
+                  "name" : "position",
+                  "value" : "Swamp"
+                }
+              ]
     }
   ]
 }

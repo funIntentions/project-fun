@@ -166,19 +166,28 @@ public:
         Character* character  = &_data.character[instance.i];
         instance = lookup(otherEntity);
         Character otherCharacter = _data.character[instance.i];
+
         // TODO: Seriously reduce this mass confusion!
-        for (std::string characterGroup : character->groups)
+        for (std::string characterGroup : character->groups) // Go through all groups that this entity belongs to.
         {
             Group group = groups.find(characterGroup)->second;
 
-            for (auto association : group.associations)
+            for (auto association : group.associations) // For each group, go through the category -> types relationships
             {
-                for (auto type : association.second)
+                for (auto type : association.second) // Go through the types of entities that are associated with this category
                 {
-                    for (std::string otherCharacterType : otherCharacter.groups)
+                    for (std::string otherCharacterType : otherCharacter.groups) // Determine if this other entity is of a type that has a association with a group this entity belongs to.
                     {
                         if (otherCharacterType == type)
-                            character->associations[association.first].push_back({1.0f, otherEntity});
+                        {
+                            bool known = false;
+                            for (Opinion opinion : character->associations[association.first])
+                                if (opinion.entity.id == otherEntity.id)
+                                    known = true;// Don't add to knowledge if the entity is already known
+
+                            if (!known)
+                                character->associations[association.first].push_back({1.0f, otherEntity});
+                        }
                     }
                 }
             }
