@@ -321,6 +321,9 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
 
     for (unsigned i = 0; i < _data.size; ++i)
     {
+        if (_attributeComponentManager->isDead(_data.entity[i]))
+            continue;
+
         if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
         {
             _data.queuedActions[i].clear();
@@ -335,8 +338,7 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
         if (!preconditionsMet(_data.queuedActions[i].back()))
         {
             std::cout << "Preconditions Not Met" << std::endl;
-            std::vector<int> preconditions = _data.queuedActions[i].back()->getPreconditions();
-            usePlanner(_data.entity[i], preconditions);
+            usePlanner(_data.entity[i], _data.queuedActions[i].back()->getPreconditions());
         }
         else if (_data.queuedActions[i].back()->perform(deltaTime))
         {
@@ -404,7 +406,7 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
             PredicateTemplate predicateTemplate;
             predicateTemplate.type = "Location";
             predicateTemplate.params.push_back(category);
-            predicateTemplate.params.push_back("c");
+            predicateTemplate.params.push_back("Self");
 
             int id = _actionManager->getPredicateId(predicateTemplate);
             if (id != -1)
@@ -497,12 +499,42 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
             {
                 std::string desiredHealth = predicateTemplate.params[0];
                 Entity entity = entityItr->second;
-                std::string health = _attributeComponentManager->getHealthState(entity);
 
                 _attributeComponentManager->setHealthState(entity, desiredHealth);
             }
             else
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+        }
+        else if (predicateTemplate.type == "Opinion")
+        {
+            if (predicateTemplate.params.size() == 2) // TODO: Do I need this?
+            {
+                auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                if (opinionEntityItr != action->mappedParameters.end())
+                {
+                    float newVariance = (float) atof(predicateTemplate.params[0].c_str());
+                    Entity opinionEntity = opinionEntityItr->second;
+
+                    _characterComponentManager->setAllOpinionVariances(predicateTemplate.params[1], opinionEntity, newVariance);
+                }
+                else
+                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            }
+            else if (predicateTemplate.params.size() == 3)
+            {
+                auto entityItr = action->mappedParameters.find(predicateTemplate.params[0]);
+                auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[2]);
+                if (entityItr != action->mappedParameters.end() && opinionEntityItr != action->mappedParameters.end())
+                {
+                    float newVariance = (float) atof(predicateTemplate.params[1].c_str());
+                    Entity entity = entityItr->second;
+                    Entity opinionEntity = opinionEntityItr->second;
+
+                    _characterComponentManager->setOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, newVariance);
+                }
+                else
+                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            }
         }
         else
         {

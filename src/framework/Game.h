@@ -199,7 +199,7 @@ private:
                         }
 
                         _characterComponentManager->spawnComponent(*entity, groups);
-                        _characterComponentManager->addKnowledge(*entity, knownEntities);
+                        _characterComponentManager->addKnowledge(*entity, knownEntities); // TODO: this should be called in a second pass, otherwise information will be missed
                     }
                 }
             }
@@ -234,6 +234,7 @@ private:
     {
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
 
+        _characterComponentManager->readGroups("data/World.json");
         _graphics->initialize();
         _input->initialize(_graphics->window->window);
 

@@ -6,6 +6,7 @@
 #define PARTIALORDERPLANNER_CHARACTERCOMPONENTMANAGER_H
 
 #include <ComponentManager.h>
+#include <algorithm>
 #include <fstream>
 #include <rapidjson/document.h>
 
@@ -50,13 +51,11 @@ public:
     CharacterComponentManager() : ComponentManager()
     {
         _data.size = 0;
-
-        readGroups();
     }
 
-    void readGroups()
+    void readGroups(std::string worldDataPath)
     {
-        std::ifstream in("data/World.json");
+        std::ifstream in(worldDataPath);
         std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         const char* json = contents.c_str();
 
@@ -103,6 +102,11 @@ public:
         delete json;
     }
 
+    void addGroup(Group group)
+    {
+        groups.insert({group.name, group});
+    }
+
     void spawnComponent(Entity entity, std::vector<std::string> groups)
     {
         _map.emplace(entity.index(), _data.size);
@@ -131,6 +135,41 @@ public:
         }
 
         return opinions->second;
+    }
+
+    static bool sortOpinionsByVariance(const Opinion& lhs, const Opinion& rhs)
+    {
+        return lhs.variance > rhs.variance;
+    }
+
+    void setOpinionVariance(Entity entity, Category category, Entity opinionEntity, float variance)
+    {
+        Instance instance = lookup(entity);
+
+        auto opinions = _data.character[instance.i].associations.find(category);
+
+        if (opinions == _data.character[instance.i].associations.end())
+        {
+            std::cout << "I have no knowledge of the concept: " << category << std::endl;
+        }
+        else
+        {
+            for (Opinion& opinion : opinions->second)
+            {
+                if (opinion.entity.id == opinionEntity.id)
+                    opinion.variance = variance;
+            }
+
+            std::sort(opinions->second.begin(), opinions->second.end(), sortOpinionsByVariance);
+        }
+    }
+
+    void setAllOpinionVariances(Category category, Entity opinionEntity, float variance)
+    {
+        for (unsigned i = 0; i < _data.size; ++i)
+        {
+            setOpinionVariance(_data.entity[i], category, opinionEntity, variance);
+        }
     }
 
     void addKnowledge(Entity entity, std::vector<Entity> knowledge)

@@ -17,8 +17,8 @@
     },
     {
       "name" : "Fish",
-      "minDuration" : 1,
-      "maxDuration" : 1,
+      "minDuration" : 4,
+      "maxDuration" : 6,
       "params" : [{"name" : "Water"}, {"name" : "Food"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
@@ -28,7 +28,8 @@
       ],
       "addedEffects" :
       [
-        {"name" : "Health", "params" : ["Dead", "Food"]}
+        {"name" : "Health", "params" : ["Dead", "Food"]},
+        {"name" : "Opinion", "params" : ["Self", "0", "Food"]}
       ],
       "subtractedEffects" :
       []
@@ -57,9 +58,7 @@
         {"name" : "Location", "params" : ["Market", "Self"]}
       ],
       "addedEffects" :
-      [
-        {"name" : "Selling", "params" : ["Goods"]}
-      ],
+      [],
       "subtractedEffects" :
       []
     },
@@ -121,7 +120,8 @@
       ],
       "addedEffects" :
       [
-        {"name" : "Health", "params" : ["Dead", "Food"]}
+        {"name" : "Health", "params" : ["Dead", "Food"]},
+        {"name" : "Opinion", "params" : ["Self", "0", "Food"]}
       ],
       "subtractedEffects" :
       []

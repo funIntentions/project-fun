@@ -53,6 +53,12 @@ public:
             _data.health[instance.i] = value;
     }
 
+    bool isDead(Entity entity)
+    {
+        Instance instance = lookup(entity);
+        return _data.health[instance.i] <= 0;
+    }
+
     // TODO: Remove awful fuzzy state conversion
     std::string getHealthState(Entity entity)
     {
