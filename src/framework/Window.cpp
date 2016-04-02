@@ -5,11 +5,8 @@
 #include <glew-1.13.0/include/GL/glew.h>
 #include "Window.h"
 
-Window::Window()
+Window::Window(unsigned width, unsigned height, const char* title) : _width(width), _height(height), _title(title)
 {
-    _width = 800;
-    _height = 600;
-    _title = "<{-}_{-}>";
 }
 
 bool Window::create()

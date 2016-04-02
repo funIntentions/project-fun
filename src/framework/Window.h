@@ -11,13 +11,13 @@
 
 class Window {
 protected:
-    unsigned int _width;
-    unsigned int _height;
+    unsigned _width;
+    unsigned _height;
     const char* _title;
 public:
     GLFWwindow* window;
 
-    Window();
+    Window(unsigned width, unsigned height, const char* title);
     virtual ~Window() {}
     bool create();
     void destroy();

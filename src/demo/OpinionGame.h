@@ -6,10 +6,20 @@
 #define PARTIALORDERPLANNER_OPINIONGAME_H
 
 #include <framework/Game.h>
+#include <EntityManager.h>
+#include <iostream>
+#include "components/ScheduleComponentManager.h"
+#include "components/LocationComponentManager.h"
+#include <fstream>
+#include <rapidjson/document.h>
+#include <math.h>
+#include <components/PositionComponentManager.h>
+#include <components/CharacterComponentManager.h>
+#include "WorldState.h"
 
 class OpinionGame : public Game {
 public:
-    OpinionGame() : Game(),
+    OpinionGame() : Game(800, 600, "Demo: Opinions"),
              _entityManager(new EntityManager()),
              _locationComponentManager(new LocationComponentManager()),
              _attributeComponentManager(new AttributeComponentManager()),
@@ -191,7 +201,6 @@ private:
     void shutdown()
     {
         Game::shutdown();
-        _graphics->shutdown();
     }
 };
 

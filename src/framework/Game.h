@@ -5,25 +5,15 @@
 #ifndef PARTIALORDERPLANNER_GAME_H
 #define PARTIALORDERPLANNER_GAME_H
 
-#include <EntityManager.h>
-#include <chrono>
 #include <memory>
-#include <iostream>
-#include "components/ScheduleComponentManager.h"
-#include "components/LocationComponentManager.h"
-#include <fstream>
-#include <rapidjson/document.h>
-#include <math.h>
-#include <components/PositionComponentManager.h>
-#include <components/CharacterComponentManager.h>
+#include <chrono>
 #include "Graphics.h"
 #include "Input.h"
-#include "WorldState.h"
 
 class Game
 {
 public:
-    Game() : _graphics(new Graphics()),
+    Game(unsigned width, unsigned height, const char* title) : _graphics(new Graphics(width, height, title)),
              _input(new Input())
     { }
 

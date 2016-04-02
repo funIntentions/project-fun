@@ -16,7 +16,7 @@ public:
     Window* window;
     TextRenderer* textRenderer;
 
-    Graphics() : window(new Window())
+    Graphics(unsigned width, unsigned height, const char* title) : window(new Window(width, height, title))
     {
 
     }

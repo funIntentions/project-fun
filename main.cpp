@@ -1,8 +1,9 @@
-#include <OpinionGame.h>
+#include <demo/OpinionGame.h>
+#include <demo/PlannerGame.h>
 
 int main()
 {
-    OpinionGame game;
+    PlannerGame game;
     game.run();
 }
 
