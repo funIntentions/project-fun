@@ -337,7 +337,7 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
         mapParameters(_data.entity[i], _data.queuedActions[i].back());
         if (!preconditionsMet(_data.queuedActions[i].back()))
         {
-            std::cout << "Preconditions Not Met" << std::endl;
+            //std::cout << "Preconditions Not Met" << std::endl;
             usePlanner(_data.entity[i], _data.queuedActions[i].back()->getPreconditions());
         }
         else if (_data.queuedActions[i].back()->perform(deltaTime))

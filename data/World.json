@@ -7,6 +7,7 @@
       [
         {
           "category" : "Food",
+          "preference" : "Alive",
           "type" :
           [
             "Fish"
@@ -26,7 +27,6 @@
           [
             "Wooden_Bed"
           ]
-
         }
       ]
     },
@@ -48,13 +48,6 @@
           "type" :
           [
             "Village"
-          ]
-        },
-        {
-          "category" : "Bait",
-          "type" :
-          [
-            "Worm"
           ]
         }
       ]
@@ -82,6 +75,7 @@
         },
         {
           "category" : "Food",
+          "preference" : "Alive",
           "type" :
           [
             "Fish",
@@ -215,6 +209,10 @@
         {
           "name" : "schedule",
           "value" : "Fisherman"
+        },
+        {
+          "name" : "attribute",
+          "value" : 100.0
         },
         {
           "name" : "position",

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <fstream>
 #include <rapidjson/document.h>
+#include "AttributeComponentManager.h"
 
 typedef std::string Category;
 typedef std::string Type;
@@ -19,10 +20,17 @@ struct Opinion
     Entity entity;
 };
 
+struct Association
+{
+    Category category;
+    std::string preference;
+    std::vector<Type> types;
+};
+
 struct Group
 {
     std::string name;
-    std::unordered_map<Category, std::vector<Type>> associations;
+    std::unordered_map<Category, Association> associations;
 };
 
 struct Character
@@ -45,10 +53,11 @@ private:
 
     std::unordered_map<std::string, Group> groups;
     InstanceData _data;
+    std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
 
 public:
 
-    CharacterComponentManager() : ComponentManager()
+    CharacterComponentManager(std::shared_ptr<AttributeComponentManager> attributeComponentManager) : ComponentManager(), _attributeComponentManager(attributeComponentManager)
     {
         _data.size = 0;
     }
@@ -81,18 +90,26 @@ public:
                 assert(member_itr->value.IsArray());
                 for (auto association = member_itr->value.Begin(); association != member_itr->value.End(); ++association)
                 {
+                    Association newAssociation;
+
                     assert(association->IsObject());
                     auto category = association->FindMember("category");
-                    std::string categoryName = category->value.GetString();
+                    newAssociation.category = category->value.GetString();
+
+                    auto preference = association->FindMember("preference");
+                    if (preference != association->MemberEnd())
+                        newAssociation.preference = preference->value.GetString();
 
                     auto types = association->FindMember("type");
                     assert(types->value.IsArray());
                     for (auto type = types->value.Begin(); type != types->value.End(); ++type)
                     {
                         assert(type->IsString());
-                        newGroup.associations[categoryName].push_back(type->GetString());
+                        newAssociation.types.push_back(type->GetString());
 
                     }
+
+                    newGroup.associations[newAssociation.category] = newAssociation;
                 }
             }
 
@@ -216,19 +233,28 @@ public:
 
             for (auto association : group.associations) // For each group, go through the category -> types relationships
             {
-                for (auto type : association.second) // Go through the types of entities that are associated with this category
+
+                for (auto type : association.second.types) // Go through the types of entities that are associated with this category
                 {
                     for (std::string otherCharacterType : otherCharacter.groups) // Determine if this other entity is of a type that has a association with a group this entity belongs to.
                     {
                         if (otherCharacterType == type)
                         {
+                            float variance = 1.0f;
+                            if (association.second.preference == "Alive" && _attributeComponentManager->isDead(otherEntity))
+                                variance = 0.0f;
+
+
                             bool known = false;
                             for (Opinion opinion : character->associations[association.first])
                                 if (opinion.entity.id == otherEntity.id)
                                     known = true;// Don't add to knowledge if the entity is already known
 
                             if (!known)
-                                character->associations[association.first].push_back({1.0f, otherEntity});
+                            {
+                                character->associations[association.first].push_back({variance, otherEntity});
+                                std::sort(character->associations[association.first].begin(), character->associations[association.first].end(), sortOpinionsByVariance);
+                            }
                         }
                     }
                 }

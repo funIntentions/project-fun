@@ -52,7 +52,7 @@
       "name" : "SellGoods",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "Goods"}, {"name" : "Self"}],
+      "params" : [{"name" : "Market"}, {"name" : "Self"}],
       "positivePreconditions" :
       [
         {"name" : "Location", "params" : ["Market", "Self"]}

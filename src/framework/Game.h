@@ -28,9 +28,9 @@ public:
              _input(new Input()),
              _entityManager(new EntityManager()),
              _locationComponentManager(new LocationComponentManager()),
-             _characterComponentManager(new CharacterComponentManager()),
-             _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
              _attributeComponentManager(new AttributeComponentManager()),
+             _characterComponentManager(new CharacterComponentManager(_attributeComponentManager)),
+             _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
              _actionManager(new ActionManager),
              _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager, _attributeComponentManager))
     { }
@@ -91,9 +91,9 @@ private:
     std::shared_ptr<Input> _input;
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
+    std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
-    std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
@@ -123,6 +123,8 @@ private:
 
             Entity entity = entityManager.create(entityName);
             _entities.push_back(entity);
+
+            std::cout << "New Entity: " << entityName << " - " << entity.id << std::endl;
         }
 
         // Next setup their components
