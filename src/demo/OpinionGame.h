@@ -37,7 +37,7 @@ public:
 
     virtual void render()
     {
-        _graphics->textRenderer->renderText("Bleep Bloop", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+        textRenderer->renderText("Bleep Bloop", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
     }
 private:
     std::shared_ptr<EntityManager> _entityManager;
@@ -48,6 +48,7 @@ private:
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
+    TextRenderer* textRenderer;
 
     void readEntities(EntityManager& entityManager)
     {
@@ -186,7 +187,7 @@ private:
     virtual void initialize()
     {
         Game::initialize();
-
+        textRenderer = new TextRenderer(_graphics->createTextRenderer("fonts/SourceCodePro-Regular.ttf", 42));
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
         _characterComponentManager->readGroups("data/World.json");
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});

@@ -43,8 +43,5 @@ bool Graphics::initialize()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
-    textRenderer = new TextRenderer(window->getWidth(), window->getHeight());
-    textRenderer->loadFont("fonts/SourceCodePro-Regular.ttf", 48);
-
     return true;
 }

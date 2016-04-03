@@ -14,7 +14,6 @@
 class Graphics {
 public:
     Window* window;
-    TextRenderer* textRenderer;
 
     Graphics(unsigned width, unsigned height, const char* title) : window(new Window(width, height, title))
     {
@@ -26,6 +25,13 @@ public:
     static void errorCallback(int error, const char* description)
     {
         fputs(description, stderr);
+    }
+
+    TextRenderer createTextRenderer(std::string fontPath, unsigned fontSize)
+    {
+        TextRenderer textRenderer(window->getWidth(), window->getHeight());
+        textRenderer.loadFont(fontPath, fontSize);
+        return textRenderer;
     }
 
     bool windowIsOpen()
@@ -48,7 +54,6 @@ public:
     {
         window->destroy();
         delete window;
-        delete textRenderer;
         glfwTerminate();
     }
 };

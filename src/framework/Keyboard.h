@@ -11,10 +11,12 @@
 #include <vector>
 
 typedef std::function<void(int)> KeyCallbackFunction;
+typedef std::function<void(unsigned)> CharCallbackFunction;
 
 class Keyboard {
 public:
     static bool keyStates[GLFW_KEY_LAST];
+    static std::vector<CharCallbackFunction> charPressedCallbackFunctions;
     static std::vector<KeyCallbackFunction> keyPressedCallbackFunctions;
     static std::vector<KeyCallbackFunction> keyReleasedCallbackFunctions;
     static std::vector<KeyCallbackFunction> keyRepeatedCallbackFunctions;
@@ -27,7 +29,6 @@ public:
         }
     }
 
-    // TODO: queue callbacks instead of immediately calling them?
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         switch (action)
@@ -51,6 +52,11 @@ public:
                 std::cout << "Keyboard::KeyCallback action: " << action << "not handled" << std::endl;
             }
         }
+    }
+
+    static void CharCallback(GLFWwindow* window, unsigned codepoint)
+    {
+        for (auto callBack : charPressedCallbackFunctions) { callBack(codepoint); }
     }
 };
 

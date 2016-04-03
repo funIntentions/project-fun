@@ -21,6 +21,7 @@ public:
     void initialize(GLFWwindow* window)
     {
         glfwSetKeyCallback(window, Keyboard::KeyCallback);
+        glfwSetCharCallback(window, Keyboard::CharCallback);
     }
 
     void pollForInput()

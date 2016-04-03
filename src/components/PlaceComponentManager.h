@@ -36,9 +36,9 @@ public:
         places = new std::string[numOfPlaces];
 
         _data.size = 0;
-        places[Marshland] = "Marshland";
-        places[Ashplanes] = "Ashplanes";
-        places[Darkvoid] = "Darkvoid";
+        places[Marshland] = "marshland";
+        places[Ashplanes] = "ashplane";
+        places[Darkvoid] = "darkvoid";
     }
 
     ~PlaceComponentManager() {delete places;}

@@ -5,6 +5,7 @@
 #include "Keyboard.h"
 
 bool Keyboard::keyStates[GLFW_KEY_LAST];
+std::vector<CharCallbackFunction> Keyboard::charPressedCallbackFunctions;
 std::vector<KeyCallbackFunction> Keyboard::keyPressedCallbackFunctions;
 std::vector<KeyCallbackFunction> Keyboard::keyReleasedCallbackFunctions;
 std::vector<KeyCallbackFunction> Keyboard::keyRepeatedCallbackFunctions;
