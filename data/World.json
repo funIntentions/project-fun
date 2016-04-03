@@ -234,6 +234,10 @@
           "value" : "Merfolk"
         },
         {
+          "name" : "attribute",
+          "value" : 100.0
+        },
+        {
           "name" : "position",
           "value" : "Caves"
         }

@@ -130,7 +130,8 @@ private:
                     {
                         assert(componentValue->value.IsFloat());
                         float health = componentValue->value.GetFloat();
-                        _attributeComponentManager->spawnComponent(*entity, health);
+                        _attributeComponentManager->spawnComponent(*entity);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::Health, health);
                     }
                     else if (name == "character")
                     {

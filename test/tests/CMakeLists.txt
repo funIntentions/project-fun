@@ -9,7 +9,7 @@ SET(HEADER_FILES
         domains/Table.h)
 
 SET(SOURCE_FILES
-        PartialOrderPlannerFixture.cpp OpinionComponentFixture.cpp)
+        PartialOrderPlannerFixture.cpp OpinionComponentFixture.cpp AttributeComponentFixture.cpp)
 
 add_executable(run_tests ${SOURCE_FILES} ${HEADER_FILES})
 

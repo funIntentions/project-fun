@@ -43,13 +43,14 @@ protected:
         characterComponentManager.addKnowledge(merman, knownEntities);
     }
 public:
+    std::shared_ptr<AttributeComponentManager> attributeComponentManager;
     CharacterComponentManager characterComponentManager;
     EntityManager entityManager;
     Entity fisherman;
     Entity merman;
     Entity fish;
 
-    OpinionComponentFixture() : Test(), characterComponentManager()
+    OpinionComponentFixture() : Test(), attributeComponentManager(new AttributeComponentManager()), characterComponentManager(attributeComponentManager)
     {}
 
     ~OpinionComponentFixture() {}

@@ -10,6 +10,7 @@
 #include <memory>
 #include "ActionInstance.h"
 #include "Predicate.h"
+#include "components/Attribute.h"
 
 class Action {
 private:
@@ -21,13 +22,14 @@ private:
     double calculateDuration() const;
 public:
     Action(const std::string& name, int id, double minDuration, double maxDuration)
-            : name(name), id(id), minDuration(minDuration), maxDuration(maxDuration) {}
+            : name(name), id(id), minDuration(minDuration), maxDuration(maxDuration), attributes(std::vector<float>(Attribute::NumberOfAttributes)) {}
     ~Action(){}
 
     const std::string& getName() const { return name; }
     int getId() const { return id; }
     ActionInstance* createActionInstance() const;
 
+    std::vector<float> attributes;
     std::vector<std::string> parameters;
     std::shared_ptr<Operator> actionOperator;
 };
