@@ -13,6 +13,7 @@
 #include <components/DescriptionComponentManager.h>
 #include <domain/Adventure.h>
 #include <util/Extra.h>
+#include <framework/Cursor.h>
 
 static const int GAME_WIDTH = 800;
 static const int GAME_HEIGHT = 600;
@@ -20,7 +21,7 @@ static const int OUTPUT_MAX = 6;
 
 static const glm::vec3 PLAYER_ACTION_COLOUR(0.5f, 0.8f, 0.5f);
 static const glm::vec3 PLANNER_ACTION_COLOUR(0.8f, 0.8f, 0.2f);
-static const glm::vec3 INPUT_COLOUR(0.5f, 0.8f, 0.2f);
+static const glm::vec3 INPUT_COLOUR(0.8f, 0.8f, 0.8f);
 
 struct Command
 {
@@ -41,11 +42,13 @@ struct ActionOutput
 
 class PlannerGame : public Game {
 public:
-    PlannerGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Planner"), inputReady(false)
+    PlannerGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Planner"), inputReady(false), cursor(0.5f)
     { }
 
     virtual void update(float period)
     {
+        cursor.update(period);
+
         if (inputReady)
         {
             Command command;
@@ -68,7 +71,7 @@ public:
         }
 
         // Render Input Text
-        textRenderer->renderText(input, x, GAME_HEIGHT/1.2f, 1.0f, INPUT_COLOUR);
+        textRenderer->renderText(input + cursor.displayCursor(), x, GAME_HEIGHT/1.2f, 1.0f, INPUT_COLOUR);
     }
 private:
     EntityManager entityManager;
@@ -83,6 +86,7 @@ private:
     std::vector<ActionOutput> output;
     bool inputReady;
     TextRenderer* textRenderer;
+    Cursor cursor;
 
     virtual void initialize()
     {
@@ -93,6 +97,7 @@ private:
 
         Keyboard::charPressedCallbackFunctions.push_back([this](unsigned codepoint) {this->textEntered(codepoint);});
         Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+        Keyboard::keyRepeatedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
 
         partialOrderPlanner = new PartialOrderPlanner();
         worldState = adventureDomain.start;
@@ -321,13 +326,17 @@ private:
         if (key == GLFW_KEY_ENTER)
             inputReady = true;
         else if (key == GLFW_KEY_BACKSPACE && input.size() > 0)
+        {
             input = std::string(input.begin(), input.end() - 1);
+            cursor.display();
+        }
     }
 
     void textEntered(unsigned codepoint)
     {
         std::string character = utf8chr(codepoint);
         input.append(character);
+        cursor.display();
     }
 
     std::string utf8chr(unsigned cp)
