@@ -13,11 +13,17 @@ protected:
     {
         Group humanGroup;
         humanGroup.name = "Human";
-        humanGroup.associations.insert({"Food", {"Fish"}});
+        Association humanAssociations;
+        humanAssociations.category = "Food";
+        humanAssociations.types = {"Fish"};
+        humanGroup.associations.insert({humanAssociations.category, humanAssociations});
 
         Group merfolkGroup;
         merfolkGroup.name = "Merfolk";
-        merfolkGroup.associations.insert({"Food", {"Fish", "Human"}});
+        Association merfolkAssociations;
+        merfolkAssociations.category = "Food";
+        merfolkAssociations.types = {"Fish", "Human", "Plants"};
+        merfolkGroup.associations.insert({merfolkAssociations.category, merfolkAssociations});
 
         Group fishGroup;
         fishGroup.name = "Fish";
@@ -29,6 +35,8 @@ protected:
         fisherman = entityManager.create("Fisherman");
         merman = entityManager.create("Merman");
         fish = entityManager.create("Fish");
+        seaweed = entityManager.create("Seaweed");
+        lilypad = entityManager.create("Lilypad");
 
         std::vector<Type> groups = {"Merfolk"};
         characterComponentManager.spawnComponent(merman, groups);
@@ -38,6 +46,10 @@ protected:
 
         groups = {"Human", "Fisher"};
         characterComponentManager.spawnComponent(fisherman, groups);
+
+        groups = {"Plants"};
+        characterComponentManager.spawnComponent(seaweed, groups);
+        characterComponentManager.spawnComponent(lilypad, groups);
 
         std::vector<Entity> knownEntities {fish};
         characterComponentManager.addKnowledge(merman, knownEntities);
@@ -49,6 +61,8 @@ public:
     Entity fisherman;
     Entity merman;
     Entity fish;
+    Entity seaweed;
+    Entity lilypad;
 
     OpinionComponentFixture() : Test(), attributeComponentManager(new AttributeComponentManager()), characterComponentManager(attributeComponentManager)
     {}
@@ -91,4 +105,24 @@ TEST_F(OpinionComponentFixture, changing_opinion)
 
     ASSERT_EQ(opinionsBefore[0].entity.id, opinionsAfter[1].entity.id);
     ASSERT_EQ(opinionsBefore[1].entity.id, opinionsAfter[0].entity.id);
+}
+
+TEST_F(OpinionComponentFixture, opinions_ordered_by_variance)
+{
+    characterComponentManager.addKnowledge(merman, {fisherman});
+    characterComponentManager.addKnowledge(merman, {seaweed});
+    characterComponentManager.addKnowledge(merman, {lilypad});
+    characterComponentManager.setOpinionVariance(merman, "Food", fish, 0.8);
+    characterComponentManager.setOpinionVariance(merman, "Food", fisherman, 0.2);
+    characterComponentManager.setOpinionVariance(merman, "Food", seaweed, 0.5);
+    characterComponentManager.setOpinionVariance(merman, "Food", lilypad, 0.1);
+
+    std::vector<Opinion> opinions = characterComponentManager.getOpinions(merman, "Food");
+
+    ASSERT_EQ(opinions.size(), 4);
+
+    ASSERT_EQ(opinions[0].entity.id, fish.id);
+    ASSERT_EQ(opinions[1].entity.id, seaweed.id);
+    ASSERT_EQ(opinions[2].entity.id, fisherman.id);
+    ASSERT_EQ(opinions[3].entity.id, lilypad.id);
 }
