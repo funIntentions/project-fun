@@ -11,16 +11,7 @@ ScheduleInstance::ScheduleInstance(Schedule* s) : entryIndex(-1), entryEndTime(0
     schedule = s;
 }
 
-void ScheduleInstance::setupEntries(std::unordered_map<std::string, OperatorCallbackFunction>& operatorCallbacks, Entity entity)
-{
-    // TODO: Remove
-    /*for (ScheduleEntry* entryTemplate : schedule->entryTemplates)
-    {
-        entries.push_back(entryTemplate->setupEntry(operatorCallbacks, entity));
-    }*/
-}
-
-void ScheduleInstance::chooseEntryForTime(double currentTime, WorldState& worldState)
+void ScheduleInstance::chooseEntryForTime(double currentTime)
 {
     entryIndex = getEntryAtTime(currentTime);
     entryEndTime = getEndTime(entryIndex);
@@ -38,7 +29,7 @@ ActionInstance* ScheduleInstance::chooseNewAction()
 
 int ScheduleInstance::getId() const { return schedule->getId(); }
 
-void ScheduleInstance::startNextScheduleEntry(WorldState& worldState)
+void ScheduleInstance::startNextScheduleEntry()
 {
     entryIndex = nextEntry(entryIndex);
     entryEndTime = getEndTime(entryIndex);

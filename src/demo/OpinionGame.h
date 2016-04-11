@@ -15,7 +15,6 @@
 #include <math.h>
 #include <components/PositionComponentManager.h>
 #include <components/CharacterComponentManager.h>
-#include "WorldState.h"
 
 class OpinionGame : public Game {
 public:

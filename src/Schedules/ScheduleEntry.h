@@ -9,7 +9,6 @@
 #include <vector>
 #include <set>
 #include <PartialOrderPlanner.h>
-#include <WorldState.h>
 #include <components/ScheduleComponentManager.h>
 
 class Action;

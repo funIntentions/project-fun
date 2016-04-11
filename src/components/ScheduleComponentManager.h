@@ -11,7 +11,6 @@
 #include "ComponentManager.h"
 #include "PartialOrderPlan.h"
 #include "LocationComponentManager.h"
-#include "WorldState.h"
 #include "PositionComponentManager.h"
 #include "CharacterComponentManager.h"
 #include "AttributeComponentManager.h"
@@ -31,7 +30,6 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
-        std::vector<WorldState> state;
         std::vector<std::vector<ActionInstance*>> queuedActions;
         std::vector<ScheduleInstance*> currentSchedule;
     };

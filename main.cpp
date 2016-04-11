@@ -3,7 +3,7 @@
 
 int main()
 {
-    PlannerGame game;
+    OpinionGame game;
     game.run();
 }
 

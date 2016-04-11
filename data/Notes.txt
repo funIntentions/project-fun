@@ -1,6 +1,7 @@
 
 TODO:
-
+State passed to planner needs to be comprehensive
+Separate type into it's own component
 Merge Operator with Action
 
 {

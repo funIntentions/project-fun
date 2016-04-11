@@ -327,7 +327,7 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
         if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
         {
             _data.queuedActions[i].clear();
-            _data.currentSchedule[i]->startNextScheduleEntry(_data.state[i]);
+            _data.currentSchedule[i]->startNextScheduleEntry();
             _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
         }
 
@@ -550,9 +550,6 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
     _map.emplace(entity.index(), _data.size);
     _data.entity.push_back(entity);
 
-    WorldState state;
-    _data.state.push_back(state);
-
     auto scheduleId = scheduleNameToIdMap.find(scheduleName);
     if (scheduleId != scheduleNameToIdMap.end())
     {
@@ -562,8 +559,7 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
         {
             Schedule* schedule = scheduleItr->second;
             ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
-            scheduleInstance->setupEntries(operatorCallbackFunctionMap, entity);
-            scheduleInstance->chooseEntryForTime(currentTime, state);
+            scheduleInstance->chooseEntryForTime(currentTime);
             _data.currentSchedule.push_back(scheduleInstance);
             _data.queuedActions.push_back({scheduleInstance->chooseNewAction()});
         }
@@ -579,7 +575,6 @@ void ScheduleComponentManager::destroy(unsigned i)
     Entity last_e = _data.entity[last];
 
     _data.entity[i] = _data.entity[last];
-    _data.state[i] = _data.state[last];
     _data.queuedActions[i] = _data.queuedActions[last];
     _data.currentSchedule[i] = _data.currentSchedule[last];
 
@@ -587,7 +582,6 @@ void ScheduleComponentManager::destroy(unsigned i)
     _map.erase(e.index());
 
     _data.entity.pop_back();
-    _data.state.pop_back();
     _data.queuedActions.pop_back();
     _data.currentSchedule.pop_back();
 
