@@ -91,8 +91,23 @@ TEST_F(OpinionComponentFixture, adding_opinion)
 
     SUCCEED();
 }
+// TODO: implement
+TEST_F(OpinionComponentFixture, remove_opinion)
+{
+    SUCCEED();
+}
 
-TEST_F(OpinionComponentFixture, changing_opinion)
+TEST_F(OpinionComponentFixture, get_opinion_for_known_entity)
+{
+    SUCCEED();
+}
+
+TEST_F(OpinionComponentFixture, get_opinion_for_unknown_entity)
+{
+    SUCCEED();
+}
+
+TEST_F(OpinionComponentFixture, lowering_opinion)
 {
     characterComponentManager.addKnowledge(merman, {fisherman});
     std::vector<Opinion> opinionsBefore = characterComponentManager.getOpinions(merman, "Food");
@@ -105,6 +120,12 @@ TEST_F(OpinionComponentFixture, changing_opinion)
 
     ASSERT_EQ(opinionsBefore[0].entity.id, opinionsAfter[1].entity.id);
     ASSERT_EQ(opinionsBefore[1].entity.id, opinionsAfter[0].entity.id);
+}
+
+// TODO: implement
+TEST_F(OpinionComponentFixture, improving_opinion)
+{
+    SUCCEED();
 }
 
 TEST_F(OpinionComponentFixture, opinions_ordered_by_variance)

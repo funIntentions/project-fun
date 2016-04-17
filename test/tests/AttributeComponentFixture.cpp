@@ -79,3 +79,9 @@ TEST_F(AttributeComponentFixture, low_attribute_ranking_actions)
     ASSERT_EQ(operators[1].name, borrow.getName());
     ASSERT_EQ(operators[0].name, steal.getName());
 }
+
+// TODO: implement
+TEST_F(AttributeComponentFixture, chosen_plan_actions_correspond_to_attributes)
+{
+    SUCCEED();
+}
