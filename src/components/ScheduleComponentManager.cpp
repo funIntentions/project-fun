@@ -191,21 +191,17 @@ void ScheduleComponentManager::readSchedules()
             assert(memberItr->value.IsArray());
             for (auto actionData = memberItr->value.Begin(); actionData != memberItr->value.End(); ++actionData)
             {
-                assert(actionData->IsObject());
-                auto nameMember = actionData->FindMember("name");
+                assert(actionData->IsString());
 
-                if (nameMember != actionData->MemberEnd())
+                auto itr = actionNameToIdMap.find(actionData->GetString());
+                if (itr != actionNameToIdMap.end())
                 {
-                    auto itr = actionNameToIdMap.find(nameMember->value.GetString());
-                    if (itr != actionNameToIdMap.end())
+                    int actionId = itr->second;
+                    auto actionItr = actions.find(actionId);
+                    if (actionItr != actions.end())
                     {
-                        int actionId = itr->second;
-                        auto actionItr = actions.find(actionId);
-                        if (actionItr != actions.end())
-                        {
-                            Action* action = actionItr->second;
-                            entry->addAction(action);
-                        }
+                        Action* action = actionItr->second;
+                        entry->addAction(action);
                     }
                 }
             }

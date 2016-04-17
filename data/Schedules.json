@@ -149,54 +149,22 @@
     {
       "name" : "SellGoodsTemplate",
       "type" : "sequence",
-      "actions" :
-      [
-        {
-          "name" : "TravelToMarket"
-        },
-        {
-          "name" : "SellGoods"
-        }
-      ]
+      "actions" : ["TravelToMarket", "SellGoods"]
     },
     {
       "name" : "FishingTemplate",
       "type" : "sequence",
-      "actions" :
-      [
-        {
-          "name" : "TravelToFishingSpot"
-        },
-        {
-          "name" : "Fish"
-        }
-      ]
+      "actions" : ["TravelToFishingSpot", "Fish"]
     },
     {
       "name" : "SleepTemplate",
       "type" : "sequence",
-      "actions" :
-      [
-        {
-          "name" : "TravelHome"
-        },
-        {
-          "name" : "Sleep"
-        }
-      ]
+      "actions" : ["TravelHome", "Sleep"]
     },
     {
       "name" : "HuntTemplate",
       "type" : "sequence",
-      "actions" :
-      [
-        {
-          "name" : "TravelToHuntingGround"
-        },
-        {
-          "name" : "Hunt"
-        }
-      ]
+      "actions" : ["TravelToHuntingGround", "Hunt"]
     }
   ],
 
