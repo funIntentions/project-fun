@@ -5,12 +5,12 @@
       "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Water"}, {"name" : "Self"}],
+      "params" : ["Water", "Self"],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Water", "Self"]}
+        {"Location" : ["Water", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -19,17 +19,17 @@
       "name" : "Fish",
       "minDuration" : 4,
       "maxDuration" : 6,
-      "params" : [{"name" : "Water"}, {"name" : "Food"}, {"name" : "Self"}],
+      "params" : ["Water", "Food", "Self"],
       "positivePreconditions" :
       [
-        {"name" : "Health", "params" : ["Alive", "Food"]},
-        {"name" : "Location", "params" : ["Water", "Self"]},
-        {"name" : "Location", "params" : ["Water", "Food"]}
+        {"Health" : ["Alive", "Food"]},
+        {"Location" : ["Water", "Self"]},
+        {"Location" : ["Water", "Food"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Health", "params" : ["Dead", "Food"]},
-        {"name" : "Opinion", "params" : ["Self", "0", "Food"]}
+        {"Health" : ["Dead", "Food"]},
+        {"Opinion" : ["Self", "0", "Food"]}
       ],
       "subtractedEffects" :
       []
@@ -38,12 +38,12 @@
       "name" : "TravelToMarket",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "Self"}],
+      "params" : ["Market", "Self"],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Market", "Self"]}
+        {"Location" : ["Market", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -52,10 +52,10 @@
       "name" : "SellGoods",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Market"}, {"name" : "Self"}],
+      "params" : ["Market", "Self"],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Market", "Self"]}
+        {"Location" : ["Market", "Self"]}
       ],
       "addedEffects" :
       [],
@@ -66,12 +66,12 @@
       "name" : "TravelHome",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "Home"}, {"name" : "Self"}],
+      "params" : ["Home", "Self"],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["Home", "Self"]}
+        {"Location" : ["Home", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -80,12 +80,12 @@
       "name" : "TravelToHuntingGround",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "params" : [{"name" : "HuntingGround"}, {"name" : "Self"}],
+      "params" : ["HuntingGround", "Self"],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"name" : "Location", "params" : ["HuntingGround", "Self"]}
+        {"Location" : ["HuntingGround", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -94,15 +94,15 @@
       "name" : "TurnIntoMerfolk",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Self"}],
+      "params" : ["Food", "HuntingGround", "Self"],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["HuntingGround", "Self"]},
-        {"name" : "Location", "params" : ["HuntingGround", "Food"]}
+        {"Location" : ["HuntingGround", "Self"]},
+        {"Location" : ["HuntingGround", "Food"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Schedule", "params" : ["Food", "Merfolk"]}
+        {"Schedule" : ["Food", "Merfolk"]}
       ],
       "subtractedEffects" :
       []
@@ -111,17 +111,17 @@
       "name" : "Hunt",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Food"},  {"name" : "HuntingGround"}, {"name" : "Self"}],
+      "params" : ["Food", "HuntingGround", "Self"],
       "positivePreconditions" :
       [
-        {"name" : "Health", "params" : ["Alive", "Food"]},
-        {"name" : "Location", "params" : ["HuntingGround", "Self"]},
-        {"name" : "Location", "params" : ["HuntingGround", "Food"]}
+        {"Health" : ["Alive", "Food"]},
+        {"Location" : ["HuntingGround", "Self"]},
+        {"Location" : ["HuntingGround", "Food"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Health", "params" : ["Dead", "Food"]},
-        {"name" : "Opinion", "params" : ["Self", "0", "Food"]}
+        {"Health" : ["Dead", "Food"]},
+        {"Opinion" : ["Self", "0", "Food"]}
       ],
       "subtractedEffects" :
       []
@@ -130,14 +130,14 @@
       "name" : "Sleep",
       "minDuration" : 2,
       "maxDuration" : 4,
-      "params" : [{"name" : "Home"}, {"name" : "Self"}],
+      "params" : ["Home", "Self"],
       "positivePreconditions" :
       [
-        {"name" : "Location", "params" : ["Home", "Self"]}
+        {"Location" : ["Home", "Self"]}
       ],
       "addedEffects" :
       [
-        {"name" : "Sleeping", "params" : ["Home"]}
+        {"Sleeping" : ["Home"]}
       ],
       "subtractedEffects" :
       []

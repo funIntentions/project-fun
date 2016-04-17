@@ -69,9 +69,8 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             assert(member_itr->value.IsArray());
             for (auto param_itr = member_itr->value.Begin(); param_itr != member_itr->value.End(); ++param_itr)
             {
-                assert(param_itr->IsObject());
-                auto param_member = param_itr->FindMember("name");
-                action->parameters.push_back(param_member->value.GetString());
+                assert(param_itr->IsString());
+                action->parameters.push_back(param_itr->GetString());
             }
         }
 
@@ -82,12 +81,13 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                PredicateTemplate predicate;
-                auto name_itr = itr->FindMember("name");
-                predicate.type = name_itr->value.GetString();
-                auto param_itr = itr->FindMember("params");
+                assert(itr->MemberCount() == 1);
 
-                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                PredicateTemplate predicate;
+                predicate.type = itr->MemberBegin()->name.GetString();
+                auto params = itr->MemberBegin()->value.GetArray();
+
+                for (auto param = params.Begin(); param != params.End(); ++param)
                 {
                     assert(param->IsString());
                     predicate.params.push_back(param->GetString());
@@ -104,12 +104,13 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                PredicateTemplate predicate;
-                auto name_itr = itr->FindMember("name");
-                predicate.type = name_itr->value.GetString();
-                auto param_itr = itr->FindMember("params");
+                assert(itr->MemberCount() == 1);
 
-                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                PredicateTemplate predicate;
+                predicate.type = itr->MemberBegin()->name.GetString();
+                auto params = itr->MemberBegin()->value.GetArray();
+
+                for (auto param = params.Begin(); param != params.End(); ++param)
                 {
                     assert(param->IsString());
                     predicate.params.push_back(param->GetString());
@@ -126,12 +127,13 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             for (auto itr = member_itr->value.Begin(); itr != member_itr->value.End(); ++itr)
             {
                 assert(itr->IsObject());
-                PredicateTemplate predicate;
-                auto name_itr = itr->FindMember("name");
-                predicate.type = name_itr->value.GetString();
-                auto param_itr = itr->FindMember("params");
+                assert(itr->MemberCount() == 1);
 
-                for (auto param = param_itr->value.Begin(); param != param_itr->value.End(); ++param)
+                PredicateTemplate predicate;
+                predicate.type = itr->MemberBegin()->name.GetString();
+                auto params = itr->MemberBegin()->value.GetArray();
+
+                for (auto param = params.Begin(); param != params.End(); ++param)
                 {
                     assert(param->IsString());
                     predicate.params.push_back(param->GetString());
