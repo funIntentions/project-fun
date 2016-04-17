@@ -9,6 +9,7 @@
 #include <EntityManager.h>
 #include <ActionManager.h>
 #include <ComponentManager.h>
+#include <unordered_set>
 
 class OwnershipComponentManager : public ComponentManager {
 private:
@@ -16,7 +17,7 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
-        std::vector<std::unordered_map<int, int>> belongings;
+        std::vector<std::unordered_set<unsigned>> belongings;
     };
 
     InstanceData _data;
@@ -41,6 +42,18 @@ public:
         return false;
     }
 
+    std::vector<unsigned> getBelongings(Entity entity)
+    {
+        Instance instance = lookup(entity);
+        if (instance.i != -1)
+        {
+            std::vector<unsigned> state(_data.belongings[instance.i].begin(), _data.belongings[instance.i].end());
+            return state;
+        }
+
+        return {};
+    }
+
     void giveOwnership(Entity entity, Entity belonging)
     {
         Instance instance = lookup(entity);
@@ -48,7 +61,7 @@ public:
         {
             auto itr = _data.belongings[instance.i].find(belonging.id);
             if (itr == _data.belongings[instance.i].end())
-                _data.belongings[instance.i].insert({belonging.id, belonging.id});
+                _data.belongings[instance.i].insert(belonging.id);
         }
     }
 

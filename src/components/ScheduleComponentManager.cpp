@@ -3,6 +3,7 @@
 //
 #include "ScheduleComponentManager.h"
 #include "Schedules/Schedule.h"
+#include "OwnershipComponentManager.h"
 #include <Schedules/ScheduleEntry.h>
 #include <Schedules/ScheduleInstance.h>
 #include <util/Extra.h>
@@ -10,11 +11,13 @@
 ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager,
                                                    std::shared_ptr<CharacterComponentManager> characterComponentManager,
                                                    std::shared_ptr<PositionComponentManager> positionComponentManager,
+                                                   std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
                                                    std::shared_ptr<AttributeComponentManager> attributeComponentManager) :
         ComponentManager(),
         _actionManager(actionManager),
         _characterComponentManager(characterComponentManager),
         _positionComponentManager(positionComponentManager),
+        _ownershipComponentManager(ownershipComponentManager),
         _attributeComponentManager(attributeComponentManager),
         time(0.0)
 {
@@ -416,6 +419,28 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
         }
     }
 
+    if ((_ownershipComponentManager->lookup(entity)).i != -1)
+    {
+        std::vector<unsigned> belongings = _ownershipComponentManager->getBelongings(entity);
+        for (unsigned belonging : belongings)
+        {
+            std::vector<std::string> categories = _characterComponentManager->getCategories(entity, {belonging});
+            for (auto category : categories)
+            {
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Has";
+                predicateTemplate.params.push_back(category);
+                predicateTemplate.params.push_back("Self");
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "Predicate Unknown" << std::endl;
+            }
+        }
+    }
+
     return state;
 }
 
@@ -462,6 +487,10 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
                 if (health != desiredHealth)
                     return false;
             }
+        }
+        else if (predicateTemplate.type == "Has")
+        {
+            // TODO: implement precondition match for ownership
         }
         else
         {
@@ -535,6 +564,10 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
                 else
                     std::cout << "Error: Parameter Mapping Not Found" << std::endl;
             }
+        }
+        else if (predicateTemplate.type == "Has")
+        {
+            // TODO: implement update state for ownership
         }
         else
         {

@@ -1,5 +1,5 @@
 
-TODO:
+TODO: Sorted actions may not actually mean most preferred plans are returned since partial plans branch and are sorted by length not preference, I should have tests for this!!!
 State passed to planner needs to be comprehensive
 Separate type into it's own component
 Merge Operator with Action

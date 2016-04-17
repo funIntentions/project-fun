@@ -25,7 +25,12 @@ public:
              _characterComponentManager(new CharacterComponentManager(_attributeComponentManager)),
              _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
              _actionManager(new ActionManager),
-             _scheduleComponentManager(new ScheduleComponentManager(_actionManager, _characterComponentManager, _positionComponentManager, _attributeComponentManager))
+             _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),
+             _scheduleComponentManager(new ScheduleComponentManager(_actionManager,
+                                                                    _characterComponentManager,
+                                                                    _positionComponentManager,
+                                                                    _ownershipComponentManager,
+                                                                    _attributeComponentManager))
     { }
 
     virtual void update(float period)
@@ -45,6 +50,7 @@ private:
     std::shared_ptr<CharacterComponentManager> _characterComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
+    std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
     TextRenderer* textRenderer;
@@ -116,13 +122,6 @@ private:
                         assert(componentValue->value.IsArray());
                         std::vector<Entity> locals;
 
-                        /*for (auto connection = componentValue->value.Begin(); connection != componentValue->value.End(); ++connection)
-                        {
-                            std::string locationName = connection->GetString();
-                            Entity locationEntity = _entityManager->getEntity(locationName);
-                            locations.push_back(locationEntity);
-                        }*/
-
                         _locationComponentManager->spawnComponent(*entity, entityName, locals);
                     }
                     else if (name == "attribute")
@@ -172,15 +171,6 @@ private:
             {
                 std::cout << param << std::endl;
             }
-
-
-            //Predicate predicate = _actionManager->getPredicate(id);
-
-            /*if (predicate.type == "Location")
-            {
-                std::cout << "Entity Travelling: " << _entityManager->getName({predicate.params[1]}) << std::endl;
-                _positionComponentManager->changeEntitiesLocation({predicate.params[1]}, {predicate.params[0]});
-            }*/
         }
     }
 
