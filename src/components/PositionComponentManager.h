@@ -9,7 +9,7 @@
 #include <memory>
 #include "ComponentManager.h"
 #include "LocationComponentManager.h"
-#include "CharacterComponentManager.h"
+#include "OpinionComponentManager.h"
 
 class PositionComponentManager : public ComponentManager
 {
@@ -23,11 +23,11 @@ private:
 
     InstanceData _data;
     std::shared_ptr<LocationComponentManager> _locationComponentManger;
-    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
+    std::shared_ptr<OpinionComponentManager> _characterComponentManager;
 
 public:
 
-    PositionComponentManager(std::shared_ptr<LocationComponentManager> locationComponentManager, std::shared_ptr<CharacterComponentManager> characterComponentManager) : ComponentManager(), _locationComponentManger(locationComponentManager), _characterComponentManager(characterComponentManager)
+    PositionComponentManager(std::shared_ptr<LocationComponentManager> locationComponentManager, std::shared_ptr<OpinionComponentManager> characterComponentManager) : ComponentManager(), _locationComponentManger(locationComponentManager), _characterComponentManager(characterComponentManager)
     {
         _data.size = 0;
     }

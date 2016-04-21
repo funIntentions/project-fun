@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <components/CharacterComponentManager.h>
+#include <components/OpinionComponentManager.h>
 
 class OpinionComponentFixture : public ::testing::Test {
 protected:
@@ -56,7 +56,7 @@ protected:
     }
 public:
     std::shared_ptr<AttributeComponentManager> attributeComponentManager;
-    CharacterComponentManager characterComponentManager;
+    OpinionComponentManager characterComponentManager;
     EntityManager entityManager;
     Entity fisherman;
     Entity merman;

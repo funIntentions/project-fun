@@ -8,25 +8,15 @@
         {
           "category" : "Food",
           "preference" : "Alive",
-          "type" :
-          [
-            "Fish"
-          ]
+          "type" : ["Fish"]
         },
         {
           "category" : "Enemies",
-          "type" :
-          [
-            "Merfolk"
-          ]
-
+          "type" : ["Merfolk"]
         },
         {
           "category" : "Bed",
-          "type" :
-          [
-            "Wooden_Bed"
-          ]
+          "type" : ["Wooden_Bed"]
         }
       ]
     },
@@ -36,23 +26,16 @@
       [
         {
           "category" : "Water",
-          "type" :
-          [
-            "Lake",
-            "Ocean",
-            "Pond"
-          ]
+          "type" : ["Lake", "Ocean", "Pond"]
         },
         {
           "category" : "Market",
-          "type" :
-          [
-            "Village"
-          ]
+          "type" : ["Village"]
         }
       ]
     },
-    {"group" : "Fish",
+    {
+      "group" : "Fish",
       "associations" : []
     },
     {
@@ -61,26 +44,16 @@
       [
         {
           "category" : "Home",
-          "type" :
-          [
-            "Underground"
-          ]
+          "type" : ["Underground"]
         },
         {
           "category" : "HuntingGround",
-          "type" :
-          [
-            "Pond"
-          ]
+          "type" : ["Pond"]
         },
         {
           "category" : "Food",
           "preference" : "Alive",
-          "type" :
-          [
-            "Fish",
-            "Human"
-          ]
+          "type" : ["Fish", "Human"]
         }
       ]
     }
@@ -88,53 +61,16 @@
   "entities" :
   [
     {
-      "name" : "Meadow",
-      "components" :
-      [
-        {
-          "name" : "location",
-          "value" :
-          [
-            "Swamp",
-            "Planes",
-            "Village"
-          ]
-        }
-      ]
-    },
-    {
-      "name" : "Planes",
-      "components" :
-      [
-        {
-          "name" : "location",
-          "value" :
-          [
-            "Meadow",
-            "Caves"
-          ]
-        }
-      ]
-    },
-    {
       "name" : "Caves",
       "components" :
       [
         {
-          "name" : "character",
-          "value" :
-          [
-            "Underground"
-          ],
-          "knowledge" : []
+          "name" : "type",
+          "value" : ["Underground"]
         },
         {
           "name" : "location",
-          "value" :
-          [
-            "Swamp",
-            "Planes"
-          ]
+          "value" : []
         }
       ]
     },
@@ -143,35 +79,12 @@
       "components" :
       [
         {
-          "name" : "character",
-          "value" :
-          [
-            "Pond"
-          ],
-          "knowledge" : []
+          "name" : "type",
+          "value" : ["Pond"]
         },
         {
           "name" : "location",
-          "value" :
-          [
-            "Meadow",
-            "Forest",
-            "Caves"
-          ]
-        }
-      ]
-    },
-    {
-      "name" : "Forest",
-      "components" :
-      [
-        {
-          "name" : "location",
-          "value" :
-          [
-            "Swamp",
-            "Village"
-          ]
+          "value" : []
         }
       ]
     },
@@ -180,20 +93,12 @@
       "components" :
       [
         {
-          "name" : "character",
-          "value" :
-          [
-            "Village"
-          ],
-          "knowledge" : []
+          "name" : "type",
+          "value" : ["Village"]
         },
         {
           "name" : "location",
-          "value" :
-          [
-            "Forest",
-            "Meadow"
-          ]
+          "value" : []
         }
       ]
     },
@@ -202,8 +107,11 @@
       "components" :
       [
         {
-          "name" : "character",
-          "value" : ["Human", "Fisher"],
+          "name" : "type",
+          "value" : ["Human", "Fisher"]
+        },
+        {
+          "name" : "opinion",
           "knowledge" : ["Swamp", "Village"]
         },
         {
@@ -225,8 +133,11 @@
       "components" :
       [
         {
-          "name" : "character",
-          "value" : ["Merfolk"],
+          "name" : "type",
+          "value" : ["Merfolk"]
+        },
+        {
+          "name" : "opinion",
           "knowledge" : ["Swamp", "Caves"]
         },
         {
@@ -246,21 +157,24 @@
     {
       "name": "Fish_1",
       "components" :
-              [
-                {
-                  "name" : "character",
-                  "value" : ["Fish"],
-                  "knowledge" : []
-                },
-                {
-                  "name" : "attribute",
-                  "value" : 100.0
-                },
-                {
-                  "name" : "position",
-                  "value" : "Swamp"
-                }
-              ]
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : []
+        },
+        {
+          "name" : "attribute",
+          "value" : 100.0
+        },
+        {
+          "name" : "position",
+          "value" : "Swamp"
+        }
+      ]
     }
   ]
 }

@@ -9,13 +9,15 @@
 #include <util/Extra.h>
 
 ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager,
-                                                   std::shared_ptr<CharacterComponentManager> characterComponentManager,
+                                                   std::shared_ptr<TypeComponentManager> typeComponentManager,
+                                                   std::shared_ptr<OpinionComponentManager> opinionComponentManager,
                                                    std::shared_ptr<PositionComponentManager> positionComponentManager,
                                                    std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
                                                    std::shared_ptr<AttributeComponentManager> attributeComponentManager) :
         ComponentManager(),
         _actionManager(actionManager),
-        _characterComponentManager(characterComponentManager),
+        _typeComponentManager(typeComponentManager),
+        _opinionComponentManager(opinionComponentManager),
         _positionComponentManager(positionComponentManager),
         _ownershipComponentManager(ownershipComponentManager),
         _attributeComponentManager(attributeComponentManager),
@@ -400,7 +402,7 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
     if ((_positionComponentManager->lookup(entity)).i != -1)
     {
         Entity location = _positionComponentManager->getLocation(entity);
-        std::vector<std::string> categories = _characterComponentManager->getCategories(entity, location);
+        std::vector<std::string> categories = _typeComponentManager->getCategories(entity, location);
 
         for (auto category : categories)
         {
@@ -422,7 +424,7 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
         std::vector<unsigned> belongings = _ownershipComponentManager->getBelongings(entity);
         for (unsigned belonging : belongings)
         {
-            std::vector<std::string> categories = _characterComponentManager->getCategories(entity, {belonging});
+            std::vector<std::string> categories = _typeComponentManager->getCategories(entity, {belonging});
             for (auto category : categories)
             {
                 PredicateTemplate predicateTemplate;
@@ -446,7 +448,7 @@ void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* acti
 {
     for (std::string param : action->getParameters())
     {
-        std::vector<Opinion> opinions = _characterComponentManager->getOpinions(entity, param);
+        std::vector<Opinion> opinions = _opinionComponentManager->getOpinions(entity, param);
         if (!opinions.empty())
             action->mappedParameters[param] = opinions.front().entity; // The first opinion is always prioritized
     }
@@ -542,7 +544,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
                     float newVariance = (float) atof(predicateTemplate.params[0].c_str());
                     Entity opinionEntity = opinionEntityItr->second;
 
-                    _characterComponentManager->setAllOpinionVariances(predicateTemplate.params[1], opinionEntity, newVariance);
+                    _opinionComponentManager->setAllOpinionVariances(predicateTemplate.params[1], opinionEntity, newVariance);
                 }
                 else
                     std::cout << "Error: Parameter Mapping Not Found" << std::endl;
@@ -557,7 +559,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
                     Entity entity = entityItr->second;
                     Entity opinionEntity = opinionEntityItr->second;
 
-                    _characterComponentManager->setOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, newVariance);
+                    _opinionComponentManager->setOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, newVariance);
                 }
                 else
                     std::cout << "Error: Parameter Mapping Not Found" << std::endl;

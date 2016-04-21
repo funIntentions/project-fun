@@ -18,7 +18,7 @@ public:
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
-    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
+    std::shared_ptr<OpinionComponentManager> _characterComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
@@ -29,7 +29,7 @@ public:
                                  _entityManager(new EntityManager()),
                                  _locationComponentManager(new LocationComponentManager()),
                                  _attributeComponentManager(new AttributeComponentManager()),
-                                 _characterComponentManager(new CharacterComponentManager(_attributeComponentManager)),
+                                 _characterComponentManager(new OpinionComponentManager(_attributeComponentManager)),
                                  _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
                                  _actionManager(new ActionManager),
                                  _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),

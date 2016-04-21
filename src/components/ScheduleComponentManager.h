@@ -12,7 +12,7 @@
 #include "PartialOrderPlan.h"
 #include "LocationComponentManager.h"
 #include "PositionComponentManager.h"
-#include "CharacterComponentManager.h"
+#include "OpinionComponentManager.h"
 #include "AttributeComponentManager.h"
 #include "OwnershipComponentManager.h"
 
@@ -47,7 +47,8 @@ private:
 
     std::unordered_map<std::string, OperatorCallbackFunction> operatorCallbackFunctionMap;
     std::shared_ptr<ActionManager> _actionManager;
-    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
+    std::shared_ptr<TypeComponentManager> _typeComponentManager;
+    std::shared_ptr<OpinionComponentManager> _opinionComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
@@ -60,7 +61,8 @@ private:
 
 public:
     ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager,
-                             std::shared_ptr<CharacterComponentManager> characterComponentManager,
+                             std::shared_ptr<TypeComponentManager> typeComponentManager,
+                             std::shared_ptr<OpinionComponentManager> opinionComponentManager,
                              std::shared_ptr<PositionComponentManager> positionComponentManager,
                              std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
                              std::shared_ptr<AttributeComponentManager> attributeComponentManager);

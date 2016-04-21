@@ -14,23 +14,25 @@
 #include <rapidjson/document.h>
 #include <math.h>
 #include <components/PositionComponentManager.h>
-#include <components/CharacterComponentManager.h>
+#include <components/OpinionComponentManager.h>
 
 class OpinionGame : public Game {
 public:
     OpinionGame() : Game(800, 600, "Demo: Opinions"),
-             _entityManager(new EntityManager()),
-             _locationComponentManager(new LocationComponentManager()),
-             _attributeComponentManager(new AttributeComponentManager()),
-             _characterComponentManager(new CharacterComponentManager(_attributeComponentManager)),
-             _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
-             _actionManager(new ActionManager),
-             _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),
-             _scheduleComponentManager(new ScheduleComponentManager(_actionManager,
-                                                                    _characterComponentManager,
-                                                                    _positionComponentManager,
-                                                                    _ownershipComponentManager,
-                                                                    _attributeComponentManager))
+                    _entityManager(new EntityManager()),
+                    _locationComponentManager(new LocationComponentManager()),
+                    _attributeComponentManager(new AttributeComponentManager()),
+                    _typeComponentManager(new TypeComponentManager(_attributeComponentManager)),
+                    _opinionComponentManager(new OpinionComponentManager(_attributeComponentManager, _typeComponentManager)),
+                    _positionComponentManager(new PositionComponentManager(_locationComponentManager, _opinionComponentManager)),
+                    _actionManager(new ActionManager),
+                    _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),
+                    _scheduleComponentManager(new ScheduleComponentManager(_actionManager,
+                                                                           _typeComponentManager,
+                                                                           _opinionComponentManager,
+                                                                           _positionComponentManager,
+                                                                           _ownershipComponentManager,
+                                                                           _attributeComponentManager))
     { }
 
     virtual void update(float period)
@@ -47,7 +49,8 @@ private:
     std::shared_ptr<EntityManager> _entityManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
-    std::shared_ptr<CharacterComponentManager> _characterComponentManager;
+    std::shared_ptr<TypeComponentManager> _typeComponentManager;
+    std::shared_ptr<OpinionComponentManager> _opinionComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
@@ -131,7 +134,7 @@ private:
                         _attributeComponentManager->spawnComponent(*entity);
                         _attributeComponentManager->setAttribute(*entity, Attribute::Health, health);
                     }
-                    else if (name == "character")
+                    else if (name == "type")
                     {
                         assert(componentValue->value.IsArray());
                         std::vector<Type> groups;
@@ -141,6 +144,10 @@ private:
                             groups.push_back(typeName);
                         }
 
+                        _typeComponentManager->spawnComponent(*entity, groups);
+                    }
+                    else if (name == "opinion") // TODO: this should be called in a second pass, otherwise information will be missed
+                    {
                         auto knowledge = component->FindMember("knowledge");
                         assert(knowledge->value.IsArray());
                         std::vector<Entity> knownEntities;
@@ -151,8 +158,7 @@ private:
                             knownEntities.push_back(knownEntity);
                         }
 
-                        _characterComponentManager->spawnComponent(*entity, groups);
-                        _characterComponentManager->addKnowledge(*entity, knownEntities); // TODO: this should be called in a second pass, otherwise information will be missed
+                        _opinionComponentManager->spawnComponent(*entity, knownEntities);
                     }
                 }
             }
@@ -179,7 +185,7 @@ private:
         Game::initialize();
         textRenderer = new TextRenderer(_graphics->createTextRenderer("fonts/SourceCodePro-Regular.ttf", 42));
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
-        _characterComponentManager->readGroups("data/World.json");
+        _typeComponentManager->readGroups("data/World.json");
         Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
         readEntities(*_entityManager);
     }
