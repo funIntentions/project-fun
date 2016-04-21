@@ -129,10 +129,17 @@ private:
                     }
                     else if (name == "attribute")
                     {
-                        assert(componentValue->value.IsFloat());
-                        float health = componentValue->value.GetFloat();
+                        assert(componentValue->value.IsArray());
+                        auto attributes = componentValue->value.GetArray();
+                        assert(attributes.Size() == Attribute::NumberOfAttributes);
+                        float health = attributes[0].GetFloat();
+                        float materialism = attributes[1].GetFloat();
+                        float morality = attributes[2].GetFloat();
+
                         _attributeComponentManager->spawnComponent(*entity);
                         _attributeComponentManager->setAttribute(*entity, Attribute::Health, health);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::Materialism, materialism);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::Morality, morality);
                     }
                     else if (name == "type")
                     {

@@ -47,6 +47,9 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
         std::string name;
         double minDuration = 0;
         double maxDuration = 0;
+        float health = 0;
+        float materialism = 0;
+        float morality = 0;
 
         auto member_itr = action_itr->FindMember("name");
         if (member_itr != action_itr->MemberEnd())
@@ -64,6 +67,17 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
         newOperator->name = name;
 
         Action* action = new Action(name, actions.size(), minDuration, maxDuration);
+
+        member_itr = action_itr->FindMember("attributes");
+        if (member_itr != action_itr->MemberEnd())
+        {
+            assert(member_itr->value.IsArray());
+            auto attributes = member_itr->value.GetArray();
+            assert(attributes.Size() == Attribute::NumberOfAttributes);
+            action->attributes[Attribute::Health] = attributes[Attribute::Health].GetFloat();
+            action->attributes[Attribute::Morality] = attributes[Attribute::Morality].GetFloat();
+            action->attributes[Attribute::Materialism] = attributes[Attribute::Materialism].GetFloat();
+        }
 
         member_itr = action_itr->FindMember("params");
         if (member_itr != document.MemberEnd())

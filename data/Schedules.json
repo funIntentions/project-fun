@@ -5,6 +5,7 @@
       "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
+      "attributes" : [1.0,0.0,0.0],
       "params" : ["Water", "Self"],
       "positivePreconditions" :
       [],
@@ -19,6 +20,7 @@
       "name" : "Fish",
       "minDuration" : 4,
       "maxDuration" : 6,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Water", "Food", "Self"],
       "positivePreconditions" :
       [
@@ -38,6 +40,7 @@
       "name" : "TravelToMarket",
       "minDuration" : 1,
       "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Market", "Self"],
       "positivePreconditions" :
       [],
@@ -52,6 +55,7 @@
       "name" : "SellGoods",
       "minDuration" : 1,
       "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Market", "Self"],
       "positivePreconditions" :
       [
@@ -66,6 +70,7 @@
       "name" : "TravelHome",
       "minDuration" : 1,
       "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Home", "Self"],
       "positivePreconditions" :
       [],
@@ -80,6 +85,7 @@
       "name" : "TravelToHuntingGround",
       "minDuration" : 1,
       "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["HuntingGround", "Self"],
       "positivePreconditions" :
       [],
@@ -94,6 +100,7 @@
       "name" : "TurnIntoMerfolk",
       "minDuration" : 2,
       "maxDuration" : 4,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Food", "HuntingGround", "Self"],
       "positivePreconditions" :
       [
@@ -111,6 +118,7 @@
       "name" : "Hunt",
       "minDuration" : 2,
       "maxDuration" : 4,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Food", "HuntingGround", "Self"],
       "positivePreconditions" :
       [
@@ -130,6 +138,7 @@
       "name" : "Sleep",
       "minDuration" : 2,
       "maxDuration" : 4,
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Home", "Self"],
       "positivePreconditions" :
       [
