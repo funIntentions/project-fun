@@ -421,10 +421,10 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
 
     if ((_ownershipComponentManager->lookup(entity)).i != -1)
     {
-        std::vector<unsigned> belongings = _ownershipComponentManager->getBelongings(entity);
-        for (unsigned belonging : belongings)
+        std::vector<Entity> belongings = _ownershipComponentManager->getBelongings(entity);
+        for (Entity belonging : belongings)
         {
-            std::vector<std::string> categories = _typeComponentManager->getCategories(entity, {belonging});
+            std::vector<std::string> categories = _typeComponentManager->getCategories(entity, belonging);
             for (auto category : categories)
             {
                 PredicateTemplate predicateTemplate;
@@ -490,7 +490,16 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
         }
         else if (predicateTemplate.type == "Has")
         {
-            // TODO: implement precondition match for ownership
+            auto belongingItr = action->mappedParameters.find(predicateTemplate.params[0]);
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (belongingItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
+            {
+                Entity belonging = belongingItr->second;
+                Entity entity = entityItr->second;
+
+                if (!_ownershipComponentManager->isOwnedBy(entity, belonging))
+                    return false;
+            }
         }
         else
         {
@@ -567,7 +576,15 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
         }
         else if (predicateTemplate.type == "Has")
         {
-            // TODO: implement update state for ownership
+            auto belongingItr = action->mappedParameters.find(predicateTemplate.params[0]);
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (belongingItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
+            {
+                Entity belonging = belongingItr->second;
+                Entity entity = entityItr->second;
+
+                _ownershipComponentManager->giveOwnership(entity, belonging);
+            }
         }
         else
         {

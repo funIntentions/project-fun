@@ -24,6 +24,11 @@ struct Entity
 
     unsigned index() const {return id & ENTITY_INDEX_MASK;}
     unsigned generation() const {return (id >> ENTITY_INDEX_BITS) & ENTITY_GENERATION_MASK;}
+
+    friend bool operator<(const Entity& lhs, const Entity& rhs)
+    {
+        return lhs.id < rhs.id;
+    }
 };
 
 class EntityManager

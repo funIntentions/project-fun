@@ -10,6 +10,7 @@
 #include <ActionManager.h>
 #include <ComponentManager.h>
 #include <unordered_set>
+#include <set>
 
 class OwnershipComponentManager : public ComponentManager {
 private:
@@ -17,11 +18,13 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
-        std::vector<std::unordered_set<unsigned>> belongings;
+        std::vector<Entity> owner;
+        std::vector<bool> owned;
     };
 
     InstanceData _data;
     std::shared_ptr<ActionManager> _actionManager;
+    std::unordered_map<unsigned, std::set<Entity>> ownership;
 
 public:
 
@@ -30,49 +33,47 @@ public:
             _data.size = 0;
     }
 
-    bool hasOwnership(Entity entity, Entity belonging)
+    bool isOwned(Entity belonging)
     {
-        Instance instance = lookup(entity);
-        if (instance.i != -1)
-        {
-            auto itr = _data.belongings[instance.i].find(belonging.id);
+        Instance belongingInstance = lookup(belonging);
+        if (belongingInstance.i == -1)
+            return false;
 
-            return itr != _data.belongings[instance.i].end();
-        }
-        return false;
+        return _data.owned[belongingInstance.i];
     }
 
-    std::vector<unsigned> getBelongings(Entity entity)
+    bool isOwnedBy(Entity entity, Entity belonging)
     {
-        Instance instance = lookup(entity);
-        if (instance.i != -1)
-        {
-            std::vector<unsigned> state(_data.belongings[instance.i].begin(), _data.belongings[instance.i].end());
-            return state;
-        }
+        Instance belongingInstance = lookup(belonging);
+        if (belongingInstance.i == -1)
+            return false;
 
+        return _data.owner[belongingInstance.i].id == entity.id;
+    }
+
+    std::vector<Entity> getBelongings(Entity entity)
+    {
+        auto ownershipItr = ownership.find(entity.id);
+    if (ownershipItr != ownership.end()) return std::vector<Entity>(ownershipItr->second.begin(), ownershipItr->second.end());
         return {};
     }
 
     void giveOwnership(Entity entity, Entity belonging)
     {
-        Instance instance = lookup(entity);
+        Instance instance = lookup(belonging);
         if (instance.i != -1)
         {
-            auto itr = _data.belongings[instance.i].find(belonging.id);
-            if (itr == _data.belongings[instance.i].end())
-                _data.belongings[instance.i].insert(belonging.id);
-        }
-    }
+            if (_data.owned[instance.i])
+            {
+                auto belongingsItr = ownership.find(_data.owner[instance.i].id);
+                if (belongingsItr != ownership.end())
+                    belongingsItr->second.erase(belonging);
+            }
 
-    void endOwnership(Entity entity, Entity belonging)
-    {
-        Instance instance = lookup(entity);
-        if (instance.i != -1)
-        {
-            auto itr = _data.belongings[instance.i].find(belonging.id);
-            if (itr != _data.belongings[instance.i].end())
-                _data.belongings[instance.i].erase(itr);
+            ownership[entity.id].insert(belonging);
+
+            _data.owner[instance.i] = entity;
+            _data.owned[instance.i] = true;
         }
     }
 
@@ -80,6 +81,8 @@ public:
     {
         _map.emplace(entity.index(), _data.size);
         _data.entity.push_back(entity);
+        _data.owner.push_back({});
+        _data.owned.push_back(false);
 
         ++_data.size;
     }
@@ -91,11 +94,15 @@ public:
         Entity last_e = _data.entity[last];
 
         _data.entity[i] = _data.entity[last];
+        _data.owner[i] = _data.owner[last];
+        _data.owned[i] = _data.owned[last];
 
         _map[last_e.index()] =  i;
         _map.erase(e.index());
 
         _data.entity.pop_back();
+        _data.owner.pop_back();
+        _data.owned.pop_back();
 
         --_data.size;
     }
