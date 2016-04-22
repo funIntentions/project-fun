@@ -10,15 +10,20 @@
 #include <iostream>
 #include "components/ScheduleComponentManager.h"
 #include "components/LocationComponentManager.h"
+#include "Constants.h"
+#include "StoryLogger.h"
 #include <fstream>
 #include <rapidjson/document.h>
 #include <math.h>
+#include <string>
 #include <components/PositionComponentManager.h>
 #include <components/OpinionComponentManager.h>
+#include <framework/Cursor.h>
+#include <util/Extra.h>
 
 class OpinionGame : public Game {
 public:
-    OpinionGame() : Game(800, 600, "Demo: Opinions"),
+    OpinionGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Opinions"),
                     _entityManager(new EntityManager()),
                     _locationComponentManager(new LocationComponentManager()),
                     _attributeComponentManager(new AttributeComponentManager()),
@@ -32,18 +37,47 @@ public:
                                                                            _opinionComponentManager,
                                                                            _positionComponentManager,
                                                                            _ownershipComponentManager,
-                                                                           _attributeComponentManager))
+                                                                           _attributeComponentManager)),
+                    cursor(0.5f),
+                    eventLogger(_entityManager)
     { }
 
     virtual void update(float period)
     {
-        std::vector<int> addedEffects = _scheduleComponentManager->runSchedules(period);
-        handleEffects(addedEffects);
+        _scheduleComponentManager->runSchedules(period, eventLogger);
+
+        cursor.update(period);
+
+        if (inputReady)
+        {
+            input.clear();
+            inputReady = false;
+        }
     }
 
     virtual void render()
     {
-        textRenderer->renderText("Bleep Bloop", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+        const float x = 42.0f;
+        const float y = GAME_HEIGHT/1.2f;
+        const float height = 14;
+
+        double time = _scheduleComponentManager->getTimeOfDay();
+        /*int hours = (unsigned)time;
+        double minutes = time - hours;
+        minutes *= 100;
+        std::string postfix = time > 12 ? "pm" : "am";
+        hours %= 12;
+        std::string timeText = to_string(hours) + ":" + to_string((unsigned)minutes);*/
+        std::string timeText = time_format(time);
+        textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2, height, 1.0f, TIME_COLOUR);
+
+        for (int i = 0; i < eventLogger.events.size(); ++i)
+        {
+            textRenderer->renderText(eventLogger.events[i].time + ": " + eventLogger.events[i].description, x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+        }
+
+        // Render Input Text
+        textRenderer->renderText(input + cursor.displayCursor(), x, GAME_HEIGHT/1.2f, 1.0f, INPUT_COLOUR);
     }
 private:
     std::shared_ptr<EntityManager> _entityManager;
@@ -57,6 +91,11 @@ private:
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     std::vector<Entity> _entities;
     TextRenderer* textRenderer;
+    std::string input;
+    std::vector<ActionOutput> output;
+    bool inputReady;
+    Cursor cursor;
+    StoryLogger eventLogger;
 
     void readEntities(EntityManager& entityManager)
     {
@@ -173,33 +212,47 @@ private:
         }
     }
 
-    void handleEffects(std::vector<int> addedEffects)
-    {
-        for (int id : addedEffects)
-        {
-            PredicateTemplate predicateTemplate = _actionManager->getPredicateTemplate(id);
-
-            std::cout << predicateTemplate.type << std::endl;
-            for (std::string param : predicateTemplate.params)
-            {
-                std::cout << param << std::endl;
-            }
-        }
-    }
-
     virtual void initialize()
     {
         Game::initialize();
-        textRenderer = new TextRenderer(_graphics->createTextRenderer("fonts/SourceCodePro-Regular.ttf", 42));
+        textRenderer = new TextRenderer(_graphics->createTextRenderer("fonts/SourceCodePro-Regular.ttf", 12));
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
         _typeComponentManager->readGroups("data/World.json");
-        Keyboard::keyPressedCallbackFunctions.push_back([this](int key) {this->keyPressed(key);});
+
+        Keyboard::charPressedCallbackFunctions.push_back([this](unsigned codepoint) {this->textEntered(codepoint);});
+        Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+        Keyboard::keyRepeatedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+
         readEntities(*_entityManager);
     }
 
     void keyPressed(int key)
     {
-        std::cout << "key pressed: " << key << std::endl;
+        if (key == GLFW_KEY_ENTER)
+            inputReady = true;
+        else if (key == GLFW_KEY_BACKSPACE && input.size() > 0)
+        {
+            input = std::string(input.begin(), input.end() - 1);
+            cursor.display();
+        }
+    }
+
+    void textEntered(unsigned codepoint)
+    {
+        std::string character = utf8chr(codepoint);
+        input.append(character);
+        cursor.display();
+    }
+
+    std::string utf8chr(unsigned cp)
+    {
+        char c[5]={ 0x00,0x00,0x00,0x00,0x00 };
+        if     (cp<=0x7F) { c[0] = cp;  }
+        else if(cp<=0x7FF) { c[0] = (cp>>6)+192; c[1] = (cp&63)+128; }
+        else if(0xd800<=cp && cp<=0xdfff) {} //invalid block of utf8
+        else if(cp<=0xFFFF) { c[0] = (cp>>12)+224; c[1]= ((cp>>6)&63)+128; c[2]=(cp&63)+128; }
+        else if(cp<=0x10FFFF) { c[0] = (cp>>18)+240; c[1] = ((cp>>12)&63)+128; c[2] = ((cp>>6)&63)+128; c[3]=(cp&63)+128; }
+        return std::string(c);
     }
 
     void shutdown()

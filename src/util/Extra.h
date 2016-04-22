@@ -6,6 +6,15 @@
 #define PARTIALORDERPLANNER_EXTRA_H
 
 #include <PartialOrderPlan.h>
+#include <string>
+#include <sstream>
+
+template < typename T > std::string to_string( const T& n )
+{
+    std::ostringstream stm ;
+    stm << n ;
+    return stm.str() ;
+}
 
 inline std::vector<unsigned> topologicalSort(PartialOrderPlan plan, unsigned vert)
 {

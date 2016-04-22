@@ -42,6 +42,6 @@ set(SOURCE_FILES
         framework/Graphics.cpp
         framework/Input.cpp
         framework/Keyboard.cpp
-        components/OpinionComponentManager.h framework/Shader.cpp framework/Shader.h framework/TextRenderer.cpp framework/TextRenderer.h components/AttributeComponentManager.cpp components/AttributeComponentManager.h demo/OpinionGame.cpp demo/OpinionGame.h demo/PlannerGame.cpp demo/PlannerGame.h components/DescriptionComponentManager.cpp components/DescriptionComponentManager.h components/PlaceComponentManager.cpp components/PlaceComponentManager.h domain/Adventure.h components/Attribute.h framework/Cursor.h components/OwnershipComponentManager.cpp components/OwnershipComponentManager.h components/TypeComponentManager.h)
+        components/OpinionComponentManager.h framework/Shader.cpp framework/Shader.h framework/TextRenderer.cpp framework/TextRenderer.h components/AttributeComponentManager.cpp components/AttributeComponentManager.h demo/OpinionGame.cpp demo/OpinionGame.h demo/PlannerGame.cpp demo/PlannerGame.h components/DescriptionComponentManager.cpp components/DescriptionComponentManager.h components/PlaceComponentManager.cpp components/PlaceComponentManager.h domain/Adventure.h components/Attribute.h framework/Cursor.h components/OwnershipComponentManager.cpp components/OwnershipComponentManager.h components/TypeComponentManager.h demo/Constants.h demo/StoryLogger.h)
 
 add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})

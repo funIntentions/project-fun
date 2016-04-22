@@ -21,7 +21,8 @@ ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager
         _positionComponentManager(positionComponentManager),
         _ownershipComponentManager(ownershipComponentManager),
         _attributeComponentManager(attributeComponentManager),
-        time(0.0)
+        time(0.0),
+        speed(0.5)
 {
     _data.size = 0;
 
@@ -325,16 +326,14 @@ void ScheduleComponentManager::registerForAction(std::string action, OperatorCal
     operatorCallbackFunctionMap.insert({action, function});
 }
 
-std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
+void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& storyLogger)
 {
     double lastTime = time;
-    time += deltaTime;
+    time += deltaTime * speed;
 
     if (time >= 24) {
         time = fmod(time, 24);
     }
-
-    std::vector<int> effects;
 
     for (unsigned i = 0; i < _data.size; ++i)
     {
@@ -359,13 +358,10 @@ std::vector<int> ScheduleComponentManager::runSchedules(double deltaTime)
         }
         else if (_data.queuedActions[i].back()->perform(deltaTime))
         {
-            updateState(_data.queuedActions[i].back());
-            //effects.insert(effects.end(), newEffects.begin(), newEffects.end());
+            updateState(_data.queuedActions[i].back(), storyLogger);
             _data.queuedActions[i].pop_back();
         }
     }
-
-    return effects;
 }
 
 void ScheduleComponentManager::usePlanner(Entity entity, std::vector<int> preconditions)
@@ -523,7 +519,7 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
     return true;
 }
 
-void ScheduleComponentManager::updateState(ActionInstance* action)
+void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& storyLogger)
 {
     std::vector<int> effects = action->getActionEffects();
     for (int id : effects)
@@ -540,6 +536,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action)
                 Entity entity = entityItr->second;
 
                 _positionComponentManager->changeLocation(entity, desiredLocation);
+                storyLogger.logEvent(time, {"travelled to"}, {entity, desiredLocation});
             }
             else
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;

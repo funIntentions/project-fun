@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <PartialOrderPlanner.h>
+#include <demo/StoryLogger.h>
 #include "ComponentManager.h"
 #include "PartialOrderPlan.h"
 #include "LocationComponentManager.h"
@@ -55,6 +56,7 @@ private:
     PartialOrderPlanner planner;
 
     double time;
+    double speed;
 
     const std::string SIMPLE_SCHEDULE_ENTRY = "simple";
     const std::string SEQUENCE_SCHEDULE_ENTRY = "sequence";
@@ -79,7 +81,7 @@ public:
 
     void usePlanner(Entity entity, std::vector<int> preconditions);
 
-    void updateState(ActionInstance* action);
+    void updateState(ActionInstance* action, StoryLogger& storyLogger);
 
     std::vector<int> getState(Entity entity);
 
@@ -87,9 +89,11 @@ public:
 
     bool preconditionsMet(ActionInstance* action);
 
-    std::vector<int> runSchedules(double deltaTime);
+    void runSchedules(double deltaTime, StoryLogger& storyLogger);
 
     void spawnComponent(Entity entity, std::string scheduleName, double currentTime);
+
+    double getTimeOfDay() {return time;}
 
     void destroy(unsigned i);
 };

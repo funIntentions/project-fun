@@ -6,6 +6,7 @@
 #define PARTIALORDERPLANNER_PLANNERGAME_H
 
 #include "framework/TextRenderer.h"
+#include "Constants.h"
 #include <framework/Game.h>
 #include <PartialOrderPlanner.h>
 #include <EntityManager.h>
@@ -14,14 +15,6 @@
 #include <domain/Adventure.h>
 #include <util/Extra.h>
 #include <framework/Cursor.h>
-
-static const int GAME_WIDTH = 800;
-static const int GAME_HEIGHT = 600;
-static const int OUTPUT_MAX = 6;
-
-static const glm::vec3 PLAYER_ACTION_COLOUR(0.5f, 0.8f, 0.5f);
-static const glm::vec3 PLANNER_ACTION_COLOUR(0.8f, 0.8f, 0.2f);
-static const glm::vec3 INPUT_COLOUR(0.8f, 0.8f, 0.8f);
 
 struct Command
 {
@@ -32,12 +25,6 @@ struct Command
 
     std::string verb;
     std::string noun;
-};
-
-struct ActionOutput
-{
-    std::string output;
-    glm::vec3 colour;
 };
 
 class PlannerGame : public Game {
