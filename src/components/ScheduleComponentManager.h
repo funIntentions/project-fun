@@ -91,7 +91,7 @@ public:
 
     void runSchedules(double deltaTime, StoryLogger& storyLogger);
 
-    void spawnComponent(Entity entity, std::string scheduleName, double currentTime);
+    void spawnComponent(Entity entity, std::string scheduleName, double currentTime, StoryLogger& storyLogger);
 
     double getTimeOfDay() {return time;}
 

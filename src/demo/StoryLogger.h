@@ -10,6 +10,7 @@
 #include <EntityManager.h>
 #include <iomanip>
 #include <sstream>
+#include <schedules/ActionInstance.h>
 
 inline std::string time_format (double time)
 {
@@ -44,30 +45,55 @@ public:
 
     void logEvent(double time, std::vector<std::string> description, std::vector<Entity> entities)
     {
+
+        EventLog log;
+        log.time = time_format(time);
+
         unsigned numEntities = entities.size();
         if (numEntities == 0)
         {
             return;
         }
 
-        std::string event;
-        event += _entityManager->getName(entities[0]);
+        log.description += _entityManager->getName(entities[0]);
 
         for (unsigned i = 0; i < description.size(); ++i)
         {
-            event += ' ' + description[i];
+            log.description += ' ' + description[i];
 
             if (i + 1 < numEntities)
             {
-                event += ' ' + _entityManager->getName(entities[i + 1]);
+                log.description += ' ' + _entityManager->getName(entities[i + 1]);
             }
         }
 
-        EventLog log;
-        log.time = time_format(time);
-        log.description = event;
-
         events.insert(events.begin(), log);
+    }
+
+    void logState(Entity entity, std::string schedule, std::vector<ActionInstance*>& queuedActions)
+    {
+        if (states.find(entity.id) == states.end())
+            states[entity.id] = StateLog();
+
+        StateLog log = states[entity.id];
+        log.description.clear();
+
+        log.description += _entityManager->getName(entity) + ": ";
+        log.description += "[" + schedule + "]";
+
+        if (queuedActions.size() != 0)
+        {
+            unsigned lastIndex = queuedActions.size() - 1;
+            for (int i = lastIndex; i >= 0; --i)
+            {
+                if (i == lastIndex)
+                    log.description += "-> " + queuedActions[i]->getActionName();
+                else
+                    log.description += ", " + queuedActions[i]->getActionName();
+            }
+        }
+
+        states[entity.id] = log;
     }
 };
 

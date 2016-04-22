@@ -337,7 +337,8 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
 
     for (unsigned i = 0; i < _data.size; ++i)
     {
-        if (_attributeComponentManager->isDead(_data.entity[i]))
+        Entity entity = _data.entity[i];
+        if (_attributeComponentManager->isDead(entity))
             continue;
 
         if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
@@ -345,21 +346,27 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
             _data.queuedActions[i].clear();
             _data.currentSchedule[i]->startNextScheduleEntry();
             _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
+            storyLogger.logState(entity, _data.currentSchedule[i]->getName(), _data.queuedActions[i]);
         }
 
         if (_data.queuedActions[i].empty())
+        {
             _data.queuedActions[i].push_back(_data.currentSchedule[i]->chooseNewAction());
+            storyLogger.logState(entity, _data.currentSchedule[i]->getName(), _data.queuedActions[i]);
+        }
 
         mapParameters(_data.entity[i], _data.queuedActions[i].back());
         if (!preconditionsMet(_data.queuedActions[i].back()))
         {
             //std::cout << "Preconditions Not Met" << std::endl;
             usePlanner(_data.entity[i], _data.queuedActions[i].back()->getPreconditions());
+            storyLogger.logState(entity, _data.currentSchedule[i]->getName(), _data.queuedActions[i]);
         }
         else if (_data.queuedActions[i].back()->perform(deltaTime))
         {
             updateState(_data.queuedActions[i].back(), storyLogger);
             _data.queuedActions[i].pop_back();
+            storyLogger.logState(entity, _data.currentSchedule[i]->getName(), _data.queuedActions[i]);
         }
     }
 }
@@ -604,7 +611,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
     }
 }
 
-void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime)
+void ScheduleComponentManager::spawnComponent(Entity entity, std::string scheduleName, double currentTime, StoryLogger& storyLogger)
 {
     assert(schedules.size() > 0);
 
@@ -623,6 +630,7 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
             scheduleInstance->chooseEntryForTime(currentTime);
             _data.currentSchedule.push_back(scheduleInstance);
             _data.queuedActions.push_back({scheduleInstance->chooseNewAction()});
+            storyLogger.logState(entity, scheduleInstance->getName(), _data.queuedActions.back());
         }
 
         ++_data.size;

@@ -39,12 +39,12 @@ public:
                                                                            _ownershipComponentManager,
                                                                            _attributeComponentManager)),
                     cursor(0.5f),
-                    eventLogger(_entityManager)
+                    storyLogger(_entityManager)
     { }
 
     virtual void update(float period)
     {
-        _scheduleComponentManager->runSchedules(period, eventLogger);
+        _scheduleComponentManager->runSchedules(period, storyLogger);
 
         cursor.update(period);
 
@@ -71,9 +71,16 @@ public:
         std::string timeText = time_format(time);
         textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2, height, 1.0f, TIME_COLOUR);
 
-        for (int i = 0; i < eventLogger.events.size(); ++i)
+        for (int i = 0; i < storyLogger.events.size(); ++i)
         {
-            textRenderer->renderText(eventLogger.events[i].time + ": " + eventLogger.events[i].description, x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+            textRenderer->renderText(storyLogger.events[i].time + ": " + storyLogger.events[i].description, x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+        }
+
+        int i = 0;
+        for (auto state : storyLogger.states)
+        {
+            textRenderer->renderText(state.second.description, GAME_WIDTH/2 + x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+            ++i;
         }
 
         // Render Input Text
@@ -95,7 +102,7 @@ private:
     std::vector<ActionOutput> output;
     bool inputReady;
     Cursor cursor;
-    StoryLogger eventLogger;
+    StoryLogger storyLogger;
 
     void readEntities(EntityManager& entityManager)
     {
@@ -151,7 +158,7 @@ private:
                     {
                         assert(componentValue->value.IsString());
                         std::string scheduleName = componentValue->value.GetString();
-                        _scheduleComponentManager->spawnComponent(*entity, scheduleName, 0.0);
+                        _scheduleComponentManager->spawnComponent(*entity, scheduleName, 0.0, storyLogger);
                     }
                     else if (name == "position")
                     {
