@@ -67,6 +67,21 @@
       []
     },
     {
+      "name" : "StandAtGuardPost",
+      "minDuration" : 4,
+      "maxDuration" : 6,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Self"],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"Location" : ["GuardPost", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
       "name" : "TravelHome",
       "minDuration" : 1,
       "maxDuration" : 1,
@@ -174,6 +189,11 @@
       "name" : "HuntTemplate",
       "type" : "sequence",
       "actions" : ["TravelToHuntingGround", "Hunt"]
+    },
+    {
+      "name" : "StandGuard",
+      "type" : "simple",
+      "actions" : ["StandAtGuardPost"]
     }
   ],
 
@@ -191,6 +211,38 @@
         {
           "name" : "evening",
           "template" : "SellGoodsTemplate",
+          "startTime" : 20
+        }
+      ]
+    },
+    {
+      "name" : "NightGuard",
+      "entries" :
+      [
+        {
+          "name" : "day",
+          "template" : "Sleep",
+          "startTime" : 6
+        },
+        {
+          "name" : "evening",
+          "template" : "StandGuard",
+          "startTime" : 20
+        }
+      ]
+    },
+    {
+      "name" : "DayGuard",
+      "entries" :
+      [
+        {
+          "name" : "day",
+          "template" : "StandGuard",
+          "startTime" : 6
+        },
+        {
+          "name" : "evening",
+          "template" : "Sleep",
           "startTime" : 20
         }
       ]

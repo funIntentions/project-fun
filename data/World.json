@@ -11,12 +11,22 @@
           "type" : ["Fish"]
         },
         {
-          "category" : "Enemies",
+          "category" : "Home",
+          "type" : ["Village"]
+        }
+      ]
+    },
+    {
+      "group" : "Guard",
+      "associations" :
+      [
+        {
+          "category" : "Enemy",
           "type" : ["Merfolk"]
         },
         {
-          "category" : "Bed",
-          "type" : ["Wooden_Bed"]
+          "category" : "GuardPost",
+          "type" : ["Village", "Lake", "Swamp", "Forest", "Meadow"]
         }
       ]
     },
@@ -26,7 +36,7 @@
       [
         {
           "category" : "Water",
-          "type" : ["Lake", "Ocean", "Pond"]
+          "type" : ["Lake", "Swamp"]
         },
         {
           "category" : "Market",
@@ -61,7 +71,7 @@
   "entities" :
   [
     {
-      "name" : "Caves",
+      "name" : "Blue Daemon Caves",
       "components" :
       [
         {
@@ -75,12 +85,12 @@
       ]
     },
     {
-      "name" : "Swamp",
+      "name" : "Murky Lagoon",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Pond"]
+          "value" : ["Swamp"]
         },
         {
           "name" : "location",
@@ -89,7 +99,21 @@
       ]
     },
     {
-      "name" : "Village",
+      "name" : "Clear Water Lake",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Lake"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Village of Swigmire",
       "components" :
       [
         {
@@ -103,20 +127,48 @@
       ]
     },
     {
-      "name" : "Jimbo",
+      "name" : "East Forest",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Human", "Fisher"]
+          "value" : ["Forest"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Swigmire Meadows",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Meadow"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Tony",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Guard"]
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Swamp", "Village"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon"]
         },
         {
           "name" : "schedule",
-          "value" : "Fisherman"
+          "value" : "DayGuard"
         },
         {
           "name" : "attribute",
@@ -124,55 +176,33 @@
         },
         {
           "name" : "position",
-          "value" : "Village"
+          "value" : "Village of Swigmire"
         }
       ]
     },
     {
-      "name" : "Mury",
+      "name" : "Victor",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Merfolk"]
+          "value" : ["Human", "Guard"]
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Swamp", "Caves"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon"]
         },
         {
           "name" : "schedule",
-          "value" : "Merfolk"
+          "value" : "NightGuard"
         },
         {
           "name" : "attribute",
-          "value" : [0.0,0.0,0.0]
+          "value" : [1.0,0.0,0.0]
         },
         {
           "name" : "position",
-          "value" : "Caves"
-        }
-      ]
-    },
-    {
-      "name": "Fish_1",
-      "components" :
-      [
-        {
-          "name" : "type",
-          "value" : ["Fish"]
-        },
-        {
-          "name" : "opinion",
-          "knowledge" : []
-        },
-        {
-          "name" : "attribute",
-          "value" : [0.0,0.0,0.0]
-        },
-        {
-          "name" : "position",
-          "value" : "Swamp"
+          "value" : "Village of Swigmire"
         }
       ]
     }
