@@ -176,6 +176,25 @@
       []
     },
     {
+      "name" : "FindGoods",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Goods", "HuntingGround", "Self"],
+      "positivePreconditions" :
+      [
+        {"Health" : ["Alive", "Goods"]},
+        {"Location" : ["HuntingGround", "Self"]},
+        {"Location" : ["HuntingGround", "Goods"]}
+      ],
+      "addedEffects" :
+      [
+        {"Has" : ["Goods", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
       "name" : "FindFood",
       "minDuration" : 1,
       "maxDuration" : 1,
@@ -216,7 +235,7 @@
     {
       "name" : "SellGoodsTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToBuyer", "SellGoods"]
+      "actions" : ["SellGoods"]
     },
     {
       "name" : "FishingTemplate",
@@ -297,12 +316,22 @@
         {
           "name" : "nap",
           "template" : "SleepTemplate",
-          "startTime" : 13
+          "startTime" : 1
+        },
+        {
+          "name" : "sell",
+          "template" : "SellGoodsTemplate",
+          "startTime" : 6
+        },
+        {
+          "name" : "nap",
+          "template" : "SleepTemplate",
+          "startTime" : 14
         },
         {
           "name" : "hunt",
           "template" : "HuntTemplate",
-          "startTime" : 8
+          "startTime" : 20
         }
       ]
     }

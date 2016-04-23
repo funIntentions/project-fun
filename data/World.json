@@ -65,6 +65,10 @@
       "associations" : []
     },
     {
+      "group" : "FishingBait",
+      "associations" : []
+    },
+    {
       "group" : "Merfolk",
       "associations" :
       [
@@ -317,7 +321,7 @@
       ]
     },
     {
-      "name": "Fish_1",
+      "name": "Red Fish",
       "components" :
       [
         {
@@ -338,7 +342,7 @@
       ]
     },
     {
-      "name": "Fish_2",
+      "name": "Green Fish",
       "components" :
       [
         {
@@ -359,7 +363,7 @@
       ]
     },
     {
-      "name": "Fish_3",
+      "name": "Blue Fish",
       "components" :
       [
         {
@@ -380,44 +384,44 @@
       ]
     },
     {
-      "name": "Coins_1",
+      "name": "Worm",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Cash"]
+          "value" : ["FishingBait"]
         },
         {
-          "name" : "ownership",
-          "value" : "Village of Swigmire"
+          "name" : "position",
+          "value" : "Murky Lagoon"
         }
       ]
     },
     {
-      "name": "Coin_2",
+      "name": "Frog",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Cash"]
+          "value" : ["FishingBait"]
         },
         {
-          "name" : "ownership",
-          "value" : "Village of Swigmire"
+          "name" : "position",
+          "value" : "Murky Lagoon"
         }
       ]
     },
     {
-      "name": "Coin_3",
+      "name": "Leech",
       "components" :
       [
         {
           "name" : "type",
-          "value" : ["Cash"]
+          "value" : ["FishingBait"]
         },
         {
-          "name" : "ownership",
-          "value" : "Village of Swigmire"
+          "name" : "position",
+          "value" : "Murky Lagoon"
         }
       ]
     }

@@ -64,14 +64,10 @@ public:
         const float height = 14;
 
         double time = _scheduleComponentManager->getTimeOfDay();
-        /*int hours = (unsigned)time;
-        double minutes = time - hours;
-        minutes *= 100;
-        std::string postfix = time > 12 ? "pm" : "am";
-        hours %= 12;
-        std::string timeText = to_string(hours) + ":" + to_string((unsigned)minutes);*/
         std::string timeText = time_format(time);
-        textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2, height, 1.0f, TIME_COLOUR);
+        textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2 - x/2, height, 1.0f, TIME_COLOUR);
+        textRenderer->renderText("Events", GAME_WIDTH/4, height * 2, 1.0f, TIME_COLOUR);
+        textRenderer->renderText("Character State", GAME_WIDTH/1.5f, height * 2, 1.0f, TIME_COLOUR);
 
         for (int i = 0; i < storyLogger.events.size(); ++i)
         {
