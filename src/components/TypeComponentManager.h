@@ -123,7 +123,7 @@ public:
 
         for (std::string type : types)
         {
-            Group group = groups.find(type)->second;
+            Group group = groups.find(type)->second; // TODO: check if type exists
             for (auto association : group.associations)
             {
                 for (std::string otherEntityType : otherEntityTypes)

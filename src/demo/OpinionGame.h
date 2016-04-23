@@ -178,6 +178,16 @@ private:
                         else
                             _stateComponentManager->spawnComponent(*entity, State::Health::Dead);
                     }
+                    else if (name == "ownership")
+                    {
+                        _ownershipComponentManager->spawnComponent(*entity);
+
+                        if (componentValue != component->MemberEnd() && componentValue->value.IsString())
+                        {
+                            Entity owner = _entityManager->getEntity(componentValue->value.GetString());
+                            _ownershipComponentManager->giveOwnership(owner, *entity);
+                        }
+                    }
                     else if (name == "location")
                     {
                         assert(componentValue->value.IsArray());

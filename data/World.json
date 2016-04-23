@@ -13,6 +13,10 @@
         {
           "category" : "Home",
           "type" : ["Village"]
+        },
+        {
+          "category" : "Money",
+          "type" : ["Cash"]
         }
       ]
     },
@@ -39,13 +43,25 @@
           "type" : ["Lake", "Swamp"]
         },
         {
-          "category" : "Market",
+          "category" : "Buyer",
+          "type" : ["Market"]
+        },
+        {
+          "category" : "SellingSpot",
           "type" : ["Village"]
+        },
+        {
+          "category" : "Goods",
+          "type" : ["Fish"]
         }
       ]
     },
     {
       "group" : "Fish",
+      "associations" : []
+    },
+    {
+      "group" : "Market",
       "associations" : []
     },
     {
@@ -59,6 +75,18 @@
         {
           "category" : "HuntingGround",
           "type" : ["Lake", "Swamp"]
+        },
+        {
+          "category" : "Goods",
+          "type" : ["FishingBait"]
+        },
+        {
+          "category" : "Buyer",
+          "type" : ["Fisher"]
+        },
+        {
+          "category" : "SellingSpot",
+          "type" : ["Village", "Lake", "Swamp", "Forest", "Meadow"]
         },
         {
           "category" : "Food",
@@ -151,6 +179,20 @@
         {
           "name" : "location",
           "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Fish Market",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Market"]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
         }
       ]
     },
@@ -289,6 +331,93 @@
         {
           "name" : "state",
           "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Fish_2",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Fish_3",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Coins_1",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Cash"]
+        },
+        {
+          "name" : "ownership",
+          "value" : "Village of Swigmire"
+        }
+      ]
+    },
+    {
+      "name": "Coin_2",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Cash"]
+        },
+        {
+          "name" : "ownership",
+          "value" : "Village of Swigmire"
+        }
+      ]
+    },
+    {
+      "name": "Coin_3",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Cash"]
+        },
+        {
+          "name" : "ownership",
+          "value" : "Village of Swigmire"
         }
       ]
     }

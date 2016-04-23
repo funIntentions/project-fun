@@ -31,22 +31,24 @@
       "addedEffects" :
       [
         {"Health" : ["Dead", "Food"]},
-        {"Opinion" : ["Set", "0", "Food", "Self"]}
+        {"Has" : ["Food", "Self"]}
       ],
       "subtractedEffects" :
       []
     },
     {
-      "name" : "TravelToMarket",
+      "name" : "TravelToBuyer",
       "minDuration" : 1,
       "maxDuration" : 1,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["Market", "Self"],
+      "params" : ["SellingSpot", "Buyer", "Self"],
       "positivePreconditions" :
-      [],
+      [
+        {"Location" : ["SellingSpot", "Buyer"]}
+      ],
       "addedEffects" :
       [
-        {"Location" : ["Market", "Self"]}
+        {"Location" : ["SellingSpot", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -56,13 +58,36 @@
       "minDuration" : 1,
       "maxDuration" : 1,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["Market", "Self"],
+      "params" : ["Goods", "Buyer", "SellingSpot", "Self"],
       "positivePreconditions" :
       [
-        {"Location" : ["Market", "Self"]}
+        {"Has" : ["Goods", "Self"]},
+        {"Location" : ["SellingSpot", "Self"]},
+        {"Location" : ["SellingSpot", "Buyer"]}
       ],
       "addedEffects" :
-      [],
+      [
+        {"Has" : ["Goods", "Buyer"]},
+        {"Opinion" : ["Set", "-1.0", "Goods", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "MeetBuyer",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Goods", "Buyer", "SellingSpot", "Self"],
+      "positivePreconditions" :
+      [
+        {"Has" : ["Goods", "Self"]}
+      ],
+      "addedEffects" :
+      [
+        {"Location" : ["SellingSpot", "Self"]},
+        {"Location" : ["SellingSpot", "Buyer"]}
+      ],
       "subtractedEffects" :
       []
     },
@@ -145,8 +170,7 @@
       ],
       "addedEffects" :
       [
-        {"Health" : ["Dead", "Food"]},
-        {"Opinion" : ["Set", "0", "Food", "Self"]}
+        {"Health" : ["Dead", "Food"]}
       ],
       "subtractedEffects" :
       []
@@ -192,7 +216,7 @@
     {
       "name" : "SellGoodsTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToMarket", "SellGoods"]
+      "actions" : ["TravelToBuyer", "SellGoods"]
     },
     {
       "name" : "FishingTemplate",

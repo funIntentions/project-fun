@@ -612,6 +612,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 Entity entity = entityItr->second;
 
                 _ownershipComponentManager->giveOwnership(entity, belonging);
+                storyLogger.logEvent(time, {"has"}, {entity, belonging});
             }
         }
         else
