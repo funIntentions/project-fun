@@ -146,7 +146,24 @@
       "addedEffects" :
       [
         {"Health" : ["Dead", "Food"]},
-        {"Opinion" : ["Self", "0", "Food"]}
+        {"Opinion" : ["Set", "0", "Food", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "FindFood",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Food", "Self"],
+      "positivePreconditions" :
+      [
+        {"Health" : ["Dead", "Food"]}
+      ],
+      "addedEffects" :
+      [
+        {"Opinion" : ["Adjust", "-0.1", "Food", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -180,7 +197,7 @@
     {
       "name" : "FishingTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToFishingSpot", "Fish"]
+      "actions" : ["TravelToFishingSpot", "Fish", "FindFood"]
     },
     {
       "name" : "SleepTemplate",
@@ -190,7 +207,7 @@
     {
       "name" : "HuntTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToHuntingGround", "Hunt"]
+      "actions" : ["TravelToHuntingGround", "Hunt", "FindFood"]
     },
     {
       "name" : "StandGuardTemplate",
@@ -261,7 +278,7 @@
         {
           "name" : "hunt",
           "template" : "HuntTemplate",
-          "startTime" : 9
+          "startTime" : 8
         }
       ]
     }

@@ -106,38 +106,6 @@ public:
             _data.attributes[instance.i][attribute] = value;
     }
 
-    bool isDead(Entity entity)
-    {
-        Instance instance = lookup(entity);
-        if (instance.i >= 0)
-            return _data.attributes[instance.i][Attribute::Health] <= 0;
-        else
-            return true;
-    }
-
-    // TODO: Remove awful fuzzy state conversion
-    std::string getHealthState(Entity entity)
-    {
-        Instance instance = lookup(entity);
-        if  (_data.attributes[instance.i][Attribute::Health] <= 0)
-            return "Dead";
-        else
-            return "Alive";
-    }
-
-    // TODO: Remove awful fuzzy state conversion
-    void setHealthState(Entity entity, std::string state)
-    {
-        Instance instance = lookup(entity);
-        if (instance.i >= 0)
-        {
-            if (state == "Alive")
-                _data.attributes[instance.i][Attribute::Health] = 100;
-            else
-                _data.attributes[instance.i][Attribute::Health] = 0;
-        }
-    }
-
     void destroy(unsigned i)
     {
         unsigned last = _data.size - 1;

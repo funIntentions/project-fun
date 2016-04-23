@@ -177,6 +177,10 @@
         {
           "name" : "position",
           "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
         }
       ]
     },
@@ -203,6 +207,10 @@
         {
           "name" : "position",
           "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
         }
       ]
     },
@@ -229,6 +237,10 @@
         {
           "name" : "position",
           "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
         }
       ]
     },
@@ -255,6 +267,10 @@
         {
           "name" : "position",
           "value" : "Blue Daemon Caves"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
         }
       ]
     },
@@ -269,6 +285,10 @@
         {
           "name" : "position",
           "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
         }
       ]
     }

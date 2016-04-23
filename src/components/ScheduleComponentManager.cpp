@@ -13,7 +13,8 @@ ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager
                                                    std::shared_ptr<OpinionComponentManager> opinionComponentManager,
                                                    std::shared_ptr<PositionComponentManager> positionComponentManager,
                                                    std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
-                                                   std::shared_ptr<AttributeComponentManager> attributeComponentManager) :
+                                                   std::shared_ptr<AttributeComponentManager> attributeComponentManager,
+                                                   std::shared_ptr<StateComponentManager> stateComponentManager) :
         ComponentManager(),
         _actionManager(actionManager),
         _typeComponentManager(typeComponentManager),
@@ -21,6 +22,7 @@ ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager
         _positionComponentManager(positionComponentManager),
         _ownershipComponentManager(ownershipComponentManager),
         _attributeComponentManager(attributeComponentManager),
+        _stateComponentManager(stateComponentManager),
         time(0.0),
         speed(0.5)
 {
@@ -338,8 +340,12 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
     for (unsigned i = 0; i < _data.size; ++i)
     {
         Entity entity = _data.entity[i];
-        if (_attributeComponentManager->isDead(entity))
+        if (_stateComponentManager->lookup(entity).i != -1 && _stateComponentManager->getHealth(entity) == State::Health::Dead) // is Dead?
+        {
+            _data.queuedActions[i].clear();
+            storyLogger.logState(entity, "Dead", _data.queuedActions[i]);
             continue;
+        }
 
         if (_data.currentSchedule[i]->timeIsUp(lastTime, time))
         {
@@ -473,7 +479,6 @@ void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* acti
 }
 
 bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
-
     std::vector<int> preconditions = action->getPreconditions();
     for (int id : preconditions)
     {
@@ -500,12 +505,12 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
             {
                 std::string desiredHealth = predicateTemplate.params[0];
                 Entity entity = entityItr->second;
-                if (_attributeComponentManager->lookup(entity).i < 0)
+                if (_stateComponentManager->lookup(entity).i < 0)
                     return false;
 
-                std::string health = _attributeComponentManager->getHealthState(entity);
+                State::Health health = _stateComponentManager->getHealth(entity);
 
-                if (health != desiredHealth)
+                if (!(health == State::Health::Alive && "Alive" == desiredHealth || health == State::Health::Dead && "Dead" == desiredHealth))
                     return false;
             }
         }
@@ -560,7 +565,10 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 std::string desiredHealth = predicateTemplate.params[0];
                 Entity entity = entityItr->second;
 
-                _attributeComponentManager->setHealthState(entity, desiredHealth);
+                if (desiredHealth == "Alive") // TODO: Remove string checks
+                    _stateComponentManager->setHealth(entity, State::Health::Alive);
+                else
+                    _stateComponentManager->setHealth(entity, State::Health::Dead);
             }
             else
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;
@@ -574,7 +582,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
             if (entityItr == action->mappedParameters.end() || opinionEntityItr == action->mappedParameters.end())
             {
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;
-                return;
+                continue;
             }
 
             float value = (float) atof(predicateTemplate.params[1].c_str());

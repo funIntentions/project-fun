@@ -16,6 +16,7 @@
 #include "OpinionComponentManager.h"
 #include "AttributeComponentManager.h"
 #include "OwnershipComponentManager.h"
+#include "StateComponentManager.h"
 
 class ActionInstance;
 class ScheduleInstance;
@@ -53,6 +54,7 @@ private:
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
+    std::shared_ptr<StateComponentManager> _stateComponentManager;
     PartialOrderPlanner planner;
 
     double time;
@@ -67,7 +69,8 @@ public:
                              std::shared_ptr<OpinionComponentManager> opinionComponentManager,
                              std::shared_ptr<PositionComponentManager> positionComponentManager,
                              std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
-                             std::shared_ptr<AttributeComponentManager> attributeComponentManager);
+                             std::shared_ptr<AttributeComponentManager> attributeComponentManager,
+                             std::shared_ptr<StateComponentManager> stateComponentManager);
 
     void readActions(std::shared_ptr<ActionManager> actionManager);
 

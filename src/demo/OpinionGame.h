@@ -25,6 +25,7 @@ class OpinionGame : public Game {
 public:
     OpinionGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Opinions"),
                     _entityManager(new EntityManager()),
+                    _stateComponentManager(new StateComponentManager()),
                     _locationComponentManager(new LocationComponentManager()),
                     _attributeComponentManager(new AttributeComponentManager()),
                     _typeComponentManager(new TypeComponentManager(_attributeComponentManager)),
@@ -37,7 +38,8 @@ public:
                                                                            _opinionComponentManager,
                                                                            _positionComponentManager,
                                                                            _ownershipComponentManager,
-                                                                           _attributeComponentManager)),
+                                                                           _attributeComponentManager,
+                                                                           _stateComponentManager)),
                     cursor(0.5f),
                     storyLogger(_entityManager)
     { }
@@ -88,6 +90,7 @@ public:
     }
 private:
     std::shared_ptr<EntityManager> _entityManager;
+    std::shared_ptr<StateComponentManager> _stateComponentManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<TypeComponentManager> _typeComponentManager;
@@ -165,6 +168,15 @@ private:
                         assert(componentValue->value.IsString());
                         std::string positionName = componentValue->value.GetString();
                         _positionComponentManager->spawnComponent(*entity, _entityManager->getEntity(positionName));
+                    }
+                    else if (name == "state")
+                    {
+                        assert(componentValue->value.IsString());
+                        std::string health = componentValue->value.GetString();
+                        if (health == "Alive")
+                            _stateComponentManager->spawnComponent(*entity, State::Health::Alive);
+                        else
+                            _stateComponentManager->spawnComponent(*entity, State::Health::Dead);
                     }
                     else if (name == "location")
                     {
