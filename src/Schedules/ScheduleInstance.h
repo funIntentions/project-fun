@@ -28,6 +28,7 @@ public:
     double getEndTime(int entryIndex) const;
     int nextEntry(int entryIndex) const;
     int getId() const;
+    std::string getName() const;
     unsigned getActionIndex()
     {
         return actionIndex;

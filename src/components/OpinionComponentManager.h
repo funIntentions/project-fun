@@ -8,6 +8,7 @@
 #include <ComponentManager.h>
 #include <algorithm>
 #include <fstream>
+#include <algorithm>
 #include <rapidjson/document.h>
 #include "AttributeComponentManager.h"
 #include "TypeComponentManager.h"
@@ -34,7 +35,8 @@ private:
     InstanceData _data;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<TypeComponentManager> _typeComponentManager;
-
+    float _highestVariance = 1.0f;
+    float _lowestVariance = -1.0f;
 public:
     OpinionComponentManager(std::shared_ptr<AttributeComponentManager> attributeComponentManager, std::shared_ptr<TypeComponentManager> typeComponentManager) :
             ComponentManager(), _attributeComponentManager(attributeComponentManager), _typeComponentManager(typeComponentManager)
@@ -76,7 +78,7 @@ public:
         return lhs.variance > rhs.variance;
     }
 
-    void setOpinionVariance(Entity entity, Category category, Entity opinionEntity, float variance)
+    void setOpinionVariance(Entity entity, Category category, Entity opinionEntity, float value)
     {
         Instance instance = lookup(entity);
 
@@ -84,25 +86,69 @@ public:
 
         if (opinions == _data.opinions[instance.i].end())
         {
-            std::cout << "I have no knowledge of the concept: " << category << std::endl;
+            std::cout << "setOpinionVariance: I have no knowledge of the concept: " << category << std::endl;
         }
         else
         {
             for (Opinion& opinion : opinions->second)
             {
                 if (opinion.entity.id == opinionEntity.id)
-                    opinion.variance = variance;
+                {
+                    opinion.variance = std::max(_lowestVariance, std::min(value, _highestVariance));
+                }
             }
 
             std::sort(opinions->second.begin(), opinions->second.end(), sortOpinionsByVariance);
         }
     }
 
-    void setAllOpinionVariances(Category category, Entity opinionEntity, float variance)
+    void adjustOpinionVariance(Entity entity, Category category, Entity opinionEntity, float value)
     {
-        for (unsigned i = 0; i < _data.size; ++i)
+        Instance instance = lookup(entity);
+
+        auto opinions = _data.opinions[instance.i].find(category);
+
+        if (opinions == _data.opinions[instance.i].end())
         {
-            setOpinionVariance(_data.entity[i], category, opinionEntity, variance);
+            std::cout << "setOpinionVariance: I have no knowledge of the concept: " << category << std::endl;
+        }
+        else
+        {
+            for (Opinion& opinion : opinions->second)
+            {
+                if (opinion.entity.id == opinionEntity.id)
+                {
+                    opinion.variance += value;
+                    opinion.variance = std::max(_lowestVariance, std::min(opinion.variance, _highestVariance));
+                }
+            }
+
+            std::sort(opinions->second.begin(), opinions->second.end(), sortOpinionsByVariance);
+        }
+    }
+
+    void adjustOtherOpinionVariances(Entity entity, Category category, Entity opinionEntity, float value)
+    {
+        Instance instance = lookup(entity);
+
+        auto opinions = _data.opinions[instance.i].find(category);
+
+        if (opinions == _data.opinions[instance.i].end())
+        {
+            std::cout << "increaseOtherOpinionVariances: I have no knowledge of the concept: " << category << std::endl;
+        }
+        else
+        {
+            for (Opinion& opinion : opinions->second)
+            {
+                if (opinion.entity.id != opinionEntity.id)
+                {
+                    opinion.variance += value;
+                    opinion.variance = std::max(_lowestVariance, std::min(opinion.variance, _highestVariance));
+                }
+            }
+
+            std::sort(opinions->second.begin(), opinions->second.end(), sortOpinionsByVariance);
         }
     }
 

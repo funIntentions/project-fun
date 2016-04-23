@@ -463,7 +463,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
 
 void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* action)
 {
-    for (std::string param : action->getParameters())
+    std::vector<std::string> parameters = action->getParameters();
+    for (std::string param : parameters)
     {
         std::vector<Opinion> opinions = _opinionComponentManager->getOpinions(entity, param);
         if (!opinions.empty())
@@ -499,6 +500,9 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
             {
                 std::string desiredHealth = predicateTemplate.params[0];
                 Entity entity = entityItr->second;
+                if (_attributeComponentManager->lookup(entity).i < 0)
+                    return false;
+
                 std::string health = _attributeComponentManager->getHealthState(entity);
 
                 if (health != desiredHealth)
@@ -563,33 +567,31 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
         }
         else if (predicateTemplate.type == "Opinion")
         {
-            if (predicateTemplate.params.size() == 2) // TODO: Do I need this?
-            {
-                auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[1]);
-                if (opinionEntityItr != action->mappedParameters.end())
-                {
-                    float newVariance = (float) atof(predicateTemplate.params[0].c_str());
-                    Entity opinionEntity = opinionEntityItr->second;
+            std::string operationType = predicateTemplate.params[0];
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[3]);
+            auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[2]);
 
-                    _opinionComponentManager->setAllOpinionVariances(predicateTemplate.params[1], opinionEntity, newVariance);
-                }
-                else
-                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            if (entityItr == action->mappedParameters.end() || opinionEntityItr == action->mappedParameters.end())
+            {
+                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+                return;
             }
-            else if (predicateTemplate.params.size() == 3)
-            {
-                auto entityItr = action->mappedParameters.find(predicateTemplate.params[0]);
-                auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[2]);
-                if (entityItr != action->mappedParameters.end() && opinionEntityItr != action->mappedParameters.end())
-                {
-                    float newVariance = (float) atof(predicateTemplate.params[1].c_str());
-                    Entity entity = entityItr->second;
-                    Entity opinionEntity = opinionEntityItr->second;
 
-                    _opinionComponentManager->setOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, newVariance);
-                }
-                else
-                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            float value = (float) atof(predicateTemplate.params[1].c_str());
+            Entity entity = entityItr->second;
+            Entity opinionEntity = opinionEntityItr->second;
+
+            if (operationType == "Set")
+            {
+                _opinionComponentManager->setOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, value);
+            }
+            else if (operationType == "AdjustOthers")
+            {
+                _opinionComponentManager->adjustOtherOpinionVariances(entity, predicateTemplate.params[2], opinionEntity, value);
+            }
+            else if (operationType == "Adjust")
+            {
+                _opinionComponentManager->adjustOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, value);
             }
         }
         else if (predicateTemplate.type == "Has")

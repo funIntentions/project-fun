@@ -58,7 +58,7 @@
         },
         {
           "category" : "HuntingGround",
-          "type" : ["Pond"]
+          "type" : ["Lake", "Swamp"]
         },
         {
           "category" : "Food",
@@ -203,6 +203,72 @@
         {
           "name" : "position",
           "value" : "Village of Swigmire"
+        }
+      ]
+    },
+    {
+      "name" : "Sal",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Fisher"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Clear Water Lake", "Murky Lagoon", "Village of Swigmire"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Fisher"
+        },
+        {
+          "name" : "attribute",
+          "value" : [1.0,0.0,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        }
+      ]
+    },
+    {
+      "name" : "Swamp Monster",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Merfolk"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Merfolk"
+        },
+        {
+          "name" : "attribute",
+          "value" : [1.0,0.0,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Blue Daemon Caves"
+        }
+      ]
+    },
+    {
+      "name": "Fish_1",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Murky Lagoon"
         }
       ]
     }

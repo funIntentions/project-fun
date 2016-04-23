@@ -31,7 +31,7 @@
       "addedEffects" :
       [
         {"Health" : ["Dead", "Food"]},
-        {"Opinion" : ["Self", "0", "Food"]}
+        {"Opinion" : ["Set", "0", "Food", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -76,7 +76,9 @@
       [],
       "addedEffects" :
       [
-        {"Location" : ["GuardPost", "Self"]}
+        {"Location" : ["GuardPost", "Self"]},
+        {"Opinion" : ["AdjustOthers", "0.1", "GuardPost", "Self"]},
+        {"Opinion" : ["Adjust", "-0.1", "GuardPost", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -191,7 +193,7 @@
       "actions" : ["TravelToHuntingGround", "Hunt"]
     },
     {
-      "name" : "StandGuard",
+      "name" : "StandGuardTemplate",
       "type" : "simple",
       "actions" : ["StandAtGuardPost"]
     }
@@ -200,7 +202,7 @@
   "schedules" :
   [
     {
-      "name" : "Fisherman",
+      "name" : "Fisher",
       "entries" :
       [
         {
@@ -221,12 +223,12 @@
       [
         {
           "name" : "day",
-          "template" : "Sleep",
+          "template" : "SleepTemplate",
           "startTime" : 6
         },
         {
           "name" : "evening",
-          "template" : "StandGuard",
+          "template" : "StandGuardTemplate",
           "startTime" : 20
         }
       ]
@@ -237,12 +239,12 @@
       [
         {
           "name" : "day",
-          "template" : "StandGuard",
+          "template" : "StandGuardTemplate",
           "startTime" : 6
         },
         {
           "name" : "evening",
-          "template" : "Sleep",
+          "template" : "SleepTemplate",
           "startTime" : 20
         }
       ]

@@ -36,11 +36,12 @@ struct StoryLogger
 {
 private:
     std::shared_ptr<EntityManager> _entityManager;
+    unsigned _eventLimit;
 public:
     std::vector<EventLog> events;
     std::unordered_map<unsigned, StateLog> states;
 
-    StoryLogger(std::shared_ptr<EntityManager> entityManager) : _entityManager(entityManager)
+    StoryLogger(std::shared_ptr<EntityManager> entityManager, unsigned limit = 30) : _entityManager(entityManager), _eventLimit(limit)
     { }
 
     void logEvent(double time, std::vector<std::string> description, std::vector<Entity> entities)
@@ -68,6 +69,8 @@ public:
         }
 
         events.insert(events.begin(), log);
+        if (events.size() > _eventLimit)
+            events.pop_back();
     }
 
     void logState(Entity entity, std::string schedule, std::vector<ActionInstance*>& queuedActions)

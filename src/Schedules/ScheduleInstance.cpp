@@ -29,6 +29,8 @@ ActionInstance* ScheduleInstance::chooseNewAction()
 
 int ScheduleInstance::getId() const { return schedule->getId(); }
 
+std::string ScheduleInstance::getName() const { return schedule->getName(); }
+
 void ScheduleInstance::startNextScheduleEntry()
 {
     entryIndex = nextEntry(entryIndex);
