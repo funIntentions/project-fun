@@ -559,16 +559,24 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
         }
         else if (predicateTemplate.type == "Health")
         {
+            auto selfItr = action->mappedParameters.find("Self");
             auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
-            if (entityItr != action->mappedParameters.end())
+            if (entityItr != action->mappedParameters.end() && selfItr != action->mappedParameters.end())
             {
                 std::string desiredHealth = predicateTemplate.params[0];
                 Entity entity = entityItr->second;
+                Entity self = selfItr->second;
 
                 if (desiredHealth == "Alive") // TODO: Remove string checks
+                {
                     _stateComponentManager->setHealth(entity, State::Health::Alive);
+                    storyLogger.logEvent(time, {"has come to life."}, {entity});
+                }
                 else
+                {
                     _stateComponentManager->setHealth(entity, State::Health::Dead);
+                    storyLogger.logEvent(time, {"has killed"}, {self, entity});
+                }
             }
             else
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;
@@ -601,6 +609,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
             {
                 _opinionComponentManager->adjustOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, value);
             }
+
+            //storyLogger.logEvent(time, {"opinion of " + predicateTemplate.params[2] + " has changed."}, {entity});
         }
         else if (predicateTemplate.type == "Has")
         {
@@ -613,6 +623,20 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
                 _ownershipComponentManager->giveOwnership(entity, belonging);
                 storyLogger.logEvent(time, {"has"}, {entity, belonging});
+            }
+        }
+        else if (predicateTemplate.type == "Sleeping")
+        {
+
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[0]);
+            auto locationItr = action->mappedParameters.find(predicateTemplate.params[1]);
+
+            if (entityItr != action->mappedParameters.end() && locationItr != action->mappedParameters.end())
+            {
+                Entity entity = entityItr->second;
+                Entity location = locationItr->second;
+
+                storyLogger.logEvent(time, {"is sleeping at"}, {entity, location});
             }
         }
         else

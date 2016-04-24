@@ -29,7 +29,7 @@ struct Command
 
 class PlannerGame : public Game {
 public:
-    PlannerGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Planner"), inputReady(false), cursor(0.5f)
+    PlannerGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Partial Order Planner Demo"), inputReady(false), cursor(0.5f)
     { }
 
     virtual void update(float period)

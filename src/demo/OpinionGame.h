@@ -23,7 +23,7 @@
 
 class OpinionGame : public Game {
 public:
-    OpinionGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Demo: Opinions"),
+    OpinionGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Story Engine Demo"),
                     _entityManager(new EntityManager()),
                     _stateComponentManager(new StateComponentManager()),
                     _locationComponentManager(new LocationComponentManager()),

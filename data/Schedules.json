@@ -139,24 +139,6 @@
       []
     },
     {
-      "name" : "TurnIntoMerfolk",
-      "minDuration" : 2,
-      "maxDuration" : 4,
-      "attributes" : [0.0,0.0,0.0],
-      "params" : ["Food", "HuntingGround", "Self"],
-      "positivePreconditions" :
-      [
-        {"Location" : ["HuntingGround", "Self"]},
-        {"Location" : ["HuntingGround", "Food"]}
-      ],
-      "addedEffects" :
-      [
-        {"Schedule" : ["Food", "Merfolk"]}
-      ],
-      "subtractedEffects" :
-      []
-    },
-    {
       "name" : "Hunt",
       "minDuration" : 2,
       "maxDuration" : 4,
@@ -223,7 +205,7 @@
       ],
       "addedEffects" :
       [
-        {"Sleeping" : ["Home"]}
+        {"Sleeping" : ["Self", "Home"]}
       ],
       "subtractedEffects" :
       []
