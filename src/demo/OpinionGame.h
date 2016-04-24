@@ -196,14 +196,14 @@ private:
                         assert(componentValue->value.IsArray());
                         auto attributes = componentValue->value.GetArray();
                         assert(attributes.Size() == Attribute::NumberOfAttributes);
-                        float health = attributes[0].GetFloat();
-                        float materialism = attributes[1].GetFloat();
-                        float morality = attributes[2].GetFloat();
+                        float aggression = attributes[0].GetFloat();
+                        float charm = attributes[1].GetFloat();
+                        float greed = attributes[2].GetFloat();
 
                         _attributeComponentManager->spawnComponent(*entity);
-                        _attributeComponentManager->setAttribute(*entity, Attribute::Health, health);
-                        _attributeComponentManager->setAttribute(*entity, Attribute::Materialism, materialism);
-                        _attributeComponentManager->setAttribute(*entity, Attribute::Morality, morality);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::AGGRESSION, aggression);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::GREED, charm);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::CHARM, greed);
                     }
                     else if (name == "type")
                     {

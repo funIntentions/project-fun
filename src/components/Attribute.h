@@ -7,9 +7,9 @@
 
 enum Attribute
 {
-    Health,
-    Morality,
-    Materialism,
+    AGGRESSION,
+    CHARM,
+    GREED,
     NumberOfAttributes
 };
 

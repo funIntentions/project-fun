@@ -77,9 +77,9 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             assert(member_itr->value.IsArray());
             auto attributes = member_itr->value.GetArray();
             assert(attributes.Size() == Attribute::NumberOfAttributes);
-            action->attributes[Attribute::Health] = attributes[Attribute::Health].GetFloat();
-            action->attributes[Attribute::Morality] = attributes[Attribute::Morality].GetFloat();
-            action->attributes[Attribute::Materialism] = attributes[Attribute::Materialism].GetFloat();
+            action->attributes[Attribute::AGGRESSION] = attributes[Attribute::AGGRESSION].GetFloat();
+            action->attributes[Attribute::CHARM] = attributes[Attribute::CHARM].GetFloat();
+            action->attributes[Attribute::GREED] = attributes[Attribute::GREED].GetFloat();
         }
 
         member_itr = action_itr->FindMember("params");

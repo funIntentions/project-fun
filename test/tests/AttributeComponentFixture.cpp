@@ -29,13 +29,13 @@ public:
 TEST_F(AttributeComponentFixture, high_attribute_ranking_actions)
 {
     Action steal("Steal", 0, 1, 1);
-    steal.attributes[Attribute::Morality] = 0.0f;
+    steal.attributes[Attribute::CHARM] = 0.0f;
     steal.actionOperator = std::shared_ptr<Operator>(new Operator(steal.getName()));
     Action buy("Buy", 2, 1, 1);
-    buy.attributes[Attribute::Morality] = 0.8f;
+    buy.attributes[Attribute::CHARM] = 0.8f;
     buy.actionOperator = std::shared_ptr<Operator>(new Operator(buy.getName()));
     Action borrow("Borrow(Never Return)", 1, 1, 1);
-    borrow.attributes[Attribute::Morality] = 0.4f;
+    borrow.attributes[Attribute::CHARM] = 0.4f;
     borrow.actionOperator = std::shared_ptr<Operator>(new Operator(borrow.getName()));
 
     std::unordered_map<int, Action*> actions;
@@ -43,7 +43,7 @@ TEST_F(AttributeComponentFixture, high_attribute_ranking_actions)
     actions[borrow.getId()] = &borrow;
     actions[buy.getId()] = &buy;
 
-    attributeComponentManager.setAttribute(character, Attribute::Morality, 1.0);
+    attributeComponentManager.setAttribute(character, Attribute::CHARM, 1.0);
     std::vector<Operator> operators = attributeComponentManager.sortActionOperations(actions, character);
 
     ASSERT_EQ(operators.size(), 3);
@@ -56,13 +56,13 @@ TEST_F(AttributeComponentFixture, high_attribute_ranking_actions)
 TEST_F(AttributeComponentFixture, low_attribute_ranking_actions)
 {
     Action steal("Steal", 0, 1, 1);
-    steal.attributes[Attribute::Morality] = 0.0f;
+    steal.attributes[Attribute::CHARM] = 0.0f;
     steal.actionOperator = std::shared_ptr<Operator>(new Operator(steal.getName()));
     Action buy("Buy", 2, 1, 1);
-    buy.attributes[Attribute::Morality] = 0.8f;
+    buy.attributes[Attribute::CHARM] = 0.8f;
     buy.actionOperator = std::shared_ptr<Operator>(new Operator(buy.getName()));
     Action borrow("Borrow(Never Return)", 1, 1, 1);
-    borrow.attributes[Attribute::Morality] = 0.4f;
+    borrow.attributes[Attribute::CHARM] = 0.4f;
     borrow.actionOperator = std::shared_ptr<Operator>(new Operator(borrow.getName()));
 
     std::unordered_map<int, Action*> actions;
@@ -70,7 +70,7 @@ TEST_F(AttributeComponentFixture, low_attribute_ranking_actions)
     actions[borrow.getId()] = &borrow;
     actions[buy.getId()] = &buy;
 
-    attributeComponentManager.setAttribute(character, Attribute::Morality, 0.0);
+    attributeComponentManager.setAttribute(character, Attribute::CHARM, 0.0);
     std::vector<Operator> operators = attributeComponentManager.sortActionOperations(actions, character);
 
     ASSERT_EQ(operators.size(), 3);
