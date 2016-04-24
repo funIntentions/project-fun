@@ -209,9 +209,83 @@
       ],
       "subtractedEffects" :
       []
+    },
+    {
+      "name" : "ArrestOutlaw",
+      "minDuration" : 1,
+      "maxDuration" : 2,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["GuardPost", "Self"]},
+        {"Location" : ["GuardPost", "Outlaw"]},
+        {"Freedom" : ["Outlaw", "Apprehended"]}
+      ],
+      "addedEffects" :
+      [
+        {"Schedule" : ["Prisoner", "Outlaw"]},
+        {"Location" : ["Prison", "Outlaw"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "ZapOutlaw",
+      "minDuration" : 1,
+      "maxDuration" : 2,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["GuardPost", "Self"]},
+        {"Location" : ["GuardPost", "Outlaw"]}
+      ],
+      "addedEffects" :
+      [
+        {"Freedom" : ["Apprehended", "Outlaw"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "KillOutlaw",
+      "minDuration" : 1,
+      "maxDuration" : 2,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["GuardPost", "Self"]},
+        {"Location" : ["GuardPost", "Outlaw"]},
+      ],
+      "addedEffects" :
+      [
+        {"Health" : ["Dead", "Outlaw"]},
+        {"Freedom" : ["Apprehended", "Outlaw"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "HandcuffOutlaw",
+      "minDuration" : 1,
+      "maxDuration" : 2,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["GuardPost", "Self"]},
+        {"Location" : ["GuardPost", "Outlaw"]}
+      ],
+      "addedEffects" :
+      [
+        {"Freedom" : ["Apprehended", "Outlaw"]}
+      ],
+      "subtractedEffects" :
+      []
     }
   ],
-
   "scheduleEntryTemplates" :
   [
     {
