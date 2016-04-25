@@ -114,6 +114,9 @@ public:
 
     std::vector<Category> getCategories(Entity entity, Entity otherEntity)
     {
+        if (entity.id == otherEntity.id)
+            return {"Self"};
+
         std::vector<Category> categories;
 
         Instance instance = lookup(entity);

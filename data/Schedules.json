@@ -19,19 +19,20 @@
     {
       "name" : "Fish",
       "minDuration" : 4,
-      "maxDuration" : 6,
+      "maxDuration" : 10,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Water", "Food", "Self"],
       "positivePreconditions" :
       [
         {"Health" : ["Alive", "Food"]},
         {"Location" : ["Water", "Self"]},
-        {"Location" : ["Water", "Food"]}
+        {"Location" : ["Same", "Food", "Self"]}
       ],
       "addedEffects" :
       [
         {"Health" : ["Dead", "Food"]},
-        {"Has" : ["Food", "Self"]}
+        {"Has" : ["Food", "Self"]},
+        {"Opinion" : ["Remove", "Food", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -48,7 +49,8 @@
       ],
       "addedEffects" :
       [
-        {"Location" : ["SellingSpot", "Self"]}
+        {"Location" : ["SellingSpot", "Self"]},
+        {"Location" : ["Same", "Buyer", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -62,13 +64,13 @@
       "positivePreconditions" :
       [
         {"Has" : ["Goods", "Self"]},
-        {"Location" : ["SellingSpot", "Self"]},
-        {"Location" : ["SellingSpot", "Buyer"]}
+        {"Location" : ["SellingSpot", "Buyer"]},
+        {"Location" : ["Same", "Buyer", "Self"]}
       ],
       "addedEffects" :
       [
         {"Has" : ["Goods", "Buyer"]},
-        {"Opinion" : ["Set", "-1.0", "Goods", "Self"]}
+        {"Opinion" : ["Remove", "Goods", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -85,8 +87,8 @@
       ],
       "addedEffects" :
       [
-        {"Location" : ["SellingSpot", "Self"]},
-        {"Location" : ["SellingSpot", "Buyer"]}
+        {"Location" : ["SellingSpot", "Buyer"]},
+        {"Location" : ["Same", "Buyer", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -124,35 +126,52 @@
       []
     },
     {
-      "name" : "TravelToHuntingGround",
-      "minDuration" : 1,
-      "maxDuration" : 1,
+      "name" : "Hunt",
+      "minDuration" : 4,
+      "maxDuration" : 6,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["HuntingGround", "Self"],
       "positivePreconditions" :
       [],
       "addedEffects" :
       [
-        {"Location" : ["HuntingGround", "Self"]}
+        {"Location" : ["HuntingGround", "Self"]},
+        {"Opinion" : ["AdjustOthers", "0.1", "HuntingGround", "Self"]},
+        {"Opinion" : ["Adjust", "-0.1", "HuntingGround", "Self"]}
       ],
       "subtractedEffects" :
       []
     },
     {
-      "name" : "Hunt",
+      "name" : "TrackPrey",
       "minDuration" : 2,
-      "maxDuration" : 4,
+      "maxDuration" : 3,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["Food", "HuntingGround", "Self"],
+      "params" : ["Food", "Self"],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"Location" : ["Same", "Food", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "KillPrey",
+      "minDuration" : 2,
+      "maxDuration" : 3,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Food", "Self"],
       "positivePreconditions" :
       [
         {"Health" : ["Alive", "Food"]},
-        {"Location" : ["HuntingGround", "Self"]},
-        {"Location" : ["HuntingGround", "Food"]}
+        {"Location" : ["Same", "Food", "Self"]}
       ],
       "addedEffects" :
       [
-        {"Health" : ["Dead", "Food"]}
+        {"Health" : ["Dead", "Food"]},
+        {"Opinion" : ["Remove", "Food", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -162,12 +181,27 @@
       "minDuration" : 2,
       "maxDuration" : 4,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["Goods", "HuntingGround", "Self"],
+      "params" : ["Goods", "Self"],
+      "positivePreconditions" :
+      [
+      ],
+      "addedEffects" :
+      [
+        {"Location" : ["Same", "Goods", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "Scavenge",
+      "minDuration" : 2,
+      "maxDuration" : 4,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Goods", "Self"],
       "positivePreconditions" :
       [
         {"Health" : ["Alive", "Goods"]},
-        {"Location" : ["HuntingGround", "Self"]},
-        {"Location" : ["HuntingGround", "Goods"]}
+        {"Location" : ["Same", "Goods", "Self"]}
       ],
       "addedEffects" :
       [
@@ -177,26 +211,9 @@
       []
     },
     {
-      "name" : "FindFood",
-      "minDuration" : 1,
-      "maxDuration" : 1,
-      "attributes" : [0.0,0.0,0.0],
-      "params" : ["Food", "Self"],
-      "positivePreconditions" :
-      [
-        {"Health" : ["Dead", "Food"]}
-      ],
-      "addedEffects" :
-      [
-        {"Opinion" : ["Adjust", "-0.1", "Food", "Self"]}
-      ],
-      "subtractedEffects" :
-      []
-    },
-    {
       "name" : "Sleep",
-      "minDuration" : 2,
-      "maxDuration" : 4,
+      "minDuration" : 8,
+      "maxDuration" : 10,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Home", "Self"],
       "positivePreconditions" :
@@ -234,8 +251,7 @@
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
       [
-        {"Location" : ["GuardPost", "Self"]},
-        {"Location" : ["GuardPost", "Outlaw"]},
+        {"Location" : ["Same", "Outlaw", "Self"]},
         {"Freedom" : ["Outlaw", "Apprehended"]}
       ],
       "addedEffects" :
@@ -256,8 +272,7 @@
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
       [
-        {"Location" : ["GuardPost", "Self"]},
-        {"Location" : ["GuardPost", "Outlaw"]}
+        {"Location" : ["Same", "Outlaw", "Self"]}
       ],
       "addedEffects" :
       [
@@ -275,8 +290,7 @@
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
       [
-        {"Location" : ["GuardPost", "Self"]},
-        {"Location" : ["GuardPost", "Outlaw"]}
+        {"Location" : ["Same", "Outlaw", "Self"]}
       ],
       "addedEffects" :
       [
@@ -293,8 +307,7 @@
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
       [
-        {"Location" : ["GuardPost", "Self"]},
-        {"Location" : ["GuardPost", "Outlaw"]}
+        {"Location" : ["Same", "Outlaw", "Self"]}
       ],
       "addedEffects" :
       [
@@ -314,7 +327,7 @@
     {
       "name" : "FishingTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToFishingSpot", "Fish", "FindFood"]
+      "actions" : ["TravelToFishingSpot", "Fish"]
     },
     {
       "name" : "SleepTemplate",
@@ -324,7 +337,7 @@
     {
       "name" : "HuntTemplate",
       "type" : "sequence",
-      "actions" : ["TravelToHuntingGround", "Hunt", "FindFood"]
+      "actions" : ["Hunt", "KillPrey"]
     },
     {
       "name" : "StandGuardTemplate",
@@ -389,12 +402,12 @@
         {
           "name" : "nap",
           "template" : "SleepTemplate",
-          "startTime" : 1
+          "startTime" : 3
         },
         {
-          "name" : "sell",
-          "template" : "SellGoodsTemplate",
-          "startTime" : 6
+          "name" : "hunt",
+          "template" : "HuntTemplate",
+          "startTime" : 8
         },
         {
           "name" : "nap",
@@ -402,8 +415,8 @@
           "startTime" : 14
         },
         {
-          "name" : "hunt",
-          "template" : "HuntTemplate",
+          "name" : "sell",
+          "template" : "SellGoodsTemplate",
           "startTime" : 20
         }
       ]

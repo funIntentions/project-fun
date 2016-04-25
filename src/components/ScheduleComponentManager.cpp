@@ -412,7 +412,6 @@ void ScheduleComponentManager::usePlanner(Entity entity, std::vector<int> precon
                         _data.queuedActions[instance.i].push_back(action->second->createActionInstance());
                     }
                 }
-
             }
         }
     }
@@ -422,47 +421,167 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
 {
     std::vector<int> state;
 
-    if ((_positionComponentManager->lookup(entity)).i != -1)
+    auto opinionMap = _opinionComponentManager->getOpinions(entity);
+    Opinion self;
+    self.entity = entity;
+    self.variance = 1.0;
+    opinionMap.insert({"Self", {self}});
+
+    for (auto opinions : opinionMap)
     {
-        Entity location = _positionComponentManager->getLocation(entity);
-        std::vector<std::string> categories = _typeComponentManager->getCategories(entity, location);
+        if (opinions.second.size() == 0)
+            continue;
 
-        for (auto category : categories)
+        Category entityCategory = opinions.first;
+        Entity known = opinions.second.front().entity;
+
+        if ((_positionComponentManager->lookup(known)).i != -1)
         {
-            PredicateTemplate predicateTemplate;
-            predicateTemplate.type = "Location";
-            predicateTemplate.params.push_back(category);
-            predicateTemplate.params.push_back("Self");
-
-            int id = _actionManager->getPredicateId(predicateTemplate);
-            if (id != -1)
-                state.push_back(id);
-            else
-                std::cout << "Predicate Unknown" << std::endl;
-        }
-    }
-
-    if ((_ownershipComponentManager->lookup(entity)).i != -1)
-    {
-        std::vector<Entity> belongings = _ownershipComponentManager->getBelongings(entity);
-        for (Entity belonging : belongings)
-        {
-            std::vector<std::string> categories = _typeComponentManager->getCategories(entity, belonging);
-            for (auto category : categories)
+            Entity entityLocation = _positionComponentManager->getLocation(entity);
+            Entity knownLocation = _positionComponentManager->getLocation(known);
+            if (entityLocation.id == knownLocation.id)
             {
                 PredicateTemplate predicateTemplate;
-                predicateTemplate.type = "Has";
-                predicateTemplate.params.push_back(category);
+                predicateTemplate.type = "Location";
+                predicateTemplate.params.push_back("Same");
+                predicateTemplate.params.push_back(entityCategory);
                 predicateTemplate.params.push_back("Self");
 
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
                 else
-                    std::cout << "Predicate Unknown" << std::endl;
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
+
+            Entity location = _positionComponentManager->getLocation(known);
+            std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
+
+            for (auto locationCategory : locationCategories)
+            {
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Location";
+                predicateTemplate.params.push_back(locationCategory);
+                predicateTemplate.params.push_back(entityCategory);
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
             }
         }
+
+        if ((_ownershipComponentManager->lookup(known)).i != -1)
+        {
+            if (_ownershipComponentManager->isOwnedBy(entity, known))
+            {
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Has";
+                predicateTemplate.params.push_back(entityCategory);
+                predicateTemplate.params.push_back("Self");
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
+        }
+
+        if ((_stateComponentManager->lookup(known)).i != -1)
+        {
+            State::Health health = _stateComponentManager->getHealth(known);
+
+            PredicateTemplate predicateTemplate;
+            predicateTemplate.type = "Health";
+            std::string healthParam = health == State::Alive ? "Alive" : "Dead";
+            predicateTemplate.params.push_back(healthParam);
+            predicateTemplate.params.push_back(entityCategory);
+
+            int id = _actionManager->getPredicateId(predicateTemplate);
+            if (id != -1)
+                state.push_back(id);
+            else
+                std::cout << "getState: Predicate Unknown" << std::endl;
+        }
     }
+
+    /*std::set<Entity> knowledge = _opinionComponentManager->getKnowledge(entity);
+    knowledge.insert(entity);
+
+    for (Entity known : knowledge)
+    {
+        std::vector<std::string> entityCategories = _typeComponentManager->getCategories(entity, known);
+
+        if ((_positionComponentManager->lookup(known)).i != -1)
+        {
+            Entity location = _positionComponentManager->getLocation(known);
+            std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
+
+            for (auto entityCategory : entityCategories)
+            {
+                for (auto locationCategory : locationCategories)
+                {
+                    PredicateTemplate predicateTemplate;
+                    predicateTemplate.type = "Location";
+                    predicateTemplate.params.push_back(locationCategory);
+                    predicateTemplate.params.push_back(entityCategory);
+
+                    int id = _actionManager->getPredicateId(predicateTemplate);
+                    if (id != -1)
+                        state.push_back(id);
+                    else
+                        std::cout << "getState: Predicate Unknown" << std::endl;
+                }
+            }
+        }
+
+        if ((_ownershipComponentManager->lookup(known)).i != -1)
+        {
+            std::vector<Entity> belongings = _ownershipComponentManager->getBelongings(known);
+            for (Entity belonging : belongings)
+            {
+                std::vector<std::string> belongingCategories = _typeComponentManager->getCategories(entity, belonging);
+                for (auto entityCategory : entityCategories)
+                {
+                    for (auto belongingCategory : belongingCategories)
+                    {
+                        PredicateTemplate predicateTemplate;
+                        predicateTemplate.type = "Has";
+                        predicateTemplate.params.push_back(belongingCategory);
+                        predicateTemplate.params.push_back(entityCategory);
+
+                        int id = _actionManager->getPredicateId(predicateTemplate);
+                        if (id != -1)
+                            state.push_back(id);
+                        else
+                            std::cout << "getState: Predicate Unknown" << std::endl;
+                    }
+                }
+            }
+        }
+
+        if ((_stateComponentManager->lookup(known)).i != -1)
+        {
+            State::Health health = _stateComponentManager->getHealth(known);
+
+            for (auto entityCategory : entityCategories)
+            {
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Health";
+                std::string healthParam = health == State::Alive ? "Alive" : "Dead";
+                predicateTemplate.params.push_back(healthParam);
+                predicateTemplate.params.push_back(entityCategory);
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
+        }
+    }*/
 
     return state;
 }
@@ -486,16 +605,42 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
 
         if (predicateTemplate.type == "Location")
         {
-            auto locationItr = action->mappedParameters.find(predicateTemplate.params[0]);
-            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
-            if (locationItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
-            {
-                Entity desiredLocation = locationItr->second;
-                Entity entity = entityItr->second;
-                Entity location = _positionComponentManager->getLocation(entity);
 
-                if (location.id != desiredLocation.id)
-                    return false;
+            std::string operationType = predicateTemplate.params[0];
+
+            if (operationType == "Same")
+            {
+                auto entityOneItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                auto entityTwoItr = action->mappedParameters.find(predicateTemplate.params[2]);
+                if (entityOneItr != action->mappedParameters.end() && entityTwoItr != action->mappedParameters.end())
+                {
+                    Entity entityOne = entityOneItr->second;
+                    Entity entityTwo = entityTwoItr->second;
+                    Entity entityOneLocation = _positionComponentManager->getLocation(entityOne);
+                    Entity entityTwoLocation = _positionComponentManager->getLocation(entityTwo);
+
+                    if (entityOneLocation.id != entityTwoLocation.id)
+                        return false;
+                }
+            }
+            else
+            {
+                std::string desiredCategory = predicateTemplate.params[0];
+                auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                if (entityItr != action->mappedParameters.end())
+                {
+                    Entity entity = entityItr->second;
+                    Entity location = _positionComponentManager->getLocation(entity);
+                    std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
+                    unsigned numLocationCategories = locationCategories.size();
+                    for (unsigned i = 0; i < locationCategories.size(); ++i)
+                    {
+                        if (locationCategories[i] == desiredCategory)
+                            break;
+                        else if (i+1 == numLocationCategories)
+                            return false;
+                    }
+                }
             }
         }
         else if (predicateTemplate.type == "Health")
@@ -544,18 +689,38 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
         if (predicateTemplate.type == "Location")
         {
-            auto locationItr = action->mappedParameters.find(predicateTemplate.params[0]);
-            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
-            if (locationItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
+            std::string operationType = predicateTemplate.params[0];
+            if (operationType == "Same")
             {
-                Entity desiredLocation = locationItr->second;
-                Entity entity = entityItr->second;
+                auto entityOneItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                auto entityTwoItr = action->mappedParameters.find(predicateTemplate.params[2]);
+                if (entityOneItr != action->mappedParameters.end() && entityTwoItr != action->mappedParameters.end())
+                {
+                    Entity entityOne = entityOneItr->second;
+                    Entity entityTwo = entityTwoItr->second;
+                    Entity desiredLocation = _positionComponentManager->getLocation(entityOne);
 
-                _positionComponentManager->changeLocation(entity, desiredLocation);
-                storyLogger.logEvent(time, {"travelled to"}, {entity, desiredLocation});
+                    _positionComponentManager->changeLocation(entityTwo, desiredLocation);
+                    storyLogger.logEvent(time, {"travelled to"}, {entityTwo, desiredLocation});
+                }
+                else
+                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
             }
             else
-                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            {
+                auto locationItr = action->mappedParameters.find(predicateTemplate.params[0]);
+                auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                if (locationItr != action->mappedParameters.end() && entityItr != action->mappedParameters.end())
+                {
+                    Entity desiredLocation = locationItr->second;
+                    Entity entity = entityItr->second;
+
+                    _positionComponentManager->changeLocation(entity, desiredLocation);
+                    storyLogger.logEvent(time, {"travelled to"}, {entity, desiredLocation});
+                }
+                else
+                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            }
         }
         else if (predicateTemplate.type == "Health")
         {
@@ -584,6 +749,18 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
         else if (predicateTemplate.type == "Opinion")
         {
             std::string operationType = predicateTemplate.params[0];
+
+            if (operationType == "Remove")
+            {
+                auto entityItr = action->mappedParameters.find(predicateTemplate.params[2]);
+                auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+
+                Entity entity = entityItr->second;
+
+                _opinionComponentManager->removeOpinion(entity, predicateTemplate.params[1]);
+                continue;
+            }
+
             auto entityItr = action->mappedParameters.find(predicateTemplate.params[3]);
             auto opinionEntityItr = action->mappedParameters.find(predicateTemplate.params[2]);
 

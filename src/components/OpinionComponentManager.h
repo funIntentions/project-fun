@@ -10,6 +10,7 @@
 #include <fstream>
 #include <algorithm>
 #include <rapidjson/document.h>
+#include <util/Extra.h>
 #include "AttributeComponentManager.h"
 #include "TypeComponentManager.h"
 
@@ -30,6 +31,7 @@ private:
         unsigned size;
         std::vector<Entity> entity;
         std::vector<std::unordered_map<Category, std::vector<Opinion>>> opinions;
+        std::vector<std::set<Entity>> knowledge;
     };
 
     InstanceData _data;
@@ -50,10 +52,37 @@ public:
 
         _data.entity.push_back(entity);
         _data.opinions.push_back(std::unordered_map<Category, std::vector<Opinion>>());
+        _data.knowledge.push_back(std::set<Entity>());
 
         addKnowledge(entity, knowledge);
 
         ++_data.size;
+    }
+
+    std::set<Entity> getKnowledge(Entity entity)
+    {
+        Instance instance = lookup(entity);
+        assert (instance.i != -1);
+
+        return _data.knowledge[instance.i];
+    }
+
+    std::unordered_map<Category, std::vector<Opinion>> getOpinions(Entity entity)
+    {
+        Instance instance = lookup(entity);
+        assert(instance.i != -1);
+        return _data.opinions[instance.i];
+    }
+
+    void removeOpinion(Entity entity, Category category)
+    {
+        Instance instance = lookup(entity);
+        auto opinions = _data.opinions[instance.i].find(category);
+
+        if (opinions != _data.opinions[instance.i].end() && opinions->second.size() > 0)
+        {
+            opinions->second.erase(opinions->second.begin());
+        }
     }
 
     std::vector<Opinion> getOpinions(Entity entity, Category category)
@@ -154,8 +183,18 @@ public:
 
     void addKnowledge(Entity entity, std::vector<Entity> knowledge)
     {
+        Instance instance = lookup(entity);
+        if (instance.i == -1) return;
+
         for (Entity known : knowledge)
         {
+            if (_data.knowledge[instance.i].find(known) != _data.knowledge[instance.i].end())
+            {
+                std::cout << "Entity already known: " + to_string(known.id) << std::endl;
+                continue;
+            }
+
+            _data.knowledge[instance.i].insert(known);
             assignToCategory(entity, known);
         }
     }
@@ -168,22 +207,10 @@ public:
         std::vector<Category> categories = _typeComponentManager->getCategories(entity, otherEntity);
         for (Category category : categories)
         {
-            std::vector<Opinion> categoryOpinions = opinionMap[category];
-
-            int i = 0;
-            unsigned opinionCount = categoryOpinions.size();
-            for (; i < opinionCount; ++i)
-            {
-                Opinion existingOpinion = categoryOpinions[i];
-                if (existingOpinion.entity.id == otherEntity.id)
-                    break;
-            }
-            if (i == opinionCount) // doesn't exist yet
-            {
-                float variance = 0.0f;
-                opinionMap[category].push_back({variance, otherEntity});
-                std::sort(opinionMap[category].begin(), opinionMap[category].end(), sortOpinionsByVariance);
-            }
+            std::cout << "Adding opinion: " + to_string(otherEntity.id) + "in category: " + category << std::endl;
+            float variance = 0.0f;
+            opinionMap[category].push_back({variance, otherEntity});
+            std::sort(opinionMap[category].begin(), opinionMap[category].end(), sortOpinionsByVariance);
         }
     }
 
@@ -195,12 +222,14 @@ public:
 
         _data.entity[i] = _data.entity[last];
         _data.opinions[i] = _data.opinions[last];
+        _data.knowledge[i] = _data.knowledge[last];
 
         _map[last_e.index()] =  i;
         _map.erase(e.index());
 
         _data.entity.pop_back();
         _data.opinions.pop_back();
+        _data.knowledge.pop_back();
 
         --_data.size;
     }

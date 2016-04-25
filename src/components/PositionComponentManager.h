@@ -51,9 +51,7 @@ public:
     {
         Instance inst = lookup(entity);
         _locationComponentManger->removeLocalEntity(_data.location[inst.i], entity);
-        std::cout << "old location: " << _locationComponentManger->getLocationName(_data.location[inst.i]) << std::endl;
         _locationComponentManger->addLocalEntity(location, entity);
-        std::cout << "new location: " << _locationComponentManger->getLocationName(location) << std::endl << std::endl;
         _data.location[inst.i] = location;
 
         updateKnowledge(entity, location);
