@@ -79,7 +79,7 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
             assert(attributes.Size() == Attribute::NumberOfAttributes);
             action->attributes[Attribute::AGGRESSION] = attributes[Attribute::AGGRESSION].GetFloat();
             action->attributes[Attribute::CHARM] = attributes[Attribute::CHARM].GetFloat();
-            action->attributes[Attribute::GREED] = attributes[Attribute::GREED].GetFloat();
+            action->attributes[Attribute::INTELLIGENCE] = attributes[Attribute::INTELLIGENCE].GetFloat();
         }
 
         member_itr = action_itr->FindMember("params");
@@ -381,12 +381,7 @@ void ScheduleComponentManager::usePlanner(Entity entity, std::vector<int> precon
 {
     Instance instance = lookup(entity);
 
-    std::vector<Operator> ops;
-
-    for (auto op : operators)
-    {
-        ops.push_back(*(op.get()));
-    }
+    std::vector<Operator> ops = _attributeComponentManager->sortActionOperations(actions, entity);
 
     Operator start;
     start.addedEffects = getState(entity);
@@ -491,19 +486,50 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
 
         if ((_stateComponentManager->lookup(known)).i != -1)
         {
-            State::Health health = _stateComponentManager->getHealth(known);
+            {
+                State::Health health = _stateComponentManager->getHealth(known);
 
-            PredicateTemplate predicateTemplate;
-            predicateTemplate.type = "Health";
-            std::string healthParam = health == State::Alive ? "Alive" : "Dead";
-            predicateTemplate.params.push_back(healthParam);
-            predicateTemplate.params.push_back(entityCategory);
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Health";
+                std::string healthParam = health == State::Alive ? "Alive" : "Dead";
+                predicateTemplate.params.push_back(healthParam);
+                predicateTemplate.params.push_back(entityCategory);
 
-            int id = _actionManager->getPredicateId(predicateTemplate);
-            if (id != -1)
-                state.push_back(id);
-            else
-                std::cout << "getState: Predicate Unknown" << std::endl;
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
+
+            {
+                State::Activity activity = _stateComponentManager->getState(known);
+
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "State";
+                std::string stateParam;
+                if (activity == State::Activity::Fishing)
+                {
+                    stateParam = "Fishing";
+                }
+                else if (activity == State::Activity::Hooked)
+                {
+                    stateParam = "Hooked";
+                }
+                else
+                {
+                    stateParam = "None";
+                }
+
+                predicateTemplate.params.push_back(stateParam);
+                predicateTemplate.params.push_back(entityCategory);
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
         }
     }
 
@@ -659,6 +685,24 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
                     return false;
             }
         }
+        else if (predicateTemplate.type == "State")
+        {
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (entityItr != action->mappedParameters.end())
+            {
+                std::string desiredState = predicateTemplate.params[0];
+                Entity entity = entityItr->second;
+                if (_stateComponentManager->lookup(entity).i < 0)
+                    return false;
+
+                State::Activity state = _stateComponentManager->getState(entity);
+
+                if (!(state == State::Activity::Fishing && "Fishing" == desiredState
+                      || state == State::Activity::Hooked && "Hooked" == desiredState
+                      || state == State::Activity::None && "None" == desiredState))
+                    return false;
+            }
+        }
         else if (predicateTemplate.type == "Has")
         {
             auto belongingItr = action->mappedParameters.find(predicateTemplate.params[0]);
@@ -746,6 +790,28 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
             else
                 std::cout << "Error: Parameter Mapping Not Found" << std::endl;
         }
+        else if (predicateTemplate.type == "State")
+        {
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+            if (entityItr != action->mappedParameters.end())
+            {
+                std::string newState = predicateTemplate.params[0];
+                Entity entity = entityItr->second;
+
+                if (newState == "Fishing")
+                {
+                    _stateComponentManager->setState(entity, State::Activity::Fishing);
+                }
+                else if (newState == "Hooked")
+                {
+                    _stateComponentManager->setState(entity, State::Activity::Hooked);
+                }
+                else
+                {
+                    _stateComponentManager->setState(entity, State::Activity::None);
+                }
+            }
+        }
         else if (predicateTemplate.type == "Opinion")
         {
             std::string operationType = predicateTemplate.params[0];
@@ -786,8 +852,6 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
             {
                 _opinionComponentManager->adjustOpinionVariance(entity, predicateTemplate.params[2], opinionEntity, value);
             }
-
-            //storyLogger.logEvent(time, {"opinion of " + predicateTemplate.params[2] + " has changed."}, {entity});
         }
         else if (predicateTemplate.type == "Has")
         {

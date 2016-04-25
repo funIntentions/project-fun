@@ -17,22 +17,80 @@
       []
     },
     {
-      "name" : "Fish",
+      "name" : "BaitHook",
+      "minDuration" : 1,
+      "maxDuration" : 1.5,
+      "attributes" : [0.1,0.0,0.8],
+      "params" : ["FishingBait", "Self"],
+      "positivePreconditions" :
+      [
+        {"Health" : ["Alive", "FishingBait"]},
+        {"Has" : ["FishingBait", "Self"]}
+      ],
+      "addedEffects" :
+      [
+        {"Health" : ["Dead", "FishingBait"]},
+        {"Opinion" : ["Remove", "FishingBait", "Self"]},
+        {"State" : ["Hooked", "FishingBait"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "CatchFish",
+      "minDuration" : 4,
+      "maxDuration" : 10,
+      "attributes" : [0.1,0.3,0.5],
+      "params" : ["Water", "FishingBait", "Food", "Self"],
+      "positivePreconditions" :
+      [
+        {"Health" : ["Alive", "Food"]},
+        {"Location" : ["Water", "Self"]},
+        {"Location" : ["Same", "Food", "Self"]},
+        {"State" : ["Hooked", "FishingBait"]}
+      ],
+      "addedEffects" :
+      [
+        {"Health" : ["Dead", "Food"]},
+        {"Has" : ["Food", "Self"]},
+        {"Opinion" : ["Remove", "Food", "Self"]},
+        {"State" : ["Fishing", "Self"]},
+        {"State" : ["None", "FishingBait"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "CatchNothing",
       "minDuration" : 4,
       "maxDuration" : 10,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Water", "Food", "Self"],
       "positivePreconditions" :
       [
-        {"Health" : ["Alive", "Food"]},
         {"Location" : ["Water", "Self"]},
         {"Location" : ["Same", "Food", "Self"]}
       ],
       "addedEffects" :
       [
-        {"Health" : ["Dead", "Food"]},
-        {"Has" : ["Food", "Self"]},
-        {"Opinion" : ["Remove", "Food", "Self"]}
+        {"State" : ["Fishing", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "Fish",
+      "minDuration" : 0,
+      "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Self"],
+      "positivePreconditions" :
+      [
+        {"State" : ["Fishing", "Self"]}
+      ],
+      "addedEffects" :
+      [
+        {"State" : ["None", "Self"]}
       ],
       "subtractedEffects" :
       []

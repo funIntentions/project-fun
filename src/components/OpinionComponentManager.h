@@ -23,7 +23,7 @@ struct Opinion
     Entity entity;
 };
 
-class OpinionComponentManager : ComponentManager
+class OpinionComponentManager : public ComponentManager
 {
 private:
     struct InstanceData

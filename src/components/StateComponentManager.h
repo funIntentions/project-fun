@@ -16,6 +16,12 @@ struct State
         Alive,
         Dead
     };
+    enum Activity
+    {
+        None,
+        Fishing,
+        Hooked,
+    };
 };
 
 class StateComponentManager : public ComponentManager
@@ -26,6 +32,7 @@ private:
         unsigned size;
         std::vector<Entity> entity;
         std::vector<State::Health> health;
+        std::vector<State::Activity> state;
     };
 
     InstanceData _data;
@@ -36,9 +43,13 @@ public:
 
     State::Health getHealth(Entity entity);
 
+    State::Activity getState(Entity entity);
+
     void setHealth(Entity entity, State::Health);
 
-    void spawnComponent(Entity entity, State::Health health);
+    void setState(Entity entity, State::Activity);
+
+    void spawnComponent(Entity entity, State::Health health, State::Activity state);
 
     void destroy(unsigned i);
 };

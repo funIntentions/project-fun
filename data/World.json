@@ -47,6 +47,10 @@
           "type" : ["Market"]
         },
         {
+          "category" : "FishingBait",
+          "type" : ["Grub"]
+        },
+        {
           "category" : "SellingSpot",
           "type" : ["Village"]
         },
@@ -65,7 +69,7 @@
       "associations" : []
     },
     {
-      "group" : "FishingBait",
+      "group" : "Grub",
       "associations" : []
     },
     {
@@ -82,11 +86,11 @@
         },
         {
           "category" : "Goods",
-          "type" : ["FishingBait"]
+          "type" : ["Grub"]
         },
         {
           "category" : "Buyer",
-          "type" : ["Fisher", "Market"]
+          "type" : ["Fisher"]
         },
         {
           "category" : "SellingSpot",
@@ -278,7 +282,7 @@
         },
         {
           "name" : "attribute",
-          "value" : [0.0,0.0,0.0]
+          "value" : [0.2,0.2,0.6]
         },
         {
           "name" : "position",
@@ -300,7 +304,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves", "Sal"]
+          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves"]
         },
         {
           "name" : "schedule",
@@ -389,11 +393,19 @@
       [
         {
           "name" : "type",
-          "value" : ["FishingBait"]
+          "value" : ["Grub"]
         },
         {
           "name" : "position",
           "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership",
+          "value" : "Sal"
         }
       ]
     },
@@ -403,11 +415,18 @@
       [
         {
           "name" : "type",
-          "value" : ["FishingBait"]
+          "value" : ["Grub"]
         },
         {
           "name" : "position",
           "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
         }
       ]
     },
@@ -417,11 +436,18 @@
       [
         {
           "name" : "type",
-          "value" : ["FishingBait"]
+          "value" : ["Grub"]
         },
         {
           "name" : "position",
           "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
         }
       ]
     }

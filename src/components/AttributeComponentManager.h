@@ -75,6 +75,7 @@ public:
             int actionId = actionPair.first;
 
             float preference = calculatePreference(action->attributes, attributes);
+            action->actionOperator->score = preference;
             operatorPreferences.push_back({preference, actionId});
         }
 

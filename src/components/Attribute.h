@@ -9,7 +9,7 @@ enum Attribute
 {
     AGGRESSION,
     CHARM,
-    GREED,
+    INTELLIGENCE,
     NumberOfAttributes
 };
 

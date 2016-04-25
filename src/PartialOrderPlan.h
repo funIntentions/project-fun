@@ -14,19 +14,17 @@
 #include <queue>
 #include <string>
 
-// TODO: rename Operator to step
 struct Operator
 {
     std::string name;
     unsigned id;
+    float score;
     std::vector<int> preconditions;
     std::vector<int> addedEffects;
     std::vector<int> subtractedEffects;
 
-    Operator(std::string op = "") : name(op)
-    {
-        id = 0;
-    }
+    Operator(std::string op = "") : name(op), id(0), score(0)
+    { }
 
     bool operator==(const Operator& other) const
     {
@@ -112,7 +110,19 @@ struct ComparePlans
 {
     bool operator()(PartialOrderPlan const &plan1, PartialOrderPlan const &plan2)
     {
-        return (plan1.steps.size() > plan2.steps.size());
+        float sum1 = 0;
+        float sum2 = 0;
+
+        for (auto stepPair : plan1.steps)
+            sum1 += stepPair.second.score;
+
+        for (auto stepPair : plan2.steps)
+            sum2 += stepPair.second.score;
+
+        if (sum1 == sum2)
+            return (plan1.steps.size() > plan2.steps.size());
+
+        return (sum1 > sum2);
     }
 };
 

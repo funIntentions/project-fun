@@ -32,7 +32,7 @@ public:
                     _opinionComponentManager(new OpinionComponentManager(_attributeComponentManager, _typeComponentManager)),
                     _positionComponentManager(new PositionComponentManager(_locationComponentManager, _opinionComponentManager)),
                     _actionManager(new ActionManager),
-                    _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),
+                    _ownershipComponentManager(new OwnershipComponentManager(_actionManager, _opinionComponentManager)),
                     _scheduleComponentManager(new ScheduleComponentManager(_actionManager,
                                                                            _typeComponentManager,
                                                                            _opinionComponentManager,
@@ -170,9 +170,9 @@ private:
                         assert(componentValue->value.IsString());
                         std::string health = componentValue->value.GetString();
                         if (health == "Alive")
-                            _stateComponentManager->spawnComponent(*entity, State::Health::Alive);
+                            _stateComponentManager->spawnComponent(*entity, State::Health::Alive, State::Activity::None);
                         else
-                            _stateComponentManager->spawnComponent(*entity, State::Health::Dead);
+                            _stateComponentManager->spawnComponent(*entity, State::Health::Dead, State::Activity::None);
                     }
                     else if (name == "ownership")
                     {
@@ -198,12 +198,12 @@ private:
                         assert(attributes.Size() == Attribute::NumberOfAttributes);
                         float aggression = attributes[0].GetFloat();
                         float charm = attributes[1].GetFloat();
-                        float greed = attributes[2].GetFloat();
+                        float intelligence = attributes[2].GetFloat();
 
                         _attributeComponentManager->spawnComponent(*entity);
                         _attributeComponentManager->setAttribute(*entity, Attribute::AGGRESSION, aggression);
-                        _attributeComponentManager->setAttribute(*entity, Attribute::GREED, charm);
-                        _attributeComponentManager->setAttribute(*entity, Attribute::CHARM, greed);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::CHARM, charm);
+                        _attributeComponentManager->setAttribute(*entity, Attribute::INTELLIGENCE, intelligence);
                     }
                     else if (name == "type")
                     {

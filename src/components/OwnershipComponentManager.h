@@ -11,6 +11,7 @@
 #include <ComponentManager.h>
 #include <unordered_set>
 #include <set>
+#include "OpinionComponentManager.h"
 
 class OwnershipComponentManager : public ComponentManager {
 private:
@@ -23,12 +24,13 @@ private:
     };
 
     InstanceData _data;
-    std::shared_ptr<ActionManager> _actionManager;
     std::unordered_map<unsigned, std::set<Entity>> ownership;
+    std::shared_ptr<ActionManager> _actionManager;
+    std::shared_ptr<OpinionComponentManager> _opinionComponentManager;
 
 public:
 
-    OwnershipComponentManager(std::shared_ptr<ActionManager> actionManager) : _actionManager(actionManager)
+    OwnershipComponentManager(std::shared_ptr<ActionManager> actionManager, std::shared_ptr<OpinionComponentManager> opinionComponentManager) : _actionManager(actionManager), _opinionComponentManager(opinionComponentManager)
     {
             _data.size = 0;
     }
@@ -71,6 +73,9 @@ public:
             }
 
             ownership[entity.id].insert(belonging);
+
+            if (_opinionComponentManager->lookup(entity).i != -1)
+                _opinionComponentManager->addKnowledge(entity, {belonging});
 
             _data.owner[instance.i] = entity;
             _data.owned[instance.i] = true;
