@@ -340,7 +340,7 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
     for (unsigned i = 0; i < _data.size; ++i)
     {
         Entity entity = _data.entity[i];
-        if (_stateComponentManager->lookup(entity).i != -1 && _stateComponentManager->getHealth(entity) == State::Health::Dead) // is Dead?
+        if (_stateComponentManager->lookup(entity).i != -1 && _stateComponentManager->getHealth(entity) == State::Health::Dead) // Do not run schedules for the dead
         {
             _data.queuedActions[i].clear();
             storyLogger.logState(entity, "Dead", _data.queuedActions[i]);
@@ -364,7 +364,6 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
         mapParameters(_data.entity[i], _data.queuedActions[i].back());
         if (!preconditionsMet(_data.queuedActions[i].back()))
         {
-            //std::cout << "Preconditions Not Met" << std::endl;
             usePlanner(_data.entity[i], _data.queuedActions[i].back()->getPreconditions());
             storyLogger.logState(entity, _data.currentSchedule[i]->getName(), _data.queuedActions[i]);
         }

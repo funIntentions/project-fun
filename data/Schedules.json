@@ -304,8 +304,8 @@
     },
     {
       "name" : "NoOutlawToConfront",
-      "minDuration" : 1,
-      "maxDuration" : 2,
+      "minDuration" : 0.5,
+      "maxDuration" : 1,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Outlaw", "Self"],
       "positivePreconditions" :

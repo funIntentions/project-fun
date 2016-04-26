@@ -223,6 +223,36 @@
       ]
     },
     {
+      "name" : "Swamp Monster",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Merfolk"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Merfolk"
+        },
+        {
+          "name" : "attribute",
+          "value" : [1.0,1.0,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Blue Daemon Caves"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
       "name" : "Tony",
       "components" :
       [
@@ -232,7 +262,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison", "Swamp Monster"]
         },
         {
           "name" : "schedule",
@@ -262,7 +292,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison", "Swamp Monster"]
         },
         {
           "name" : "schedule",
@@ -305,36 +335,6 @@
         {
           "name" : "position",
           "value" : "Village of Swigmire"
-        },
-        {
-          "name" : "state",
-          "value" : "Alive"
-        }
-      ]
-    },
-    {
-      "name" : "Swamp Monster",
-      "components" :
-      [
-        {
-          "name" : "type",
-          "value" : ["Merfolk"]
-        },
-        {
-          "name" : "opinion",
-          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves"]
-        },
-        {
-          "name" : "schedule",
-          "value" : "Merfolk"
-        },
-        {
-          "name" : "attribute",
-          "value" : [1.0,1.0,0.0]
-        },
-        {
-          "name" : "position",
-          "value" : "Blue Daemon Caves"
         },
         {
           "name" : "state",

@@ -9,6 +9,8 @@
 #include <memory>
 #include <EntityManager.h>
 #include <iomanip>
+#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <schedules/ActionInstance.h>
 
@@ -37,12 +39,23 @@ struct StoryLogger
 private:
     std::shared_ptr<EntityManager> _entityManager;
     unsigned _eventLimit;
+    std::ofstream _logFile;
 public:
     std::vector<EventLog> events;
     std::unordered_map<unsigned, StateLog> states;
 
-    StoryLogger(std::shared_ptr<EntityManager> entityManager, unsigned limit = 30) : _entityManager(entityManager), _eventLimit(limit)
-    { }
+
+    StoryLogger(std::shared_ptr<EntityManager> entityManager, unsigned limit = 30) : _entityManager(entityManager), _eventLimit(limit), _logFile("StoryLog.txt")
+    {
+        if (_logFile.is_open())
+            _logFile.clear();
+    }
+
+    ~StoryLogger()
+    {
+        if (_logFile.is_open())
+            _logFile.close();
+    }
 
     void logEvent(double time, std::vector<std::string> description, std::vector<Entity> entities)
     {
@@ -66,6 +79,11 @@ public:
             {
                 log.description += ' ' + _entityManager->getName(entities[i + 1]);
             }
+        }
+
+        if (_logFile.is_open())
+        {
+            _logFile << log.time << ": " << log.description << std::endl;
         }
 
         events.insert(events.begin(), log);
