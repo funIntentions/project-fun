@@ -21,6 +21,8 @@ struct State
         None,
         Fishing,
         Hooked,
+        Apprehended,
+        Confronted,
     };
 };
 

@@ -448,6 +448,20 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 else
                     std::cout << "getState: Predicate Unknown" << std::endl;
             }
+            else
+            {
+                PredicateTemplate predicateTemplate;
+                predicateTemplate.type = "Location";
+                predicateTemplate.params.push_back("Different");
+                predicateTemplate.params.push_back(entityCategory);
+                predicateTemplate.params.push_back("Self");
+
+                int id = _actionManager->getPredicateId(predicateTemplate);
+                if (id != -1)
+                    state.push_back(id);
+                else
+                    std::cout << "getState: Predicate Unknown" << std::endl;
+            }
 
             Entity location = _positionComponentManager->getLocation(known);
             std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
@@ -508,6 +522,7 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 PredicateTemplate predicateTemplate;
                 predicateTemplate.type = "State";
                 std::string stateParam;
+
                 if (activity == State::Activity::Fishing)
                 {
                     stateParam = "Fishing";
@@ -515,6 +530,14 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 else if (activity == State::Activity::Hooked)
                 {
                     stateParam = "Hooked";
+                }
+                else if (activity == State::Activity::Apprehended)
+                {
+                    stateParam = "Apprehended";
+                }
+                else if (activity == State::Activity::Confronted)
+                {
+                    stateParam = "Confronted";
                 }
                 else
                 {
@@ -649,6 +672,21 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
                         return false;
                 }
             }
+            else if (operationType == "Different")
+            {
+                auto entityOneItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                auto entityTwoItr = action->mappedParameters.find(predicateTemplate.params[2]);
+                if (entityOneItr != action->mappedParameters.end() && entityTwoItr != action->mappedParameters.end())
+                {
+                    Entity entityOne = entityOneItr->second;
+                    Entity entityTwo = entityTwoItr->second;
+                    Entity entityOneLocation = _positionComponentManager->getLocation(entityOne);
+                    Entity entityTwoLocation = _positionComponentManager->getLocation(entityTwo);
+
+                    if (entityOneLocation.id == entityTwoLocation.id)
+                        return false;
+                }
+            }
             else
             {
                 std::string desiredCategory = predicateTemplate.params[0];
@@ -699,6 +737,8 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
 
                 if (!(state == State::Activity::Fishing && "Fishing" == desiredState
                       || state == State::Activity::Hooked && "Hooked" == desiredState
+                      || state == State::Activity::Apprehended && "Apprehended" == desiredState
+                      || state == State::Activity::Confronted && "Confronted" == desiredState
                       || state == State::Activity::None && "None" == desiredState))
                     return false;
             }
@@ -806,6 +846,14 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 {
                     _stateComponentManager->setState(entity, State::Activity::Hooked);
                 }
+                else if (newState == "Apprehended")
+                {
+                    _stateComponentManager->setState(entity, State::Activity::Apprehended);
+                }
+                else if (newState == "Confronted")
+                {
+                    _stateComponentManager->setState(entity, State::Activity::Confronted);
+                }
                 else
                 {
                     _stateComponentManager->setState(entity, State::Activity::None);
@@ -878,6 +926,33 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 Entity location = locationItr->second;
 
                 storyLogger.logEvent(time, {"is sleeping at"}, {entity, location});
+            }
+        }
+        else if (predicateTemplate.type == "Schedule")
+        {
+            auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+
+            auto scheduleId = scheduleNameToIdMap.find(predicateTemplate.params[0]);
+            if (scheduleId != scheduleNameToIdMap.end() && entityItr != action->mappedParameters.end())
+            {
+                Entity entity = entityItr->second;
+                Instance instance = lookup(entity);
+
+                auto scheduleItr = schedules.find(scheduleId->second);
+
+                if (scheduleItr != schedules.end())
+                {
+                    ScheduleInstance* oldSchedule = _data.currentSchedule[instance.i];
+                    delete oldSchedule;
+                    _data.queuedActions[instance.i].clear();
+
+                    Schedule* schedule = scheduleItr->second;
+                    ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
+                    scheduleInstance->chooseEntryForTime(0.0);
+                    _data.currentSchedule[instance.i] = scheduleInstance;
+                    _data.queuedActions[instance.i].push_back(_data.currentSchedule[instance.i]->chooseNewAction());
+                    storyLogger.logState(entity, _data.currentSchedule[instance.i]->getName(), _data.queuedActions[instance.i]);
+                }
             }
         }
         else

@@ -31,6 +31,10 @@
         {
           "category" : "GuardPost",
           "type" : ["Village", "Lake", "Swamp", "Forest", "Meadow"]
+        },
+        {
+          "category" : "Prison",
+          "type" : ["Jail"]
         }
       ]
     },
@@ -191,6 +195,20 @@
       ]
     },
     {
+      "name" : "Swigmire Prison",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Jail"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
       "name" : "Fish Market",
       "components" :
       [
@@ -214,7 +232,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison"]
         },
         {
           "name" : "schedule",
@@ -222,7 +240,7 @@
         },
         {
           "name" : "attribute",
-          "value" : [0.0,0.0,0.0]
+          "value" : [0.0,0.1,0.0]
         },
         {
           "name" : "position",
@@ -244,7 +262,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon"]
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison"]
         },
         {
           "name" : "schedule",
@@ -252,7 +270,7 @@
         },
         {
           "name" : "attribute",
-          "value" : [1.0,0.0,0.0]
+          "value" : [0.5,0.0,0.0]
         },
         {
           "name" : "position",
@@ -404,8 +422,7 @@
           "value" : "Alive"
         },
         {
-          "name" : "ownership",
-          "value" : "Sal"
+          "name" : "ownership"
         }
       ]
     },

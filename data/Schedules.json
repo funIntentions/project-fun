@@ -289,14 +289,32 @@
       "name" : "ConfrontOutlaw",
       "minDuration" : 1,
       "maxDuration" : 2,
-      "attributes" : [0.5,0.0,0.0],
-      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Outlaw", "Self"],
       "positivePreconditions" :
       [
-        {"Confronted" : ["Self", "Outlaw"]}
+        {"State" : ["Confronted", "Self"]}
       ],
       "addedEffects" :
       [
+        {"State" : ["None", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "NoOutlawToConfront",
+      "minDuration" : 1,
+      "maxDuration" : 2,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Outlaw", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["Different", "Outlaw", "Self"]}
+      ],
+      "addedEffects" :
+      [
+        {"State" : ["Confronted", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -304,20 +322,20 @@
     {
       "name" : "ArrestOutlaw",
       "minDuration" : 1,
-      "maxDuration" : 2,
+      "maxDuration" : 1.4,
       "attributes" : [0.5,0.0,0.0],
-      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "params" : ["Outlaw", "Prison", "Self"],
       "positivePreconditions" :
       [
         {"Location" : ["Same", "Outlaw", "Self"]},
-        {"Freedom" : ["Outlaw", "Apprehended"]}
+        {"State" : ["Apprehended", "Outlaw"]}
       ],
       "addedEffects" :
       [
         {"Schedule" : ["Prisoner", "Outlaw"]},
         {"Location" : ["Prison", "Outlaw"]},
-        {"Freedom" : ["Outlaw", "Arrested"]},
-        {"Confronted" : ["Self", "Outlaw"]}
+        {"State" : ["Confronted", "Self"]},
+        {"State" : ["None", "Outlaw"]}
       ],
       "subtractedEffects" :
       []
@@ -325,17 +343,18 @@
     {
       "name" : "WarnOutlaw",
       "minDuration" : 1,
-      "maxDuration" : 2,
+      "maxDuration" : 1.2,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
+      "params" : ["GuardPost", "Outlaw", "Self"],
       "positivePreconditions" :
       [
+        {"Location" : ["GuardPost", "Self"]},
         {"Location" : ["Same", "Outlaw", "Self"]}
       ],
       "addedEffects" :
       [
-        {"Opinion" : ["AdjustForAll", "-0.5", "GuardPost", "Outlaw"]},
-        {"Confronted" : ["Self", "Outlaw"]}
+        {"Opinion" : ["Adjust", "-1.0", "GuardPost", "Outlaw"]},
+        {"State" : ["Confronted", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -343,7 +362,7 @@
     {
       "name" : "ZapOutlaw",
       "minDuration" : 1,
-      "maxDuration" : 2,
+      "maxDuration" : 1.1,
       "attributes" : [1.0,0.0,0.0],
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
@@ -352,7 +371,7 @@
       ],
       "addedEffects" :
       [
-        {"Freedom" : ["Apprehended", "Outlaw"]}
+        {"State" : ["Apprehended", "Outlaw"]}
       ],
       "subtractedEffects" :
       []
@@ -360,7 +379,7 @@
     {
       "name" : "HandcuffOutlaw",
       "minDuration" : 1,
-      "maxDuration" : 2,
+      "maxDuration" : 1.2,
       "attributes" : [0.4,0.0,0.0],
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
@@ -369,7 +388,23 @@
       ],
       "addedEffects" :
       [
-        {"Freedom" : ["Apprehended", "Outlaw"]}
+        {"State" : ["Apprehended", "Outlaw"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "ServeTime",
+      "minDuration" : 10,
+      "maxDuration" : 20,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["Prison", "Self"]}
+      ],
+      "addedEffects" :
+      [
       ],
       "subtractedEffects" :
       []
@@ -379,7 +414,7 @@
   [
     {
       "name" : "SellGoodsTemplate",
-      "type" : "sequence",
+      "type" : "simple",
       "actions" : ["SellGoods"]
     },
     {
@@ -399,8 +434,13 @@
     },
     {
       "name" : "StandGuardTemplate",
+      "type" : "sequence",
+      "actions" : ["StandAtGuardPost", "ConfrontOutlaw"]
+    },
+    {
+      "name" : "PrisonerTemplate",
       "type" : "simple",
-      "actions" : ["StandAtGuardPost"]
+      "actions" : ["ServeTime"]
     }
   ],
   "schedules" :
@@ -450,6 +490,17 @@
           "name" : "evening",
           "template" : "SleepTemplate",
           "startTime" : 20
+        }
+      ]
+    },
+    {
+      "name" : "Prisoner",
+      "entries" :
+      [
+        {
+          "name" : "allDay",
+          "template" : "PrisonerTemplate",
+          "startTime" : 0
         }
       ]
     },
