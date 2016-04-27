@@ -13,6 +13,7 @@
 #include <util/Extra.h>
 #include "AttributeComponentManager.h"
 #include "TypeComponentManager.h"
+#include "demo/StoryLogger.h"
 
 typedef std::string Category;
 typedef std::string Type;
@@ -37,11 +38,13 @@ private:
     InstanceData _data;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
     std::shared_ptr<TypeComponentManager> _typeComponentManager;
+    std::shared_ptr<StoryLogger> _storyLogger;
+
     float _highestVariance = 1.0f;
     float _lowestVariance = -1.0f;
 public:
-    OpinionComponentManager(std::shared_ptr<AttributeComponentManager> attributeComponentManager, std::shared_ptr<TypeComponentManager> typeComponentManager) :
-            ComponentManager(), _attributeComponentManager(attributeComponentManager), _typeComponentManager(typeComponentManager)
+    OpinionComponentManager(std::shared_ptr<AttributeComponentManager> attributeComponentManager, std::shared_ptr<TypeComponentManager> typeComponentManager, std::shared_ptr<StoryLogger> storyLogger) :
+            ComponentManager(), _attributeComponentManager(attributeComponentManager), _typeComponentManager(typeComponentManager), _storyLogger(storyLogger)
     {
         _data.size = 0;
     }
@@ -207,6 +210,7 @@ public:
         std::vector<Category> categories = _typeComponentManager->getCategories(entity, otherEntity);
         for (Category category : categories)
         {
+            _storyLogger->logEvent({"added as new " + category + " opinion for"}, {otherEntity, entity});
             std::cout << "Adding opinion: " + to_string(otherEntity.id) + "in category: " + category << std::endl;
             float variance = 0.0f;
             opinionMap[category].push_back({variance, otherEntity});

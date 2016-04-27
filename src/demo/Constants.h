@@ -10,6 +10,8 @@
 
 static const int GAME_WIDTH = 800;
 static const int GAME_HEIGHT = 600;
+static const int SE_GAME_WIDTH = 1000;
+static const int SE_GAME_HEIGHT = 600;
 static const int OUTPUT_MAX = 6;
 
 static const glm::vec3 PLAYER_ACTION_COLOUR(0.5f, 0.8f, 0.5f);

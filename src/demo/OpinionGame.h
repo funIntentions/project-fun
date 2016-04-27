@@ -23,13 +23,14 @@
 
 class OpinionGame : public Game {
 public:
-    OpinionGame() : Game(GAME_WIDTH, GAME_HEIGHT, "Story Engine Demo"),
+    OpinionGame() : Game(SE_GAME_WIDTH, SE_GAME_HEIGHT, "Demo: Story Engine"),
                     _entityManager(new EntityManager()),
+                    _storyLogger(new StoryLogger(_entityManager)),
                     _stateComponentManager(new StateComponentManager()),
                     _locationComponentManager(new LocationComponentManager()),
                     _attributeComponentManager(new AttributeComponentManager()),
                     _typeComponentManager(new TypeComponentManager(_attributeComponentManager)),
-                    _opinionComponentManager(new OpinionComponentManager(_attributeComponentManager, _typeComponentManager)),
+                    _opinionComponentManager(new OpinionComponentManager(_attributeComponentManager, _typeComponentManager, _storyLogger)),
                     _positionComponentManager(new PositionComponentManager(_locationComponentManager, _opinionComponentManager)),
                     _actionManager(new ActionManager),
                     _ownershipComponentManager(new OwnershipComponentManager(_actionManager, _opinionComponentManager)),
@@ -40,21 +41,20 @@ public:
                                                                            _ownershipComponentManager,
                                                                            _attributeComponentManager,
                                                                            _stateComponentManager)),
-                    cursor(0.5f),
-                    storyLogger(_entityManager)
+                    cursor(0.5f)
     { }
 
     virtual void update(float period)
     {
-        _scheduleComponentManager->runSchedules(period, storyLogger);
+        _scheduleComponentManager->runSchedules(period, *_storyLogger);
 
-        cursor.update(period);
+        /*cursor.update(period);
 
         if (inputReady)
         {
             input.clear();
             inputReady = false;
-        }
+        }*/
     }
 
     virtual void render()
@@ -65,27 +65,28 @@ public:
 
         double time = _scheduleComponentManager->getTimeOfDay();
         std::string timeText = time_format(time);
-        textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2 - x/2, height, 1.0f, TIME_COLOUR);
+        textRenderer->renderText("Time: " + timeText, GAME_WIDTH/2, height, 1.0f, TIME_COLOUR);
         textRenderer->renderText("Events", GAME_WIDTH/4, height * 2, 1.0f, TIME_COLOUR);
-        textRenderer->renderText("Character State", GAME_WIDTH/1.5f, height * 2, 1.0f, TIME_COLOUR);
+        textRenderer->renderText("Character State", GAME_WIDTH/1.3f, height * 2, 1.0f, TIME_COLOUR);
 
-        for (int i = 0; i < storyLogger.events.size(); ++i)
+        for (int i = 0; i < _storyLogger->events.size(); ++i)
         {
-            textRenderer->renderText(storyLogger.events[i].time + ": " + storyLogger.events[i].description, x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+            textRenderer->renderText(_storyLogger->events[i].time + ": " + _storyLogger->events[i].description, x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
         }
 
         int i = 0;
-        for (auto state : storyLogger.states)
+        for (auto state : _storyLogger->states)
         {
-            textRenderer->renderText(state.second.description, GAME_WIDTH/2 + x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
+            textRenderer->renderText(state.second.description, GAME_WIDTH/1.3f - x, y - (height * (i + 1)), 1.0f, PLANNER_ACTION_COLOUR);
             ++i;
         }
 
         // Render Input Text
-        textRenderer->renderText(input + cursor.displayCursor(), x, GAME_HEIGHT/1.2f, 1.0f, INPUT_COLOUR);
+        //textRenderer->renderText(input + cursor.displayCursor(), x, GAME_HEIGHT/1.2f, 1.0f, INPUT_COLOUR);
     }
 private:
     std::shared_ptr<EntityManager> _entityManager;
+    std::shared_ptr<StoryLogger> _storyLogger;
     std::shared_ptr<StateComponentManager> _stateComponentManager;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
@@ -101,7 +102,6 @@ private:
     std::vector<ActionOutput> output;
     bool inputReady;
     Cursor cursor;
-    StoryLogger storyLogger;
 
     void readEntities(EntityManager& entityManager)
     {
@@ -157,7 +157,7 @@ private:
                     {
                         assert(componentValue->value.IsString());
                         std::string scheduleName = componentValue->value.GetString();
-                        _scheduleComponentManager->spawnComponent(*entity, scheduleName, 0.0, storyLogger);
+                        _scheduleComponentManager->spawnComponent(*entity, scheduleName, 0.0, *_storyLogger);
                     }
                     else if (name == "position")
                     {
@@ -244,9 +244,9 @@ private:
         std::cout << std::chrono::high_resolution_clock::period::den << std::endl;
         _typeComponentManager->readGroups("data/World.json");
 
-        Keyboard::charPressedCallbackFunctions.push_back([this](unsigned codepoint) {this->textEntered(codepoint);});
-        Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
-        Keyboard::keyRepeatedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+        //Keyboard::charPressedCallbackFunctions.push_back([this](unsigned codepoint) {this->textEntered(codepoint);});
+        //Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+        //Keyboard::keyRepeatedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
 
         readEntities(*_entityManager);
     }

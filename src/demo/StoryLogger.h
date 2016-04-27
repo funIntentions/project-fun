@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <schedules/ActionInstance.h>
+#include <util/Extra.h>
 
 inline std::string time_format (double time)
 {
@@ -40,15 +41,18 @@ private:
     std::shared_ptr<EntityManager> _entityManager;
     unsigned _eventLimit;
     std::ofstream _logFile;
+    unsigned _day;
+    double _time;
 public:
     std::vector<EventLog> events;
     std::unordered_map<unsigned, StateLog> states;
 
 
-    StoryLogger(std::shared_ptr<EntityManager> entityManager, unsigned limit = 30) : _entityManager(entityManager), _eventLimit(limit), _logFile("StoryLog.txt")
+    StoryLogger(std::shared_ptr<EntityManager> entityManager, unsigned limit = 30) : _entityManager(entityManager), _eventLimit(limit), _logFile("StoryLog.txt"), _day(0), _time(0.0)
     {
         if (_logFile.is_open())
             _logFile.clear();
+        newDay();
     }
 
     ~StoryLogger()
@@ -57,19 +61,26 @@ public:
             _logFile.close();
     }
 
-    void logEvent(double time, std::vector<std::string> description, std::vector<Entity> entities)
+    void setTime(double time)
+    {
+        _time = time;
+    }
+
+    void newDay()
+    {
+        ++_day;
+        logEvent({"--------------- Day " + to_string(_day) + " ---------------"}, {});
+    }
+
+    void logEvent(std::vector<std::string> description, std::vector<Entity> entities)
     {
 
         EventLog log;
-        log.time = time_format(time);
+        log.time = time_format(_time);
 
         unsigned numEntities = entities.size();
-        if (numEntities == 0)
-        {
-            return;
-        }
-
-        log.description += _entityManager->getName(entities[0]);
+        if (numEntities != 0)
+            log.description += _entityManager->getName(entities[0]);
 
         for (unsigned i = 0; i < description.size(); ++i)
         {

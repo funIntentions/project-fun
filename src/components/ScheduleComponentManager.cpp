@@ -335,7 +335,10 @@ void ScheduleComponentManager::runSchedules(double deltaTime, StoryLogger& story
 
     if (time >= 24) {
         time = fmod(time, 24);
+        storyLogger.newDay();
     }
+
+    storyLogger.setTime(time);
 
     for (unsigned i = 0; i < _data.size; ++i)
     {
@@ -783,8 +786,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     Entity entityTwo = entityTwoItr->second;
                     Entity desiredLocation = _positionComponentManager->getLocation(entityOne);
 
+                    storyLogger.logEvent({"travelled to"}, {entityTwo, desiredLocation});
                     _positionComponentManager->changeLocation(entityTwo, desiredLocation);
-                    storyLogger.logEvent(time, {"travelled to"}, {entityTwo, desiredLocation});
                 }
                 else
                     std::cout << "Error: Parameter Mapping Not Found" << std::endl;
@@ -798,8 +801,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     Entity desiredLocation = locationItr->second;
                     Entity entity = entityItr->second;
 
+                    storyLogger.logEvent({"travelled to"}, {entity, desiredLocation});
                     _positionComponentManager->changeLocation(entity, desiredLocation);
-                    storyLogger.logEvent(time, {"travelled to"}, {entity, desiredLocation});
                 }
                 else
                     std::cout << "Error: Parameter Mapping Not Found" << std::endl;
@@ -817,13 +820,13 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
                 if (desiredHealth == "Alive") // TODO: Remove string checks
                 {
+                    storyLogger.logEvent({"has come to life."}, {entity});
                     _stateComponentManager->setHealth(entity, State::Health::Alive);
-                    storyLogger.logEvent(time, {"has come to life."}, {entity});
                 }
                 else
                 {
+                    storyLogger.logEvent({"has killed"}, {self, entity});
                     _stateComponentManager->setHealth(entity, State::Health::Dead);
-                    storyLogger.logEvent(time, {"has killed"}, {self, entity});
                 }
             }
             else
@@ -839,14 +842,17 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
                 if (newState == "Fishing")
                 {
+                    storyLogger.logEvent({"is fishing"}, {entity});
                     _stateComponentManager->setState(entity, State::Activity::Fishing);
                 }
                 else if (newState == "Hooked")
                 {
+                    storyLogger.logEvent({"is on fish hook"}, {entity});
                     _stateComponentManager->setState(entity, State::Activity::Hooked);
                 }
                 else if (newState == "Apprehended")
                 {
+                    storyLogger.logEvent({"is apprehended"}, {entity});
                     _stateComponentManager->setState(entity, State::Activity::Apprehended);
                 }
                 else if (newState == "Confronted")
@@ -909,8 +915,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 Entity belonging = belongingItr->second;
                 Entity entity = entityItr->second;
 
+                storyLogger.logEvent({"has"}, {entity, belonging});
                 _ownershipComponentManager->giveOwnership(entity, belonging);
-                storyLogger.logEvent(time, {"has"}, {entity, belonging});
             }
         }
         else if (predicateTemplate.type == "Sleeping")
@@ -924,7 +930,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 Entity entity = entityItr->second;
                 Entity location = locationItr->second;
 
-                storyLogger.logEvent(time, {"is sleeping at"}, {entity, location});
+                storyLogger.logEvent({"is sleeping at"}, {entity, location});
             }
         }
         else if (predicateTemplate.type == "Schedule")
@@ -951,6 +957,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     _data.currentSchedule[instance.i] = scheduleInstance;
                     _data.queuedActions[instance.i].push_back(_data.currentSchedule[instance.i]->chooseNewAction());
                     storyLogger.logState(entity, _data.currentSchedule[instance.i]->getName(), _data.queuedActions[instance.i]);
+                    storyLogger.logEvent({"schedule changed to " + scheduleInstance->getName()}, {entity});
                 }
             }
         }
