@@ -466,13 +466,13 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
             }
 
             Entity location = _positionComponentManager->getLocation(known);
-            std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
+            std::vector<std::pair<Category, float>> locationCategories = _typeComponentManager->getCategories(entity, location);
 
             for (auto locationCategory : locationCategories)
             {
                 PredicateTemplate predicateTemplate;
                 predicateTemplate.type = "Location";
-                predicateTemplate.params.push_back(locationCategory);
+                predicateTemplate.params.push_back(locationCategory.first);
                 predicateTemplate.params.push_back(entityCategory);
 
                 int id = _actionManager->getPredicateId(predicateTemplate);
@@ -693,15 +693,17 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
             {
                 std::string desiredCategory = predicateTemplate.params[0];
                 auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
+                auto selfItr = action->mappedParameters.find("Self");
                 if (entityItr != action->mappedParameters.end())
                 {
                     Entity entity = entityItr->second;
+                    Entity self = selfItr->second;
                     Entity location = _positionComponentManager->getLocation(entity);
-                    std::vector<std::string> locationCategories = _typeComponentManager->getCategories(entity, location);
+                    std::vector<std::pair<Category, float>> locationCategories = _typeComponentManager->getCategories(self, location);
                     unsigned numLocationCategories = locationCategories.size();
                     for (unsigned i = 0; i < locationCategories.size(); ++i)
                     {
-                        if (locationCategories[i] == desiredCategory)
+                        if (locationCategories[i].first == desiredCategory)
                             break;
                         else if (i+1 == numLocationCategories)
                             return false;

@@ -7,16 +7,11 @@
       [
         {
           "category" : "Food",
-          "preference" : "Alive",
-          "type" : ["Fish"]
+          "type" : [{"Fish" : 0.0}]
         },
         {
           "category" : "Home",
-          "type" : ["Village"]
-        },
-        {
-          "category" : "Money",
-          "type" : ["Cash"]
+          "type" : [{"Village" : 0.0}]
         }
       ]
     },
@@ -26,15 +21,15 @@
       [
         {
           "category" : "Outlaw",
-          "type" : ["Merfolk"]
+          "type" : [{"Merfolk" : 0.0}]
         },
         {
           "category" : "GuardPost",
-          "type" : ["Village", "Lake", "Swamp", "Forest", "Meadow"]
+          "type" : [{"Village" : 0.0}, {"Lake" : 0.0}, {"Swamp" : 0.0}, {"Forest" : 0.0}, {"Meadow" : 0.0}]
         },
         {
           "category" : "Prison",
-          "type" : ["Jail"]
+          "type" : [{"Jail" : 0.0}]
         }
       ]
     },
@@ -44,23 +39,23 @@
       [
         {
           "category" : "Water",
-          "type" : ["Lake", "Swamp"]
+          "type" : [{"Lake" : 0.5}, {"Swamp" : -0.1}]
         },
         {
           "category" : "Buyer",
-          "type" : ["Market"]
+          "type" : [{"Market" : 0.0}]
         },
         {
           "category" : "FishingBait",
-          "type" : ["Grub"]
+          "type" : [{"Grub" : 0.5}]
         },
         {
           "category" : "SellingSpot",
-          "type" : ["Village"]
+          "type" : [{"Village" : 0.3}]
         },
         {
           "category" : "Goods",
-          "type" : ["Fish"]
+          "type" : [{"Fish" : 0.7}]
         }
       ]
     },
@@ -82,28 +77,28 @@
       [
         {
           "category" : "Home",
-          "type" : ["Underground"]
+          "type" : [{"Underground" : 0.4}]
         },
         {
           "category" : "HuntingGround",
-          "type" : ["Lake", "Swamp"]
+          "type" : [{"Lake" : 0.0}, {"Swamp" : 0.0}]
         },
         {
           "category" : "Goods",
-          "type" : ["Grub"]
+          "type" : [{"Grub" : 0.4}]
         },
         {
           "category" : "Buyer",
-          "type" : ["Fisher"]
+          "type" : [{"Fisher" : 0.0}]
         },
         {
           "category" : "SellingSpot",
-          "type" : ["Village", "Lake", "Swamp", "Forest", "Meadow"]
+          "type" : [{"Village" : 0.0}, {"Lake" : 0.0}, {"Swamp" : 0.0}, {"Forest" : 0.0}, {"Meadow" : 0.0}]
         },
         {
           "category" : "Food",
           "preference" : "Alive",
-          "type" : ["Fish", "Human"]
+          "type" : [{"Fish" : 0.8}, {"Human" : -0.5}]
         }
       ]
     }
@@ -223,6 +218,36 @@
       ]
     },
     {
+      "name" : "Sal",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Fisher"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Clear Water Lake", "Murky Lagoon", "Village of Swigmire"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Fisher"
+        },
+        {
+          "name" : "attribute",
+          "value" : [0.2,0.2,0.9]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
       "name" : "Swamp Monster",
       "components" :
       [
@@ -232,7 +257,7 @@
         },
         {
           "name" : "opinion",
-          "knowledge" : ["Murky Lagoon", "Blue Daemon Caves"]
+          "knowledge" : ["Murky Lagoon", "Clear Water Lake", "Blue Daemon Caves", "Village of Swigmire"]
         },
         {
           "name" : "schedule",
@@ -270,7 +295,7 @@
         },
         {
           "name" : "attribute",
-          "value" : [0.0,0.1,0.0]
+          "value" : [1.0,0.1,0.0]
         },
         {
           "name" : "position",
@@ -301,36 +326,6 @@
         {
           "name" : "attribute",
           "value" : [0.5,0.0,0.0]
-        },
-        {
-          "name" : "position",
-          "value" : "Village of Swigmire"
-        },
-        {
-          "name" : "state",
-          "value" : "Alive"
-        }
-      ]
-    },
-    {
-      "name" : "Sal",
-      "components" :
-      [
-        {
-          "name" : "type",
-          "value" : ["Human", "Fisher"]
-        },
-        {
-          "name" : "opinion",
-          "knowledge" : ["Clear Water Lake", "Murky Lagoon", "Village of Swigmire"]
-        },
-        {
-          "name" : "schedule",
-          "value" : "Fisher"
-        },
-        {
-          "name" : "attribute",
-          "value" : [0.2,0.2,0.6]
         },
         {
           "name" : "position",
@@ -386,6 +381,48 @@
     },
     {
       "name": "Blue Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Grey Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Purple Fish",
       "components" :
       [
         {

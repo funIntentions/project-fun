@@ -134,24 +134,6 @@
       []
     },
     {
-      "name" : "MeetBuyer",
-      "minDuration" : 1,
-      "maxDuration" : 1,
-      "attributes" : [0.0,0.0,0.0],
-      "params" : ["Goods", "Buyer", "SellingSpot", "Self"],
-      "positivePreconditions" :
-      [
-        {"Has" : ["Goods", "Self"]}
-      ],
-      "addedEffects" :
-      [
-        {"Location" : ["SellingSpot", "Buyer"]},
-        {"Location" : ["Same", "Buyer", "Self"]}
-      ],
-      "subtractedEffects" :
-      []
-    },
-    {
       "name" : "StandAtGuardPost",
       "minDuration" : 4,
       "maxDuration" : 6,
@@ -217,8 +199,8 @@
     },
     {
       "name" : "KillPrey",
-      "minDuration" : 2,
-      "maxDuration" : 3,
+      "minDuration" : 1,
+      "maxDuration" : 2,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Food", "Self"],
       "positivePreconditions" :
@@ -255,10 +237,11 @@
       "minDuration" : 2,
       "maxDuration" : 4,
       "attributes" : [0.0,0.0,0.0],
-      "params" : ["Goods", "Self"],
+      "params" : ["Goods", "HuntingGround", "Self"],
       "positivePreconditions" :
       [
         {"Health" : ["Alive", "Goods"]},
+        {"Location" : ["HuntingGround", "Goods"]},
         {"Location" : ["Same", "Goods", "Self"]}
       ],
       "addedEffects" :
@@ -430,7 +413,7 @@
     {
       "name" : "HuntTemplate",
       "type" : "sequence",
-      "actions" : ["Hunt", "KillPrey"]
+      "actions" : ["Hunt", "KillPrey", "Hunt"]
     },
     {
       "name" : "StandGuardTemplate",
@@ -509,24 +492,19 @@
       "entries" :
       [
         {
-          "name" : "nap",
-          "template" : "SleepTemplate",
-          "startTime" : 3
-        },
-        {
           "name" : "hunt",
           "template" : "HuntTemplate",
+          "startTime" : 23
+        },
+        {
+          "name" : "sell",
+          "template" : "SellGoodsTemplate",
           "startTime" : 8
         },
         {
           "name" : "nap",
           "template" : "SleepTemplate",
-          "startTime" : 14
-        },
-        {
-          "name" : "sell",
-          "template" : "SellGoodsTemplate",
-          "startTime" : 20
+          "startTime" : 16
         }
       ]
     }

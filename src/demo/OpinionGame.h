@@ -208,7 +208,7 @@ private:
                     else if (name == "type")
                     {
                         assert(componentValue->value.IsArray());
-                        std::vector<Type> groups;
+                        std::vector<std::string> groups;
                         for (auto type = componentValue->value.Begin(); type != componentValue->value.End(); ++type)
                         {
                             std::string typeName = type->GetString();

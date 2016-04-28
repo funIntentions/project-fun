@@ -16,7 +16,6 @@
 #include "demo/StoryLogger.h"
 
 typedef std::string Category;
-typedef std::string Type;
 
 struct Opinion
 {
@@ -193,7 +192,6 @@ public:
         {
             if (_data.knowledge[instance.i].find(known) != _data.knowledge[instance.i].end())
             {
-                std::cout << "Entity already known: " + to_string(known.id) << std::endl;
                 continue;
             }
 
@@ -207,14 +205,13 @@ public:
         Instance instance = lookup(entity);
         auto& opinionMap = _data.opinions[instance.i];
 
-        std::vector<Category> categories = _typeComponentManager->getCategories(entity, otherEntity);
-        for (Category category : categories)
+        std::vector<std::pair<Category, float>> categories = _typeComponentManager->getCategories(entity, otherEntity);
+        for (std::pair<Category, float> category : categories)
         {
-            _storyLogger->logEvent({"added as new " + category + " opinion for"}, {otherEntity, entity});
-            std::cout << "Adding opinion: " + to_string(otherEntity.id) + "in category: " + category << std::endl;
-            float variance = 0.0f;
-            opinionMap[category].push_back({variance, otherEntity});
-            std::sort(opinionMap[category].begin(), opinionMap[category].end(), sortOpinionsByVariance);
+            _storyLogger->logEvent({"added as new " + category.first + " opinion for"}, {otherEntity, entity});
+            float variance = category.second;
+            opinionMap[category.first].push_back({variance, otherEntity});
+            std::sort(opinionMap[category.first].begin(), opinionMap[category.first].end(), sortOpinionsByVariance);
         }
     }
 

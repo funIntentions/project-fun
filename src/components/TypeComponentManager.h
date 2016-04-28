@@ -13,12 +13,21 @@
 #include "AttributeComponentManager.h"
 
 typedef std::string Category;
-typedef std::string Type;
+
+struct Type
+{
+    std::string name;
+    float preference;
+
+    friend bool operator<(const Type& l, const Type& r)
+    {
+        return std::tie(l.name, l.preference) < std::tie(r.name, r.preference); // keep the same order
+    }
+};
 
 struct Association
 {
     Category category;
-    std::string preference;
     std::set<Type> types;
 };
 
@@ -84,17 +93,15 @@ public:
                     auto category = association->FindMember("category");
                     newAssociation.category = category->value.GetString();
 
-                    auto preference = association->FindMember("preference");
-                    if (preference != association->MemberEnd())
-                        newAssociation.preference = preference->value.GetString();
-
                     auto types = association->FindMember("type");
                     assert(types->value.IsArray());
                     for (auto type = types->value.Begin(); type != types->value.End(); ++type)
                     {
-                        assert(type->IsString());
-                        newAssociation.types.insert(type->GetString());
-
+                        assert(type->IsObject());
+                        Type newType;
+                        newType.name = type->MemberBegin()->name.GetString();
+                        newType.preference = type->MemberBegin()->value.GetFloat();
+                        newAssociation.types.insert(newType);
                     }
 
                     newGroup.associations[newAssociation.category] = newAssociation;
@@ -112,12 +119,17 @@ public:
         groups.insert({group.name, group});
     }
 
-    std::vector<Category> getCategories(Entity entity, Entity otherEntity)
+    std::vector<std::pair<Category, float>> getCategories(Entity entity, Entity otherEntity)
     {
         if (entity.id == otherEntity.id)
-            return {"Self"};
+        {
+            std::pair<Category, float> self;
+            self.first = "Self";
+            self.second = 0.0f;
+            return {self};
+        }
 
-        std::vector<Category> categories;
+        std::vector<std::pair<Category, float>> categories;
 
         Instance instance = lookup(entity);
         std::vector<std::string> types = _data.groups[instance.i];
@@ -131,8 +143,14 @@ public:
             {
                 for (std::string otherEntityType : otherEntityTypes)
                 {
-                    if (association.second.types.find(otherEntityType) != association.second.types.end())
-                        categories.push_back(association.first);
+                    for (Type associatedType : association.second.types)
+                    {
+                        if (associatedType.name == otherEntityType)
+                        {
+                            categories.push_back({association.first, associatedType.preference});
+                            break;
+                        }
+                    }
                 }
             }
         }
