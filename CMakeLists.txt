@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(PartialOrderPlanner)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -static-libgcc -static-libstdc++  -D__NO_INLINE__ ")
 
 
 set(SOURCE_FILES main.cpp)

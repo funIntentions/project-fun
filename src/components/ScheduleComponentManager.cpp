@@ -447,8 +447,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                    //std::cout << "getState: Predicate Unknown" << std::endl;
             }
             else
             {
@@ -461,8 +461,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                //    std::cout << "getState: Predicate Unknown" << std::endl;
             }
 
             Entity location = _positionComponentManager->getLocation(known);
@@ -478,8 +478,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                //    std::cout << "getState: Predicate Unknown" << std::endl;
             }
         }
 
@@ -495,8 +495,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                //    std::cout << "getState: Predicate Unknown" << std::endl;
             }
         }
 
@@ -514,8 +514,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                //    std::cout << "getState: Predicate Unknown" << std::endl;
             }
 
             {
@@ -552,8 +552,8 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
                 int id = _actionManager->getPredicateId(predicateTemplate);
                 if (id != -1)
                     state.push_back(id);
-                else
-                    std::cout << "getState: Predicate Unknown" << std::endl;
+                //else
+                //    std::cout << "getState: Predicate Unknown" << std::endl;
             }
         }
     }
@@ -724,7 +724,15 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
                 State::Health health = _stateComponentManager->getHealth(entity);
 
                 if (!(health == State::Health::Alive && "Alive" == desiredHealth || health == State::Health::Dead && "Dead" == desiredHealth))
+                {
+                    if (health == State::Health::Dead)
+                    {
+                        Entity self = action->mappedParameters.find("Self")->second;
+                        _opinionComponentManager->removeOpinion(self, predicateTemplate.params[1]);
+                    }
+
                     return false;
+                }
             }
         }
         else if (predicateTemplate.type == "State")
@@ -760,10 +768,10 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
                     return false;
             }
         }
-        else
+        /*else
         {
             std::cout << "Unhandled predicate: " << predicateTemplate.type << std::endl;
-        }
+        }*/
     }
     return true;
 }
@@ -791,8 +799,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     storyLogger.logEvent({"travelled to"}, {entityTwo, desiredLocation});
                     _positionComponentManager->changeLocation(entityTwo, desiredLocation);
                 }
-                else
-                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+                //else
+                //    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
             }
             else
             {
@@ -806,8 +814,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     storyLogger.logEvent({"travelled to"}, {entity, desiredLocation});
                     _positionComponentManager->changeLocation(entity, desiredLocation);
                 }
-                else
-                    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+                //else
+                //    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
             }
         }
         else if (predicateTemplate.type == "Health")
@@ -831,8 +839,8 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                     _stateComponentManager->setHealth(entity, State::Health::Dead);
                 }
             }
-            else
-                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+            //else
+            //    std::cout << "Error: Parameter Mapping Not Found" << std::endl;
         }
         else if (predicateTemplate.type == "State")
         {
@@ -887,7 +895,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
             if (entityItr == action->mappedParameters.end() || opinionEntityItr == action->mappedParameters.end())
             {
-                std::cout << "Error: Parameter Mapping Not Found" << std::endl;
+                //std::cout << "Error: Parameter Mapping Not Found" << std::endl;
                 continue;
             }
 
@@ -963,10 +971,10 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 }
             }
         }
-        else
+        /*else
         {
             std::cout << "Unhandled predicate: " << predicateTemplate.type << std::endl;
-        }
+        }*/
     }
 }
 

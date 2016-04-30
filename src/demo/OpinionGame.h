@@ -46,15 +46,8 @@ public:
 
     virtual void update(float period)
     {
-        _scheduleComponentManager->runSchedules(period, *_storyLogger);
-
-        /*cursor.update(period);
-
-        if (inputReady)
-        {
-            input.clear();
-            inputReady = false;
-        }*/
+        if (!pause)
+            _scheduleComponentManager->runSchedules(period, *_storyLogger);
     }
 
     virtual void render()
@@ -101,6 +94,7 @@ private:
     std::string input;
     std::vector<ActionOutput> output;
     bool inputReady;
+    bool pause;
     Cursor cursor;
 
     void readEntities(EntityManager& entityManager)
@@ -245,7 +239,7 @@ private:
         _typeComponentManager->readGroups("data/World.json");
 
         //Keyboard::charPressedCallbackFunctions.push_back([this](unsigned codepoint) {this->textEntered(codepoint);});
-        //Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
+        Keyboard::keyPressedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
         //Keyboard::keyRepeatedCallbackFunctions.push_back([this](unsigned key) {this->keyPressed(key);});
 
         readEntities(*_entityManager);
@@ -254,12 +248,7 @@ private:
     void keyPressed(int key)
     {
         if (key == GLFW_KEY_ENTER)
-            inputReady = true;
-        else if (key == GLFW_KEY_BACKSPACE && input.size() > 0)
-        {
-            input = std::string(input.begin(), input.end() - 1);
-            cursor.display();
-        }
+            pause = !pause;
     }
 
     void textEntered(unsigned codepoint)

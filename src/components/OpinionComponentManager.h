@@ -65,7 +65,6 @@ public:
     {
         Instance instance = lookup(entity);
         assert (instance.i != -1);
-
         return _data.knowledge[instance.i];
     }
 
@@ -97,7 +96,7 @@ public:
 
         if (opinions == _data.opinions[instance.i].end())
         {
-            std::cout << "I have no knowledge of the concept: " << category << std::endl;
+            //std::cout << "I have no knowledge of the concept: " << category << std::endl;
             return {};
         }
 

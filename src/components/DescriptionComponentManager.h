@@ -44,10 +44,12 @@ public:
         std::cout << description << std::endl;
     }
 
+    // Examines the entity and returns a de
     void examineEntity(Entity entity)
     {
-        // TODO: check for entity in component manager
-        std::cout << _data.description[entity.id] << std::endl;
+        Instance instance = lookup(entity);
+        if (instance.i != -1)
+            std::cout << _data.description[entity.id] << std::endl;
     }
 
     void spawnComponent(Entity entity, std::string name, std::string description)

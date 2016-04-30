@@ -5,7 +5,7 @@
       "name" : "TravelToFishingSpot",
       "minDuration" : 1,
       "maxDuration" : 1,
-      "attributes" : [1.0,0.0,0.0],
+      "attributes" : [0.0,0.0,0.0],
       "params" : ["Water", "Self"],
       "positivePreconditions" :
       [],
@@ -38,8 +38,8 @@
     },
     {
       "name" : "CatchFish",
-      "minDuration" : 4,
-      "maxDuration" : 10,
+      "minDuration" : 2,
+      "maxDuration" : 3,
       "attributes" : [0.1,0.3,0.5],
       "params" : ["Water", "FishingBait", "Food", "Self"],
       "positivePreconditions" :
@@ -62,8 +62,8 @@
     },
     {
       "name" : "CatchNothing",
-      "minDuration" : 4,
-      "maxDuration" : 10,
+      "minDuration" : 2,
+      "maxDuration" : 3,
       "attributes" : [0.0,0.0,0.0],
       "params" : ["Water", "Food", "Self"],
       "positivePreconditions" :
@@ -107,7 +107,6 @@
       ],
       "addedEffects" :
       [
-        {"Location" : ["SellingSpot", "Self"]},
         {"Location" : ["Same", "Buyer", "Self"]}
       ],
       "subtractedEffects" :
@@ -161,6 +160,21 @@
       "addedEffects" :
       [
         {"Location" : ["Home", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "TravelToHuntingGround",
+      "minDuration" : 0,
+      "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["HuntingGround", "Self"],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"Location" : ["HuntingGround", "Self"]}
       ],
       "subtractedEffects" :
       []
@@ -286,26 +300,9 @@
       []
     },
     {
-      "name" : "NoOutlawToConfront",
+      "name" : "ArrestOutlaw",
       "minDuration" : 0.5,
       "maxDuration" : 1,
-      "attributes" : [0.0,0.0,0.0],
-      "params" : ["Outlaw", "Self"],
-      "positivePreconditions" :
-      [
-        {"Location" : ["Different", "Outlaw", "Self"]}
-      ],
-      "addedEffects" :
-      [
-        {"State" : ["Confronted", "Self"]}
-      ],
-      "subtractedEffects" :
-      []
-    },
-    {
-      "name" : "ArrestOutlaw",
-      "minDuration" : 1,
-      "maxDuration" : 1.4,
       "attributes" : [0.5,0.0,0.0],
       "params" : ["Outlaw", "Prison", "Self"],
       "positivePreconditions" :
@@ -344,8 +341,8 @@
     },
     {
       "name" : "ZapOutlaw",
-      "minDuration" : 1,
-      "maxDuration" : 1.1,
+      "minDuration" : 0.5,
+      "maxDuration" : 1,
       "attributes" : [1.0,0.0,0.0],
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
       "positivePreconditions" :
@@ -361,7 +358,7 @@
     },
     {
       "name" : "HandcuffOutlaw",
-      "minDuration" : 1,
+      "minDuration" : 0.5,
       "maxDuration" : 1.2,
       "attributes" : [0.4,0.0,0.0],
       "params" : ["GuardPost", "Outlaw", "Prison", "Self"],
@@ -407,8 +404,8 @@
     },
     {
       "name" : "SleepTemplate",
-      "type" : "sequence",
-      "actions" : ["TravelHome", "Sleep"]
+      "type" : "simple",
+      "actions" : ["Sleep"]
     },
     {
       "name" : "HuntTemplate",
@@ -488,7 +485,7 @@
       ]
     },
     {
-      "name" : "Merfolk",
+      "name" : "Monster",
       "entries" :
       [
         {
