@@ -828,7 +828,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 Entity entity = entityItr->second;
                 Entity self = selfItr->second;
 
-                if (desiredHealth == "Alive") // TODO: Remove string checks
+                if (desiredHealth == "Alive")
                 {
                     storyLogger.logEvent({"has come to life."}, {entity});
                     _stateComponentManager->setHealth(entity, State::Health::Alive);

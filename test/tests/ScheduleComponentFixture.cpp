@@ -52,7 +52,6 @@ public:
 };
 
 
-// TODO: implement all these tests
 TEST_F(ScheduleComponentFixture, action_loading)
 {
     SUCCEED();
