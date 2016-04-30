@@ -9,6 +9,8 @@
 #include <memory>
 #include <PartialOrderPlanner.h>
 #include <demo/StoryLogger.h>
+#include <schedules/Schedule.h>
+#include <schedules/ScheduleInstance.h>
 #include "ComponentManager.h"
 #include "PartialOrderPlan.h"
 #include "LocationComponentManager.h"
@@ -71,6 +73,60 @@ public:
                              std::shared_ptr<OwnershipComponentManager> ownershipComponentManager,
                              std::shared_ptr<AttributeComponentManager> attributeComponentManager,
                              std::shared_ptr<StateComponentManager> stateComponentManager);
+
+    Action* getAction(std::string actionName)
+    {
+        Action* action = nullptr;
+        auto IdItr = actionNameToIdMap.find(actionName);
+        if (IdItr != actionNameToIdMap.end())
+        {
+            auto actionItr =  actions.find(IdItr->second);
+            if (actionItr != actions.end())
+            {
+                action = actionItr->second;
+            }
+        }
+
+        return action;
+    }
+
+    unsigned getNumActions()
+    {
+        return actions.size();
+    }
+
+    Schedule* getSchedule(std::string scheduleName)
+    {
+        Schedule* schedule = nullptr;
+        auto IdItr = scheduleNameToIdMap.find(scheduleName);
+        if (IdItr != scheduleNameToIdMap.end())
+        {
+            auto scheduleItr =  schedules.find(IdItr->second);
+            if (scheduleItr != schedules.end())
+            {
+                schedule = scheduleItr->second;
+            }
+        }
+
+        return schedule;
+    }
+
+    ScheduleInstance* getEntitySchedule(Entity entity)
+    {
+        Instance instance = lookup(entity);
+
+        if (instance.i != -1)
+        {
+            return _data.currentSchedule[instance.i];
+        }
+
+        return nullptr;
+    }
+
+    unsigned getNumSchedules()
+    {
+        return schedules.size();
+    }
 
     void readActions(std::shared_ptr<ActionManager> actionManager);
 

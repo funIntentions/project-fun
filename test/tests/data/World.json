@@ -1,0 +1,510 @@
+{
+  "groups" :
+  [
+    {
+      "group" : "Human",
+      "associations" :
+      [
+        {
+          "category" : "Food",
+          "type" : [{"Fish" : 0.0}]
+        },
+        {
+          "category" : "Home",
+          "type" : [{"Village" : 0.0}]
+        }
+      ]
+    },
+    {
+      "group" : "Guard",
+      "associations" :
+      [
+        {
+          "category" : "Outlaw",
+          "type" : [{"Monster" : 0.0}]
+        },
+        {
+          "category" : "GuardPost",
+          "type" : [{"Village" : 0.0}, {"Lake" : 0.0}, {"Swamp" : 0.0}, {"Forest" : 0.0}, {"Meadow" : 0.0}]
+        },
+        {
+          "category" : "Prison",
+          "type" : [{"Jail" : 0.0}]
+        }
+      ]
+    },
+    {
+      "group" : "Fisher",
+      "associations" :
+      [
+        {
+          "category" : "Water",
+          "type" : [{"Lake" : 0.5}, {"Swamp" : -0.1}]
+        },
+        {
+          "category" : "Buyer",
+          "type" : [{"Market" : 0.0}]
+        },
+        {
+          "category" : "FishingBait",
+          "type" : [{"Grub" : 0.5}]
+        },
+        {
+          "category" : "SellingSpot",
+          "type" : [{"Village" : 0.3}]
+        },
+        {
+          "category" : "Goods",
+          "type" : [{"Fish" : 0.7}]
+        }
+      ]
+    },
+    {
+      "group" : "Fish",
+      "associations" : []
+    },
+    {
+      "group" : "Market",
+      "associations" : []
+    },
+    {
+      "group" : "Grub",
+      "associations" : []
+    },
+    {
+      "group" : "Monster",
+      "associations" :
+      [
+        {
+          "category" : "Home",
+          "type" : [{"Underground" : 0.4}]
+        },
+        {
+          "category" : "HuntingGround",
+          "type" : [{"Lake" : 0.0}, {"Swamp" : 0.0}]
+        },
+        {
+          "category" : "Goods",
+          "type" : [{"Grub" : 0.4}]
+        },
+        {
+          "category" : "Buyer",
+          "type" : [{"Fisher" : 0.0}]
+        },
+        {
+          "category" : "SellingSpot",
+          "type" : [{"Village" : 0.0}, {"Lake" : 0.0}, {"Swamp" : 0.0}, {"Forest" : 0.0}, {"Meadow" : 0.0}]
+        },
+        {
+          "category" : "Food",
+          "type" : [{"Fish" : 0.8}, {"Human" : -0.5}]
+        }
+      ]
+    }
+  ],
+  "entities" :
+  [
+    {
+      "name" : "Blue Daemon Caves",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Underground"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Murky Lagoon",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Swamp"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Clear Water Lake",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Lake"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Village of Swigmire",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Village"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "East Forest",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Forest"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Swigmire Meadows",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Meadow"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Swigmire Prison",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Jail"]
+        },
+        {
+          "name" : "location",
+          "value" : []
+        }
+      ]
+    },
+    {
+      "name" : "Fish Market",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Market"]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        }
+      ]
+    },
+    {
+      "name" : "Sal",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Fisher"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Clear Water Lake", "Murky Lagoon", "Village of Swigmire"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Fisher"
+        },
+        {
+          "name" : "attribute",
+          "value" : [0.2,0.2,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
+      "name" : "Swamp Monster",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Monster"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Murky Lagoon", "Clear Water Lake", "Blue Daemon Caves", "Village of Swigmire"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "Monster"
+        },
+        {
+          "name" : "attribute",
+          "value" : [1.0,1.0,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Blue Daemon Caves"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
+      "name" : "Tony",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Guard"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison", "Swamp Monster"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "DayGuard"
+        },
+        {
+          "name" : "attribute",
+          "value" : [0.0,0.1,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
+      "name" : "Victor",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Human", "Guard"]
+        },
+        {
+          "name" : "opinion",
+          "knowledge" : ["Village of Swigmire", "Clear Water Lake", "East Forest", "Swigmire Meadows", "Murky Lagoon", "Swigmire Prison", "Swamp Monster"]
+        },
+        {
+          "name" : "schedule",
+          "value" : "NightGuard"
+        },
+        {
+          "name" : "attribute",
+          "value" : [0.0,0.0,0.0]
+        },
+        {
+          "name" : "position",
+          "value" : "Village of Swigmire"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        }
+      ]
+    },
+    {
+      "name": "Red Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Green Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Blue Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Grey Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Purple Fish",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Fish"]
+        },
+        {
+          "name" : "position",
+          "value" : "Clear Water Lake"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Worm",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Grub"]
+        },
+        {
+          "name" : "position",
+          "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Frog",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Grub"]
+        },
+        {
+          "name" : "position",
+          "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    },
+    {
+      "name": "Leech",
+      "components" :
+      [
+        {
+          "name" : "type",
+          "value" : ["Grub"]
+        },
+        {
+          "name" : "position",
+          "value" : "Murky Lagoon"
+        },
+        {
+          "name" : "state",
+          "value" : "Alive"
+        },
+        {
+          "name" : "ownership"
+        }
+      ]
+    }
+  ]
+}
+
+

@@ -1,0 +1,134 @@
+{
+  "actions" :
+  [
+    {
+      "name" : "StandAtGuardPost",
+      "minDuration" : 4,
+      "maxDuration" : 6,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["GuardPost", "Self"],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"Location" : ["GuardPost", "Self"]},
+        {"Opinion" : ["AdjustOthers", "0.1", "GuardPost", "Self"]},
+        {"Opinion" : ["Adjust", "-0.1", "GuardPost", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "TravelHome",
+      "minDuration" : 1,
+      "maxDuration" : 1,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Home", "Self"],
+      "positivePreconditions" :
+      [],
+      "addedEffects" :
+      [
+        {"Location" : ["Home", "Self"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "Sleep",
+      "minDuration" : 8,
+      "maxDuration" : 10,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Home", "Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["Home", "Self"]}
+      ],
+      "addedEffects" :
+      [
+        {"Sleeping" : ["Self", "Home"]}
+      ],
+      "subtractedEffects" :
+      []
+    },
+    {
+      "name" : "ServeTime",
+      "minDuration" : 10,
+      "maxDuration" : 20,
+      "attributes" : [0.0,0.0,0.0],
+      "params" : ["Self"],
+      "positivePreconditions" :
+      [
+        {"Location" : ["Prison", "Self"]}
+      ],
+      "addedEffects" :
+      [
+      ],
+      "subtractedEffects" :
+      []
+    }
+  ],
+  "scheduleEntryTemplates" :
+  [
+    {
+      "name" : "SleepTemplate",
+      "type" : "sequence",
+      "actions" : ["TravelHome", "Sleep"]
+    },
+    {
+      "name" : "StandGuardTemplate",
+      "type" : "simple",
+      "actions" : ["StandAtGuardPost"]
+    },
+    {
+      "name" : "PrisonerTemplate",
+      "type" : "simple",
+      "actions" : ["ServeTime"]
+    }
+  ],
+  "schedules" :
+  [
+    {
+      "name" : "NightGuard",
+      "entries" :
+      [
+        {
+          "name" : "day",
+          "template" : "SleepTemplate",
+          "startTime" : 6
+        },
+        {
+          "name" : "evening",
+          "template" : "StandGuardTemplate",
+          "startTime" : 20
+        }
+      ]
+    },
+    {
+      "name" : "DayGuard",
+      "entries" :
+      [
+        {
+          "name" : "day",
+          "template" : "StandGuardTemplate",
+          "startTime" : 6
+        },
+        {
+          "name" : "evening",
+          "template" : "SleepTemplate",
+          "startTime" : 20
+        }
+      ]
+    },
+    {
+      "name" : "Prisoner",
+      "entries" :
+      [
+        {
+          "name" : "allDay",
+          "template" : "PrisonerTemplate",
+          "startTime" : 0
+        }
+      ]
+    }
+  ]
+}
