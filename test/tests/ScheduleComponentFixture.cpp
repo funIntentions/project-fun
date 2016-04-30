@@ -16,29 +16,36 @@ protected:
     }
 public:
     std::shared_ptr<EntityManager> _entityManager;
+    std::shared_ptr<StoryLogger> _storyLogger;
     std::shared_ptr<LocationComponentManager> _locationComponentManager;
     std::shared_ptr<AttributeComponentManager> _attributeComponentManager;
-    std::shared_ptr<OpinionComponentManager> _characterComponentManager;
+    std::shared_ptr<TypeComponentManager> _typeComponentManager;
+    std::shared_ptr<OpinionComponentManager> _opinionComponentManager;
     std::shared_ptr<PositionComponentManager> _positionComponentManager;
     std::shared_ptr<ActionManager> _actionManager;
     std::shared_ptr<OwnershipComponentManager> _ownershipComponentManager;
+    std::shared_ptr<StateComponentManager> _stateComponentManager;
     std::shared_ptr<ScheduleComponentManager> _scheduleComponentManager;
     Entity character;
 
     ScheduleComponentFixture() : Test(),
                                  _entityManager(new EntityManager()),
+                                 _storyLogger(new StoryLogger(_entityManager)),
                                  _locationComponentManager(new LocationComponentManager()),
                                  _attributeComponentManager(new AttributeComponentManager()),
-                                 _characterComponentManager(new OpinionComponentManager(_attributeComponentManager)),
-                                 _positionComponentManager(new PositionComponentManager(_locationComponentManager, _characterComponentManager)),
+                                 _typeComponentManager(new TypeComponentManager(_attributeComponentManager)),
+                                 _opinionComponentManager(new OpinionComponentManager(_attributeComponentManager, _typeComponentManager, _storyLogger)),
+                                 _positionComponentManager(new PositionComponentManager(_locationComponentManager, _opinionComponentManager)),
                                  _actionManager(new ActionManager),
-                                 _ownershipComponentManager(new OwnershipComponentManager(_actionManager)),
+                                 _ownershipComponentManager(new OwnershipComponentManager(_actionManager, _opinionComponentManager)),
+                                 _stateComponentManager(new StateComponentManager()),
                                  _scheduleComponentManager(new ScheduleComponentManager(_actionManager,
-                                                                                        _characterComponentManager,
+                                                                                        _typeComponentManager,
+                                                                                        _opinionComponentManager,
                                                                                         _positionComponentManager,
                                                                                         _ownershipComponentManager,
-                                                                                        _attributeComponentManager))
-
+                                                                                        _attributeComponentManager,
+                                                                                        _stateComponentManager))
     {}
 
     ~ScheduleComponentFixture() {}
