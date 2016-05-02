@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_BRIEFCASE_H
 #define PARTIALORDERPLANNER_BRIEFCASE_H
 
-#include "PartialOrderPlan.h"
+#include "planner/PartialOrderPlan.h"
 
 enum BriefcaseStates
 {

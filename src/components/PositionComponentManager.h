@@ -5,9 +5,9 @@
 #ifndef PARTIALORDERPLANNER_POSITIONCOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_POSITIONCOMPONENTMANAGER_H
 
-#include <ActionManager.h>
+#include <schedules/ActionManager.h>
 #include <memory>
-#include "ComponentManager.h"
+#include "framework/ComponentManager.h"
 #include "LocationComponentManager.h"
 #include "OpinionComponentManager.h"
 

@@ -3,9 +3,9 @@
 //
 
 #include <gtest/gtest.h>
-#include <EntityManager.h>
+#include <framework/EntityManager.h>
 #include <components/AttributeComponentManager.h>
-#include <PartialOrderPlanner.h>
+#include <planner/PartialOrderPlanner.h>
 #include <util/Extra.h>
 
 class AttributeComponentFixture : public ::testing::Test {

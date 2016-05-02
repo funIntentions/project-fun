@@ -5,8 +5,8 @@
 #ifndef PARTIALORDERPLANNER_ATTRIBUTECOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_ATTRIBUTECOMPONENTMANAGER_H
 
-#include "ComponentManager.h"
-#include "ActionManager.h"
+#include "framework/ComponentManager.h"
+#include "schedules/ActionManager.h"
 #include "Attribute.h"
 #include <memory>
 #include <string>

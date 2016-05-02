@@ -6,8 +6,8 @@
 #define PARTIALORDERPLANNER_DESCRIPTIONCOMPONENTMANAGER_H
 
 #include <iostream>
-#include <EntityManager.h>
-#include <ComponentManager.h>
+#include <framework/EntityManager.h>
+#include <framework/ComponentManager.h>
 
 class DescriptionComponentManager : public ComponentManager
 {

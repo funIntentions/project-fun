@@ -8,8 +8,8 @@
 #include "framework/TextRenderer.h"
 #include "Constants.h"
 #include <framework/Game.h>
-#include <PartialOrderPlanner.h>
-#include <EntityManager.h>
+#include <planner/PartialOrderPlanner.h>
+#include <framework/EntityManager.h>
 #include <components/PlaceComponentManager.h>
 #include <components/DescriptionComponentManager.h>
 #include <domain/Adventure.h>

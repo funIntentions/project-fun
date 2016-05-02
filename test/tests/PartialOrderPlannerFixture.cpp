@@ -9,7 +9,7 @@
 #include "domains/Sussman.h"
 #include "domains/Table.h"
 
-#include "PartialOrderPlanner.h"
+#include "planner/PartialOrderPlanner.h"
 
 class PartialOrderPlannerFixture : public ::testing::Test {
 protected:

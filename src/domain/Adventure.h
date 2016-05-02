@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_ADVENTURE_H
 #include <vector>
 #include <set>
-#include "PartialOrderPlan.h"
+#include "planner/PartialOrderPlan.h"
 
 enum AdventureStates
 {

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <PartialOrderPlanner.h>
+#include <planner/PartialOrderPlanner.h>
 #include <components/ScheduleComponentManager.h>
 
 class Action;

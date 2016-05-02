@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(planner)
+project(story_engine)
 
 add_definitions(-std=c++11)
 
 set(HEADER_FILES
-        PartialOrderPlan.h
-        PartialOrderPlanner.h
-        ComponentManager.h
-        EntityManager.h
+        planner/PartialOrderPlan.h
+        planner/PartialOrderPlanner.h
+        framework/ComponentManager.h
+        framework/EntityManager.h
         schedules/Schedule.h
         schedules/ScheduleEntry.h
         schedules/Action.h
@@ -17,7 +17,7 @@ set(HEADER_FILES
         components/ScheduleComponentManager.h
         components/LocationComponentManager.h
         components/PositionComponentManager.h
-        ActionManager.h
+        schedules/ActionManager.h
         framework/Game.h
         framework/Window.h
         framework/Graphics.h
@@ -27,8 +27,8 @@ set(HEADER_FILES
         schedules/Predicate.h)
 
 set(SOURCE_FILES
-        PartialOrderPlanner.cpp
-        EntityManager.cpp
+        planner/PartialOrderPlanner.cpp
+        framework/EntityManager.cpp
         schedules/Schedule.cpp
         schedules/ScheduleEntry.cpp
         schedules/Action.cpp
@@ -37,11 +37,35 @@ set(SOURCE_FILES
         components/ScheduleComponentManager.cpp
         components/LocationComponentManager.cpp
         components/PositionComponentManager.cpp
-        ActionManager.cpp
+        schedules/ActionManager.cpp
         framework/Window.cpp
         framework/Graphics.cpp
         framework/Input.cpp
         framework/Keyboard.cpp
-        components/OpinionComponentManager.h framework/Shader.cpp framework/Shader.h framework/TextRenderer.cpp framework/TextRenderer.h components/AttributeComponentManager.cpp components/AttributeComponentManager.h demo/OpinionGame.cpp demo/OpinionGame.h demo/PlannerGame.cpp demo/PlannerGame.h components/DescriptionComponentManager.cpp components/DescriptionComponentManager.h components/PlaceComponentManager.cpp components/PlaceComponentManager.h domain/Adventure.h components/Attribute.h framework/Cursor.h components/OwnershipComponentManager.cpp components/OwnershipComponentManager.h components/TypeComponentManager.h demo/Constants.h demo/StoryLogger.h components/StateComponentManager.h components/StateComponentManager.cpp)
+        components/OpinionComponentManager.h
+        framework/Shader.cpp
+        framework/Shader.h
+        framework/TextRenderer.cpp
+        framework/TextRenderer.h
+        components/AttributeComponentManager.cpp
+        components/AttributeComponentManager.h
+        demo/OpinionGame.cpp
+        demo/OpinionGame.h
+        demo/PlannerGame.cpp
+        demo/PlannerGame.h
+        components/DescriptionComponentManager.cpp
+        components/DescriptionComponentManager.h
+        components/PlaceComponentManager.cpp
+        components/PlaceComponentManager.h
+        domain/Adventure.h
+        components/Attribute.h
+        framework/Cursor.h
+        components/OwnershipComponentManager.cpp
+        components/OwnershipComponentManager.h
+        components/TypeComponentManager.h
+        demo/Constants.h
+        demo/StoryLogger.h
+        components/StateComponentManager.h
+        components/StateComponentManager.cpp)
 
-add_library(planner STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(story_engine STATIC ${SOURCE_FILES} ${HEADER_FILES})

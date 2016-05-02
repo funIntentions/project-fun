@@ -6,9 +6,9 @@
 #define PARTIALORDERPLANNER_OWNERSHIPCOMPONENTMANAGER_H
 
 
-#include <EntityManager.h>
-#include <ActionManager.h>
-#include <ComponentManager.h>
+#include <framework/EntityManager.h>
+#include <schedules/ActionManager.h>
+#include <framework/ComponentManager.h>
 #include <unordered_set>
 #include <set>
 #include "OpinionComponentManager.h"

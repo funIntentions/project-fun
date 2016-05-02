@@ -5,9 +5,9 @@
 #ifndef PARTIALORDERPLANNER_STATECOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_STATECOMPONENTMANAGER_H
 
-#include <EntityManager.h>
-#include <ComponentManager.h>
-#include <ActionManager.h>
+#include <framework/EntityManager.h>
+#include <framework/ComponentManager.h>
+#include <schedules/ActionManager.h>
 
 struct State
 {

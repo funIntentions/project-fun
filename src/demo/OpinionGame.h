@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_OPINIONGAME_H
 
 #include <framework/Game.h>
-#include <EntityManager.h>
+#include <framework/EntityManager.h>
 #include <iostream>
 #include "components/ScheduleComponentManager.h"
 #include "components/LocationComponentManager.h"

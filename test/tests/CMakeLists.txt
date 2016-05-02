@@ -14,4 +14,4 @@ SET(SOURCE_FILES
 add_executable(run_tests ${SOURCE_FILES} ${HEADER_FILES})
 
 target_link_libraries(run_tests gtest gtest_main)
-target_link_libraries(run_tests planner)
+target_link_libraries(run_tests story_engine)

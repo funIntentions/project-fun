@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_TYPECOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_TYPECOMPONENTMANAGER_H
 
-#include <ComponentManager.h>
+#include <framework/ComponentManager.h>
 #include <algorithm>
 #include <fstream>
 #include <rapidjson/document.h>

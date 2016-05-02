@@ -46,6 +46,9 @@ int ScheduleInstance::nextEntry(int entryIndex) const
 
 int ScheduleInstance::getEntryAtTime(double currentTime) const
 {
+    if (currentTime == 0)
+        currentTime = 24.0;
+
     if (schedule->entries.size() == 1)
         return 0;
 

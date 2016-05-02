@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_CHARACTERCOMPONENTMANAGER_H
 #define PARTIALORDERPLANNER_CHARACTERCOMPONENTMANAGER_H
 
-#include <ComponentManager.h>
+#include <framework/ComponentManager.h>
 #include <algorithm>
 #include <fstream>
 #include <algorithm>

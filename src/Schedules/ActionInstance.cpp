@@ -4,7 +4,7 @@
 
 #include "ActionInstance.h"
 #include "Action.h"
-#include "PartialOrderPlan.h"
+#include "planner/PartialOrderPlan.h"
 
 
 ActionInstance::ActionInstance(const Action* action, double duration)

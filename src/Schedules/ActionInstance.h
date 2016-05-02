@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <EntityManager.h>
+#include <framework/EntityManager.h>
 
 class Action;
 class Operator;

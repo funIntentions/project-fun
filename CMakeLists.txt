@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(PartialOrderPlanner)
+project(StoryEngine)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -static-libgcc -static-libstdc++  -D__NO_INLINE__ ")
 
@@ -25,6 +25,6 @@ link_directories(
 add_subdirectory(src)
 add_subdirectory(test)
 
-add_executable(run_planner ${SOURCE_FILES} )
+add_executable(run_demo ${SOURCE_FILES} )
 
-target_link_libraries(run_planner planner ${OPENGL_LIBRARIES} freetype glfw3 glew32s glu32 opengl32)
+target_link_libraries(run_demo story_engine ${OPENGL_LIBRARIES} freetype glfw3 glew32s glu32 opengl32)

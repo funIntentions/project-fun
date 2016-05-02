@@ -6,7 +6,7 @@
 #define PARTIALORDERPLANNER_ACTIONFACTORY_H
 
 #include "schedules/Action.h"
-#include "PartialOrderPlan.h"
+#include "planner/PartialOrderPlan.h"
 #include <unordered_map>
 
 class ActionManager {

@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_SUSSMAN_H
 #define PARTIALORDERPLANNER_SUSSMAN_H
 
-#include "PartialOrderPlan.h"
+#include "planner/PartialOrderPlan.h"
 
 enum SussmanStates
 {

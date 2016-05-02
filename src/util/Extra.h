@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_EXTRA_H
 #define PARTIALORDERPLANNER_EXTRA_H
 
-#include <PartialOrderPlan.h>
+#include <planner/PartialOrderPlan.h>
 #include <string>
 #include <sstream>
 

@@ -27,6 +27,7 @@ public:
     int getEntryAtTime(double currentTime) const;
     double getEndTime(int entryIndex) const;
     int nextEntry(int entryIndex) const;
+    int currentEntry() const {return entryIndex;}
     int getId() const;
     std::string getName() const;
     unsigned getActionIndex()

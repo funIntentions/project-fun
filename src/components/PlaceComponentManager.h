@@ -6,8 +6,8 @@
 #define PARTIALORDERPLANNER_PLACECOMPONENTMANAGER_H
 
 
-#include <EntityManager.h>
-#include <ComponentManager.h>
+#include <framework/EntityManager.h>
+#include <framework/ComponentManager.h>
 
 enum Place
 {

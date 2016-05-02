@@ -7,12 +7,12 @@
 
 #include <functional>
 #include <memory>
-#include <PartialOrderPlanner.h>
+#include <planner/PartialOrderPlanner.h>
 #include <demo/StoryLogger.h>
 #include <schedules/Schedule.h>
 #include <schedules/ScheduleInstance.h>
-#include "ComponentManager.h"
-#include "PartialOrderPlan.h"
+#include "framework/ComponentManager.h"
+#include "planner/PartialOrderPlan.h"
 #include "LocationComponentManager.h"
 #include "PositionComponentManager.h"
 #include "OpinionComponentManager.h"
