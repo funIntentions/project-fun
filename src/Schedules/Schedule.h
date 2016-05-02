@@ -1,36 +1,44 @@
 //
-// Created by Dan on 2/6/2016.
+// Created by Dan on 2/7/2016.
 //
 
-#ifndef PARTIALORDERPLANNER_SCHEDULE_H
-#define PARTIALORDERPLANNER_SCHEDULE_H
+#ifndef PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
+#define PARTIALORDERPLANNER_SCHEDULEINSTANCE_H
 
-#include <vector>
-#include <string>
-#include <planner/PartialOrderPlanner.h>
+#include <components/ScheduleComponentManager.h>
 
-class ScheduleEntry;
-class ActionInstance;
+class ScheduleData;
+class Action;
 
 class Schedule {
 private:
-    std::string name;
-    int id;
-
+    ScheduleData* schedule;
+    int entryIndex;
+    double entryEndTime;
+    unsigned actionIndex;
 public:
-    std::vector<ScheduleEntry*> entries;
+    Schedule(ScheduleData* schedule);
 
-    Schedule(const std::string& name, int id) : name(name), id(id) {}
-    ~Schedule() {}
-    void addEntry(ScheduleEntry* entry) { entries.push_back(entry); }
-    unsigned getNumEntries()
+    void chooseEntryForTime(double currentTime);
+    void startNextScheduleEntry();
+    bool timeIsUp(double lastTime, double currentTime);
+    Action* chooseNewAction();
+
+    int getEntryAtTime(double currentTime) const;
+    double getEndTime(int entryIndex) const;
+    int nextEntry(int entryIndex) const;
+    int currentEntry() const {return entryIndex;}
+    int getId() const;
+    std::string getName() const;
+    unsigned getActionIndex()
     {
-        return entries.size();
+        return actionIndex;
     }
-
-    const std::string& getName() const { return name; }
-    int getId() const { return id; }
+    void setActionIndex(unsigned index)
+    {
+        actionIndex = index;
+    }
 };
 
 
-#endif //PARTIALORDERPLANNER_SCHEDULE_H
+#endif //PARTIALORDERPLANNER_SCHEDULEINSTANCE_H

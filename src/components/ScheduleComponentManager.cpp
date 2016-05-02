@@ -2,10 +2,10 @@
 // Created by Dan on 2/13/2016.
 //
 #include "ScheduleComponentManager.h"
-#include "Schedules/Schedule.h"
+#include "schedules/ScheduleData.h"
 #include "OwnershipComponentManager.h"
 #include <Schedules/ScheduleEntry.h>
-#include <Schedules/ScheduleInstance.h>
+#include <schedules/Schedule.h>
 #include <util/Extra.h>
 
 ScheduleComponentManager::ScheduleComponentManager(std::shared_ptr<ActionManager> actionManager,
@@ -69,7 +69,7 @@ void ScheduleComponentManager::readActions(std::shared_ptr<ActionManager> action
         std::shared_ptr<Operator> newOperator(new Operator());
         newOperator->name = name;
 
-        Action* action = new Action(name, actions.size(), minDuration, maxDuration);
+        ActionData* action = new ActionData(name, actions.size(), minDuration, maxDuration);
 
         member_itr = action_itr->FindMember("attributes");
         if (member_itr != action_itr->MemberEnd())
@@ -219,7 +219,7 @@ void ScheduleComponentManager::readSchedules()
                     auto actionItr = actions.find(actionId);
                     if (actionItr != actions.end())
                     {
-                        Action* action = actionItr->second;
+                        ActionData* action = actionItr->second;
                         entry->addAction(action);
                     }
                 }
@@ -242,7 +242,7 @@ void ScheduleComponentManager::readSchedules()
         if (memberItr != scheduleItr->MemberEnd())
             name = memberItr->value.GetString();
 
-        Schedule* schedule = new Schedule(name, schedules.size());
+        ScheduleData* schedule = new ScheduleData(name, schedules.size());
 
         auto entryData = scheduleItr->FindMember("entries");
         if (entryData != scheduleItr->MemberEnd())
@@ -297,7 +297,7 @@ ScheduleEntry* ScheduleComponentManager::scheduleEntryFactory(const std::string&
     }
     else
     {
-        printf("[WARNING] Unknown Schedule type %s for schedule %s\n", type.c_str(), name.c_str());
+        printf("[WARNING] Unknown ScheduleData type %s for schedule %s\n", type.c_str(), name.c_str());
         return NULL;
     }
 }
@@ -637,7 +637,7 @@ std::vector<int> ScheduleComponentManager::getState(Entity entity)
     return state;
 }
 
-void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* action)
+void ScheduleComponentManager::mapParameters(Entity entity, Action* action)
 {
     std::vector<std::string> parameters = action->getParameters();
     for (std::string param : parameters)
@@ -648,7 +648,7 @@ void ScheduleComponentManager::mapParameters(Entity entity, ActionInstance* acti
     }
 }
 
-bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
+bool ScheduleComponentManager::preconditionsMet(Action* action) {
     std::vector<int> preconditions = action->getPreconditions();
     for (int id : preconditions)
     {
@@ -776,7 +776,7 @@ bool ScheduleComponentManager::preconditionsMet(ActionInstance* action) {
     return true;
 }
 
-void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& storyLogger)
+void ScheduleComponentManager::updateState(Action* action, StoryLogger& storyLogger)
 {
     std::vector<int> effects = action->getActionEffects();
     for (int id : effects)
@@ -943,7 +943,7 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
                 storyLogger.logEvent({"is sleeping at"}, {entity, location});
             }
         }
-        else if (predicateTemplate.type == "Schedule")
+        else if (predicateTemplate.type == "ScheduleData")
         {
             auto entityItr = action->mappedParameters.find(predicateTemplate.params[1]);
 
@@ -957,12 +957,12 @@ void ScheduleComponentManager::updateState(ActionInstance* action, StoryLogger& 
 
                 if (scheduleItr != schedules.end())
                 {
-                    ScheduleInstance* oldSchedule = _data.currentSchedule[instance.i];
+                    Schedule* oldSchedule = _data.currentSchedule[instance.i];
                     delete oldSchedule;
                     _data.queuedActions[instance.i].clear();
 
-                    Schedule* schedule = scheduleItr->second;
-                    ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
+                    ScheduleData* schedule = scheduleItr->second;
+                    Schedule* scheduleInstance = new Schedule(schedule);
                     scheduleInstance->chooseEntryForTime(0.0);
                     _data.currentSchedule[instance.i] = scheduleInstance;
                     _data.queuedActions[instance.i].push_back(_data.currentSchedule[instance.i]->chooseNewAction());
@@ -992,8 +992,8 @@ void ScheduleComponentManager::spawnComponent(Entity entity, std::string schedul
 
         if (scheduleItr != schedules.end())
         {
-            Schedule* schedule = scheduleItr->second;
-            ScheduleInstance* scheduleInstance = new ScheduleInstance(schedule);
+            ScheduleData* schedule = scheduleItr->second;
+            Schedule* scheduleInstance = new Schedule(schedule);
             scheduleInstance->chooseEntryForTime(currentTime);
             _data.currentSchedule.push_back(scheduleInstance);
             _data.queuedActions.push_back({scheduleInstance->chooseNewAction()});

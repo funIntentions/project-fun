@@ -1,17 +1,45 @@
 //
-// Created by Dan on 2/6/2016.
+// Created by Dan on 2/7/2016.
 //
 
-#include <stdlib.h>
 #include "Action.h"
+#include "ActionData.h"
+#include "planner/PartialOrderPlan.h"
 
-double Action::calculateDuration() const
+
+Action::Action(const ActionData* action, double duration)
+                                : action(action), duration(duration)
 {
-    double random = (double)rand() / RAND_MAX;
-    return (minDuration + random * (maxDuration - minDuration));
+
 }
 
-ActionInstance* Action::createActionInstance() const
+bool Action::perform(double deltaTime)
 {
-    return new ActionInstance(this, calculateDuration());
+    duration -= deltaTime;
+    return (duration <= 0);
+}
+
+std::vector<std::string> Action::getParameters() const
+{
+    return action->parameters;
+}
+
+std::vector<int> Action::getPreconditions()
+{
+    return action->actionOperator->preconditions;
+}
+
+std::vector<int> Action::getActionEffects()
+{
+    return action->actionOperator->addedEffects;
+}
+
+int Action::getActionId() const
+{
+    return action->getId();
+}
+
+const std::string& Action::getActionName() const
+{
+    return action->getName();
 }

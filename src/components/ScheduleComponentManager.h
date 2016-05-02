@@ -9,8 +9,8 @@
 #include <memory>
 #include <planner/PartialOrderPlanner.h>
 #include <demo/StoryLogger.h>
+#include <schedules/ScheduleData.h>
 #include <schedules/Schedule.h>
-#include <schedules/ScheduleInstance.h>
 #include "framework/ComponentManager.h"
 #include "planner/PartialOrderPlan.h"
 #include "LocationComponentManager.h"
@@ -20,13 +20,13 @@
 #include "OwnershipComponentManager.h"
 #include "StateComponentManager.h"
 
-class ActionInstance;
-class ScheduleInstance;
-class Schedule;
-class ScheduleEntry;
 class Action;
+class Schedule;
+class ScheduleData;
+class ScheduleEntry;
+class ActionData;
 
-typedef std::function<std::vector<Operator>(Action, Entity)> OperatorCallbackFunction;
+typedef std::function<std::vector<Operator>(ActionData, Entity)> OperatorCallbackFunction;
 
 class ScheduleComponentManager : public ComponentManager
 {
@@ -35,15 +35,15 @@ private:
     {
         unsigned size;
         std::vector<Entity> entity;
-        std::vector<std::vector<ActionInstance*>> queuedActions;
-        std::vector<ScheduleInstance*> currentSchedule;
+        std::vector<std::vector<Action*>> queuedActions;
+        std::vector<Schedule*> currentSchedule;
     };
 
     InstanceData _data;
 
-    std::unordered_map<int, Schedule*> schedules;
+    std::unordered_map<int, ScheduleData*> schedules;
     std::unordered_map<int, ScheduleEntry*> scheduleEntryTemplates;
-    std::unordered_map<int, Action*> actions;
+    std::unordered_map<int, ActionData*> actions;
     std::vector<std::shared_ptr<Operator>> operators;
     std::unordered_map<std::string, int> actionNameToIdMap;
     std::unordered_map<std::string, int> entryNameToIdMap;
@@ -74,9 +74,9 @@ public:
                              std::shared_ptr<AttributeComponentManager> attributeComponentManager,
                              std::shared_ptr<StateComponentManager> stateComponentManager);
 
-    Action* getAction(std::string actionName)
+    ActionData* getAction(std::string actionName)
     {
-        Action* action = nullptr;
+        ActionData* action = nullptr;
         auto IdItr = actionNameToIdMap.find(actionName);
         if (IdItr != actionNameToIdMap.end())
         {
@@ -95,9 +95,9 @@ public:
         return actions.size();
     }
 
-    Schedule* getSchedule(std::string scheduleName)
+    ScheduleData* getSchedule(std::string scheduleName)
     {
-        Schedule* schedule = nullptr;
+        ScheduleData* schedule = nullptr;
         auto IdItr = scheduleNameToIdMap.find(scheduleName);
         if (IdItr != scheduleNameToIdMap.end())
         {
@@ -111,7 +111,7 @@ public:
         return schedule;
     }
 
-    ScheduleInstance* getEntitySchedule(Entity entity)
+    Schedule* getEntitySchedule(Entity entity)
     {
         Instance instance = lookup(entity);
 
@@ -140,13 +140,13 @@ public:
 
     void usePlanner(Entity entity, std::vector<int> preconditions);
 
-    void updateState(ActionInstance* action, StoryLogger& storyLogger);
+    void updateState(Action* action, StoryLogger& storyLogger);
 
     std::vector<int> getState(Entity entity);
 
-    void mapParameters(Entity entity, ActionInstance* action);
+    void mapParameters(Entity entity, Action* action);
 
-    bool preconditionsMet(ActionInstance* action);
+    bool preconditionsMet(Action* action);
 
     void runSchedules(double deltaTime, StoryLogger& storyLogger);
 

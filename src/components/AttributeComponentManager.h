@@ -62,7 +62,7 @@ public:
         return sum;
     }
 
-    std::vector<Operator> sortActionOperations(const std::unordered_map<int, Action*>& actions, Entity entity)
+    std::vector<Operator> sortActionOperations(const std::unordered_map<int, ActionData*>& actions, Entity entity)
     {
         Instance instance = lookup(entity);
         std::vector<float> attributes = _data.attributes[instance.i];
@@ -71,7 +71,7 @@ public:
         // calculate this entity's preference (product) for each action
         for (auto actionPair : actions)
         {
-            Action* action = actionPair.second;
+            ActionData* action = actionPair.second;
             int actionId = actionPair.first;
 
             float preference = calculatePreference(action->attributes, attributes);

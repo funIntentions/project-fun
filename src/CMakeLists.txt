@@ -9,11 +9,11 @@ set(HEADER_FILES
         planner/PartialOrderPlanner.h
         framework/ComponentManager.h
         framework/EntityManager.h
-        schedules/Schedule.h
+        schedules/ScheduleData.h
         schedules/ScheduleEntry.h
+        schedules/ActionData.h
         schedules/Action.h
-        schedules/ActionInstance.h
-        schedules/ScheduleInstance.h
+        schedules/Schedule.h
         components/ScheduleComponentManager.h
         components/LocationComponentManager.h
         components/PositionComponentManager.h
@@ -29,11 +29,11 @@ set(HEADER_FILES
 set(SOURCE_FILES
         planner/PartialOrderPlanner.cpp
         framework/EntityManager.cpp
-        schedules/Schedule.cpp
+        schedules/ScheduleData.cpp
         schedules/ScheduleEntry.cpp
+        schedules/ActionData.cpp
         schedules/Action.cpp
-        schedules/ActionInstance.cpp
-        schedules/ScheduleInstance.cpp
+        schedules/Schedule.cpp
         components/ScheduleComponentManager.cpp
         components/LocationComponentManager.cpp
         components/PositionComponentManager.cpp

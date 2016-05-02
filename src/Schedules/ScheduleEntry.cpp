@@ -4,16 +4,16 @@
 
 #include "util/Extra.h"
 #include "ScheduleEntry.h"
-#include "ScheduleInstance.h"
+#include "Schedule.h"
 
-// Simple Schedule Entry
+// Simple ScheduleData Entry
 
-void SimpleScheduleEntry::addAction(Action* a)
+void SimpleScheduleEntry::addAction(ActionData* a)
 {
     action = a;
 }
 
-ActionInstance* SimpleScheduleEntry::chooseNewAction(ScheduleInstance*)
+Action* SimpleScheduleEntry::chooseNewAction(Schedule*)
 {
     return action->createActionInstance();
 }
@@ -25,14 +25,14 @@ ScheduleEntry* SimpleScheduleEntry::clone(const std::string& name, const int& id
     return simpleScheduleEntry;
 }
 
-// Sequence Schedule Entry
+// Sequence ScheduleData Entry
 
-void SequenceScheduleEntry::addAction(Action* action)
+void SequenceScheduleEntry::addAction(ActionData* action)
 {
     actions.push_back(action);
 }
 
-ActionInstance* SequenceScheduleEntry::chooseNewAction(ScheduleInstance* scheduleInstance)
+Action* SequenceScheduleEntry::chooseNewAction(Schedule* scheduleInstance)
 {
     unsigned actionIndex = scheduleInstance->getActionIndex();
     if (actionIndex >= actions.size())
@@ -40,7 +40,7 @@ ActionInstance* SequenceScheduleEntry::chooseNewAction(ScheduleInstance* schedul
 
     scheduleInstance->setActionIndex(actionIndex + 1);
 
-    Action* action = actions[actionIndex];
+    ActionData* action = actions[actionIndex];
 
     return action->createActionInstance();
 }

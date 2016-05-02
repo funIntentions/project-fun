@@ -54,17 +54,17 @@ public:
 
 TEST_F(AttributeComponentFixture, high_attribute_ranking_actions)
 {
-    Action steal("Steal", 0, 1, 1);
+    ActionData steal("Steal", 0, 1, 1);
     steal.attributes[Attribute::CHARM] = 0.0f;
     steal.actionOperator = std::shared_ptr<Operator>(new Operator(steal.getName()));
-    Action buy("Buy", 2, 1, 1);
+    ActionData buy("Buy", 2, 1, 1);
     buy.attributes[Attribute::CHARM] = 0.8f;
     buy.actionOperator = std::shared_ptr<Operator>(new Operator(buy.getName()));
-    Action borrow("Borrow(Never Return)", 1, 1, 1);
+    ActionData borrow("Borrow(Never Return)", 1, 1, 1);
     borrow.attributes[Attribute::CHARM] = 0.4f;
     borrow.actionOperator = std::shared_ptr<Operator>(new Operator(borrow.getName()));
 
-    std::unordered_map<int, Action*> actions;
+    std::unordered_map<int, ActionData*> actions;
     actions[steal.getId()] = &steal;
     actions[borrow.getId()] = &borrow;
     actions[buy.getId()] = &buy;
@@ -81,17 +81,17 @@ TEST_F(AttributeComponentFixture, high_attribute_ranking_actions)
 
 TEST_F(AttributeComponentFixture, low_attribute_ranking_actions)
 {
-    Action steal("Steal", 0, 1, 1);
+    ActionData steal("Steal", 0, 1, 1);
     steal.attributes[Attribute::CHARM] = 0.0f;
     steal.actionOperator = std::shared_ptr<Operator>(new Operator(steal.getName()));
-    Action buy("Buy", 2, 1, 1);
+    ActionData buy("Buy", 2, 1, 1);
     buy.attributes[Attribute::CHARM] = 0.8f;
     buy.actionOperator = std::shared_ptr<Operator>(new Operator(buy.getName()));
-    Action borrow("Borrow(Never Return)", 1, 1, 1);
+    ActionData borrow("Borrow(Never Return)", 1, 1, 1);
     borrow.attributes[Attribute::CHARM] = 0.4f;
     borrow.actionOperator = std::shared_ptr<Operator>(new Operator(borrow.getName()));
 
-    std::unordered_map<int, Action*> actions;
+    std::unordered_map<int, ActionData*> actions;
     actions[steal.getId()] = &steal;
     actions[borrow.getId()] = &borrow;
     actions[buy.getId()] = &buy;
@@ -112,19 +112,19 @@ TEST_F(AttributeComponentFixture, chosen_plan_actions_correspond_to_attributes)
     int hasFishingBait = 1;
     int usingFishingBait = 2;
 
-    Action catchFish("CatchFish", 0, 1, 1);
+    ActionData catchFish("CatchFish", 0, 1, 1);
     catchFish.attributes[Attribute::INTELLIGENCE] = 0.4f;
     catchFish.actionOperator = std::shared_ptr<Operator>(new Operator(catchFish.getName()));
     catchFish.actionOperator->addedEffects = {fishing};
     catchFish.actionOperator->preconditions = {usingFishingBait};
 
-    Action baitHook("BaitHook", 2, 1, 1);
+    ActionData baitHook("BaitHook", 2, 1, 1);
     baitHook.attributes[Attribute::INTELLIGENCE] = 0.8f;
     baitHook.actionOperator = std::shared_ptr<Operator>(new Operator(baitHook.getName()));
     baitHook.actionOperator->addedEffects = {usingFishingBait};
     baitHook.actionOperator->preconditions = {hasFishingBait};
 
-    Action catchNothing("CatchNothing", 1, 1, 1);
+    ActionData catchNothing("CatchNothing", 1, 1, 1);
     catchNothing.attributes[Attribute::INTELLIGENCE] = 0.0f;
     catchNothing.actionOperator = std::shared_ptr<Operator>(new Operator(catchNothing.getName()));
     catchNothing.actionOperator->addedEffects = {fishing};
@@ -135,7 +135,7 @@ TEST_F(AttributeComponentFixture, chosen_plan_actions_correspond_to_attributes)
     Operator start("Start");
     start.addedEffects = {hasFishingBait};
 
-    std::unordered_map<int, Action*> actions;
+    std::unordered_map<int, ActionData*> actions;
     actions[catchFish.getId()] = &catchFish;
     actions[baitHook.getId()] = &baitHook;
     actions[catchNothing.getId()] = &catchNothing;
@@ -163,19 +163,19 @@ TEST_F(AttributeComponentFixture, chosen_plan_when_scores_match_is_shortest)
     int hasFishingBait = 1;
     int usingFishingBait = 2;
 
-    Action catchFish("CatchFish", 0, 1, 1);
+    ActionData catchFish("CatchFish", 0, 1, 1);
     catchFish.attributes[Attribute::INTELLIGENCE] = 0.0f;
     catchFish.actionOperator = std::shared_ptr<Operator>(new Operator(catchFish.getName()));
     catchFish.actionOperator->addedEffects = {fishing};
     catchFish.actionOperator->preconditions = {usingFishingBait};
 
-    Action baitHook("BaitHook", 2, 1, 1);
+    ActionData baitHook("BaitHook", 2, 1, 1);
     baitHook.attributes[Attribute::INTELLIGENCE] = 0.0f;
     baitHook.actionOperator = std::shared_ptr<Operator>(new Operator(baitHook.getName()));
     baitHook.actionOperator->addedEffects = {usingFishingBait};
     baitHook.actionOperator->preconditions = {hasFishingBait};
 
-    Action catchNothing("CatchNothing", 1, 1, 1);
+    ActionData catchNothing("CatchNothing", 1, 1, 1);
     catchNothing.attributes[Attribute::INTELLIGENCE] = 0.0f;
     catchNothing.actionOperator = std::shared_ptr<Operator>(new Operator(catchNothing.getName()));
     catchNothing.actionOperator->addedEffects = {fishing};
@@ -186,7 +186,7 @@ TEST_F(AttributeComponentFixture, chosen_plan_when_scores_match_is_shortest)
     Operator start("Start");
     start.addedEffects = {hasFishingBait};
 
-    std::unordered_map<int, Action*> actions;
+    std::unordered_map<int, ActionData*> actions;
     actions[catchFish.getId()] = &catchFish;
     actions[baitHook.getId()] = &baitHook;
     actions[catchNothing.getId()] = &catchNothing;

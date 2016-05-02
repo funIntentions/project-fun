@@ -11,8 +11,8 @@
 #include <planner/PartialOrderPlanner.h>
 #include <components/ScheduleComponentManager.h>
 
+class ActionData;
 class Action;
-class ActionInstance;
 
 class ScheduleEntry {
 protected:
@@ -24,8 +24,8 @@ public:
         : name(name), id(id), startTime(startTime) {}
     virtual ~ScheduleEntry() {}
 
-    virtual void addAction(Action* action) = 0;
-    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance) = 0;
+    virtual void addAction(ActionData* action) = 0;
+    virtual Action* chooseNewAction(Schedule* scheduleInstance) = 0;
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime) = 0;
 
     const std::string& getName() const { return name; }
@@ -36,28 +36,28 @@ public:
 class SimpleScheduleEntry : public ScheduleEntry
 {
 private:
-    Action* action;
+    ActionData* action;
     Operator op;
 public:
     SimpleScheduleEntry(const std::string& name, int id, double startTime)
             : ScheduleEntry(name, id, startTime), action(nullptr) {}
 
-    virtual void addAction(Action* action);
-    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance);
+    virtual void addAction(ActionData* action);
+    virtual Action* chooseNewAction(Schedule* scheduleInstance);
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 };
 
 class SequenceScheduleEntry : public ScheduleEntry
 {
 private:
-    std::vector<Action*> actions;
+    std::vector<ActionData*> actions;
 public:
     SequenceScheduleEntry(const std::string& name, int id, double startTime)
             : ScheduleEntry(name, id, startTime)
     {}
 
-    virtual void addAction(Action* action);
-    virtual ActionInstance* chooseNewAction(ScheduleInstance* scheduleInstance);
+    virtual void addAction(ActionData* action);
+    virtual Action* chooseNewAction(Schedule* scheduleInstance);
     virtual ScheduleEntry* clone(const std::string& name, const int& id, double startTime);
 
 };

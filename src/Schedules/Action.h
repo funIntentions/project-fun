@@ -1,39 +1,39 @@
 //
-// Created by Dan on 2/6/2016.
+// Created by Dan on 2/7/2016.
 //
 
-#ifndef PARTIALORDERPLANNER_ACTION_H
-#define PARTIALORDERPLANNER_ACTION_H
+#ifndef PARTIALORDERPLANNER_ACTIONINSTANCE_H
+#define PARTIALORDERPLANNER_ACTIONINSTANCE_H
 
 #include <string>
 #include <vector>
-#include <memory>
-#include "ActionInstance.h"
-#include "Predicate.h"
-#include "components/Attribute.h"
+#include <unordered_map>
+#include <framework/EntityManager.h>
+
+class ActionData;
+class Operator;
 
 class Action {
 private:
-    std::string name;
-    int id;
-    double minDuration;
-    double maxDuration;
-
-    double calculateDuration() const;
+    const ActionData* action;
+    double duration;
 public:
-    Action(const std::string& name, int id, double minDuration, double maxDuration)
-            : name(name), id(id), minDuration(minDuration), maxDuration(maxDuration), attributes(std::vector<float>(Attribute::NumberOfAttributes)) {}
-    ~Action(){}
+    std::unordered_map<std::string, Entity> mappedParameters;
 
-    const std::string& getName() const { return name; }
-    int getId() const { return id; }
-    ActionInstance* createActionInstance() const;
+    Action(const ActionData* action, double duration);
 
-    std::vector<float> attributes;
-    std::vector<std::string> parameters;
-    std::shared_ptr<Operator> actionOperator;
+    bool perform(double deltaTime);
+
+    std::vector<std::string> getParameters() const;
+    std::vector<int> getPreconditions();
+    std::vector<int> getActionEffects();
+    const std::string& getActionName() const;
+    int getActionId() const;
+    double getDuration() const
+    {
+        return duration;
+    }
 };
 
 
-
-#endif //PARTIALORDERPLANNER_ACTION_H
+#endif //PARTIALORDERPLANNER_ACTIONINSTANCE_H

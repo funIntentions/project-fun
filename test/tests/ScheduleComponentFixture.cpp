@@ -52,7 +52,7 @@ TEST_F(ScheduleComponentFixture, action_loading)
 {
     ASSERT_EQ(_scheduleComponentManager->getNumActions(), 4);
 
-    Action* action = _scheduleComponentManager->getAction("StandAtGuardPost");
+    ActionData* action = _scheduleComponentManager->getAction("StandAtGuardPost");
     ASSERT_EQ(action->parameters.size(), 2);
     ASSERT_EQ(action->actionOperator->preconditions.size(), 0);
     ASSERT_EQ(action->actionOperator->addedEffects.size(), 3);
@@ -74,7 +74,7 @@ TEST_F(ScheduleComponentFixture, schedule_loading)
 {
     ASSERT_EQ(_scheduleComponentManager->getNumActions(), 4);
 
-    Schedule* schedule = _scheduleComponentManager->getSchedule("NightGuard");
+    ScheduleData* schedule = _scheduleComponentManager->getSchedule("NightGuard");
     ASSERT_EQ(schedule->getNumEntries(), 2);
     schedule = _scheduleComponentManager->getSchedule("DayGuard");
     ASSERT_EQ(schedule->getNumEntries(), 2);
@@ -86,7 +86,7 @@ TEST_F(ScheduleComponentFixture, schedule_entry_change_multiple_entries)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "NightGuard", 0, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     ASSERT_EQ(scheduleInstance->currentEntry(), 1);
     scheduleInstance->startNextScheduleEntry();
     ASSERT_EQ(scheduleInstance->currentEntry(), 0);
@@ -96,7 +96,7 @@ TEST_F(ScheduleComponentFixture, schedule_entry_change_single_entry)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "Prisoner", 0, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     ASSERT_EQ(scheduleInstance->currentEntry(), 0);
     scheduleInstance->startNextScheduleEntry();
     ASSERT_EQ(scheduleInstance->currentEntry(), 0);
@@ -106,7 +106,7 @@ TEST_F(ScheduleComponentFixture, schedule_entry_24_hours_start_time)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "NightGuard", 0, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     ASSERT_EQ(scheduleInstance->currentEntry(), 1);
 }
 
@@ -114,7 +114,7 @@ TEST_F(ScheduleComponentFixture, schedule_entry_0_hours_start_time)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "NightGuard", 24, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     ASSERT_EQ(scheduleInstance->currentEntry(), 1);
 }
 
@@ -122,7 +122,7 @@ TEST_F(ScheduleComponentFixture, select_action_from_simple_schedule_entry)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "Prisoner", 0, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     int action = scheduleInstance->getActionIndex();
     scheduleInstance->chooseNewAction();
     int nextAction = scheduleInstance->getActionIndex();
@@ -134,7 +134,7 @@ TEST_F(ScheduleComponentFixture, select_actions_from_sequence_schedule_entry)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "DayGuard", 21, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
     int action = scheduleInstance->getActionIndex();
     scheduleInstance->chooseNewAction();
     int nextAction = scheduleInstance->getActionIndex();
@@ -146,8 +146,8 @@ TEST_F(ScheduleComponentFixture, perform_action)
 {
     Entity character = _entityManager->create("Character");
     _scheduleComponentManager->spawnComponent(character, "DayGuard", 21, *_storyLogger);
-    ScheduleInstance* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
-    ActionInstance* actionInstance = scheduleInstance->chooseNewAction();
+    Schedule* scheduleInstance = _scheduleComponentManager->getEntitySchedule(character);
+    Action* actionInstance = scheduleInstance->chooseNewAction();
 
     double duration = actionInstance->getDuration();
     ASSERT_TRUE(actionInstance->perform(duration));

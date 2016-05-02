@@ -12,7 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <schedules/ActionInstance.h>
+#include <schedules/Action.h>
 #include <util/Extra.h>
 
 inline std::string time_format (double time)
@@ -102,7 +102,7 @@ public:
             events.pop_back();
     }
 
-    void logState(Entity entity, std::string schedule, std::vector<ActionInstance*>& queuedActions)
+    void logState(Entity entity, std::string schedule, std::vector<Action*>& queuedActions)
     {
         if (states.find(entity.id) == states.end())
             states[entity.id] = StateLog();

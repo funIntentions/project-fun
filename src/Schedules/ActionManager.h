@@ -5,7 +5,7 @@
 #ifndef PARTIALORDERPLANNER_ACTIONFACTORY_H
 #define PARTIALORDERPLANNER_ACTIONFACTORY_H
 
-#include "schedules/Action.h"
+#include "schedules/ActionData.h"
 #include "planner/PartialOrderPlan.h"
 #include <unordered_map>
 
@@ -19,7 +19,7 @@ private:
     size_t addPredicate(Predicate predicate);
 
 public:
-    Operator buildOperator(Action& templateTask, std::vector<unsigned>& entities);
+    Operator buildOperator(ActionData& templateTask, std::vector<unsigned>& entities);
 
     Predicate getPredicate(int id);
 

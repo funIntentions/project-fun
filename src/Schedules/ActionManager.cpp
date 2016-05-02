@@ -57,7 +57,7 @@ PredicateTemplate ActionManager::getPredicateTemplate(int id)
     return itr->second;
 }
 
-Operator ActionManager::buildOperator(Action& templateTask, std::vector<unsigned>& entities)
+Operator ActionManager::buildOperator(ActionData& templateTask, std::vector<unsigned>& entities)
 {
     Operator anOperator;
     /*anOperator.name = templateTask.getName();
