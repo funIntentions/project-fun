@@ -49,8 +49,8 @@ set(SOURCE_FILES
         framework/TextRenderer.h
         components/AttributeComponentManager.cpp
         components/AttributeComponentManager.h
-        demo/OpinionGame.cpp
-        demo/OpinionGame.h
+        demo/StoryEngineGame.cpp
+        demo/StoryEngineGame.h
         demo/PlannerGame.cpp
         demo/PlannerGame.h
         components/DescriptionComponentManager.cpp

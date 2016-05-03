@@ -21,9 +21,9 @@
 #include <framework/Cursor.h>
 #include <util/Extra.h>
 
-class OpinionGame : public Game {
+class StoryEngineGame : public Game {
 public:
-    OpinionGame() : Game(SE_GAME_WIDTH, SE_GAME_HEIGHT, "Demo: Story Engine"),
+    StoryEngineGame() : Game(SE_GAME_WIDTH, SE_GAME_HEIGHT, "Demo: Story Engine"),
                     _entityManager(new EntityManager()),
                     _storyLogger(new StoryLogger(_entityManager)),
                     _stateComponentManager(new StateComponentManager()),
